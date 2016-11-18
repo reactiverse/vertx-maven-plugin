@@ -45,30 +45,6 @@ NOTE: please update the plugin version as needed
 </plugin>
 ---
 
-[[run-with-forked]]
-=== run goal as forked process
-[source,xml]
----
-<plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
-    <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>run</goal>
-            </goals>
-            <configuration>
-               <forked>true</forked><!--1-->
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
----
-
-<1> adding forked argument
-
 [[run-with-redeploy-default]]
 === run goal with vert.x redeploy enabled
 [source,xml]
