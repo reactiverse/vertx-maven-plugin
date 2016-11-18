@@ -188,7 +188,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
                 return Optional.of(finalNameArtifact.toFile());
             }
         } else {
-            return Optional.of(artifact.getFile());
+            return Optional.ofNullable(artifact.getFile());
         }
         return Optional.empty();
     }
