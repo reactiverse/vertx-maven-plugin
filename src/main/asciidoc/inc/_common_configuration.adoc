@@ -1,0 +1,20 @@
+[[common:configurations]]
+= Common Configurations
+
+All goals share the following configuration:
+
+.Package configuration
+[cols="1,5,1,1"]
+|===
+| Element | Description | Default | Property
+
+| `verticle`
+| Main verticle to start up
+|
+|`vertx.verticle`
+
+| `launcher`
+| Vert.x launcher to use
+| `io.vertx.core.Launcher`
+| `vertx.launcher`
+|===

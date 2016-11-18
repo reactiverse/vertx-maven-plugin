@@ -1,0 +1,17 @@
+
+[[vertx:package]]
+== *vertx.package*
+
+This goal will package a vert.x application as fat or uber jar with its dependencies bundled
+as part of the jar
+
+[[package-configuration]]
+=== Configuration
+
+The package goal does not have any additional configuration other the ones mentioned in
+ **<<common:configurations,Common Configuration>>**
+
+=== How to add this goal my maven project ?
+
+You can see **<<package-goal-examples,Examples>>** on how to to add the start goal to
+ your maven project

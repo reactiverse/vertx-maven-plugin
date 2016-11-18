@@ -1,0 +1,249 @@
+[[vertx:examples]]
+= Example Configurations
+
+The following sections shows example plugin snippets for the goals provided by the plugin.
+
+NOTE: please update the plugin version as needed
+
+[[package-goal-examples]]
+== vert.x:package Examples
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+---
+
+[[run-goal-examples]]
+== vert.x:run Examples
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+---
+
+[[run-with-forked]]
+=== run goal as forked process
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+               <forked>true</forked><!--1-->
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> adding forked argument
+
+[[run-with-redeploy-default]]
+=== run goal with vert.x redeploy enabled
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+               <redeploy>true</redeploy><!--1-->
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> enabling vert.x redeploy
+
+[[run-with-redeploy-default]]
+=== run goal with vert.x redeploy enabled with custom pattern
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+               <redeploy>true</redeploy><!--1-->
+               <redeployPatterns> <!--2-->
+                  <redeployPattern>src/main/java/*.java</redeployPattern>
+                  <redeployPattern>src/resources/webroot/*.html</redeployPattern>
+               </redeployPatterns>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> enabling vert.x redeploy
+<2> patterns that will be watched for changes and trigger redeploy
+
+[[start-goal-examples]]
+== vert.x:start Examples
+
+=== start goal with defaults
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>start</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+---
+
+[[start-with-app-id]]
+=== start goal with custom application id
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>start</goal>
+            </goals>
+            <configuration>
+               <appId>my-app-id</appId> <!--1-->
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> Custom unique application id
+
+[[start-with-java-opts]]
+=== start goal with custom java options
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>start</goal>
+            </goals>
+            <configuration>
+               <jvmArgs> <!--1-->
+                  <jvmArg>-Xms512m</jvmArg>
+                  <jvmArg>-Xmx1024m</jvmArg>
+               <jvmArgs>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> The jvm arguments that gets passed as `--java-opts` to the vert.x application
+
+[[stop-goal-examples]]
+== vert.x:stop Examples
+
+=== stop with no additional configuration
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>stop</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+---
+
+=== stopping one or more application
+
+When you have configured to <<start-with-app-id>> or know the application ids, then you can add list
+of application ids as shown below to trigger stop of the those applications
+
+[source,xml]
+---
+<plugin>
+    <groupId>org.workspace7.maven.plugins</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>start</goal>
+            </goals>
+            <configuration>
+              <appIds> <!--1-->
+                 <appId>my-app-id-1</appId>
+                 <appId>my-app-id-2</appId>
+              </appIds>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+---
+
+<1> List of custom unique application ids

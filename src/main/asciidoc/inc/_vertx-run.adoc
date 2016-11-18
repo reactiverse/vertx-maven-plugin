@@ -1,0 +1,16 @@
+[[vertx:run]]
+== *vertx:run*
+This goal allows to run the vert.x application as part of the maven build.
+The application run can either be run as forked and non-forked process.
+By default the application is run in non-forked mode.
+
+The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
+defines all the applicable configurations for the goal
+
+=== How to add this goal my maven project ?
+
+You can see **<<run-goal-examples,Examples>>** on how to to add the start goal to
+your maven project
+
+
+NOTE: Currently redeploy pattern is added, but redeploy compilation is work in progress

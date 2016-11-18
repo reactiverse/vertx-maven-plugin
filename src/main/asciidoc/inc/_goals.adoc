@@ -1,0 +1,22 @@
+= Maven Goals
+
+This plugin supports the following goals which are explained in detail
+in the next sections.
+
+.Plugin Goals
+[cols="1,3"]
+|===
+|Goal | Description
+
+|**<<vertx:package>>**
+|Package Vert.x applications
+
+|**<<vertx:run>>**
+|Run a Vert.x application in foreground
+
+|**<<vertx:start>>**
+|Run a Vert.x application in daemon mode with specific id
+
+|**<<vertx:stop>>**
+|Stops the vert.x applicaiton running in daemon mode
+|===
