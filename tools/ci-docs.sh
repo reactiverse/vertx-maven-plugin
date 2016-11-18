@@ -4,10 +4,10 @@ echo ===========================================
 
 mvn -Pdoc-html && \
 mvn -Pdoc-pdf && \
-git clone -b gh-pages git@github.com:kameshsampath/vertx-maven-plugin gh-pages && \
+git clone -b gh-pages git@github.com:fabric8io/vertx-maven-plugin gh-pages && \
 cp -rv target/generated-docs/* gh-pages/ && \
 cd gh-pages && \
-mv index.pdf docker-maven-plugin.pdf && \
+mv index.pdf vertx-maven-plugin.pdf && \
 git add --ignore-errors * && \
 git commit -m "generated documentation" && \
 git push origin gh-pages && \
