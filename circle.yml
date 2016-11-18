@@ -20,9 +20,8 @@ general:
 deployment:
   website:
     branch: master
-    owner: kameshsampath
+    owner: fabric8io
     commands:
-      - git config --global user.email "kamesh.sampath@hotmail.com"
-      - git config --global user.name "kameshsampath"
+      - git config --global user.email "circleci@fabric8.io"
+      - git config --global user.name "CircleCI"
       - ./tools/ci-docs.sh
-
