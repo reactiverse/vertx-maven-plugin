@@ -1,8 +1,7 @@
 [[vertx:run]]
 == *vertx:run*
 This goal allows to run the vert.x application as part of the maven build.
-The application run can either be run as forked and non-forked process.
-By default the application is run in non-forked mode.
+The application is always run the vert.x application as a forked process.
 
 The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
 defines all the applicable configurations for the goal

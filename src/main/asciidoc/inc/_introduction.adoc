@@ -44,7 +44,7 @@ The plugin allows running vert.x applications in following ways:
 
 The vert.x application could also be run without building building the fat jars, typically during the
 development mode.  The **<<vertx:run,vertx:run>>** goal helps in running the application. The
-application will be run in either forked or non-forked mode based on the configuration of the goal.
+application will be run in as forked process with additional configurations based on the goals.
 
 To run the application vert.x application in foreground, execute the following maven command
 
