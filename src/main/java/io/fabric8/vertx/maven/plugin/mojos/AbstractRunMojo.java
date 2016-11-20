@@ -192,6 +192,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             StringBuilder redeployArg = new StringBuilder();
             redeployArg.append(Constants.VERTX_ARG_REDEPLOY);
             redeployArg.append("=\"");
+            //TODO - SK - what if user wants redeploy only on specific paths or need to provide patterns
             if (redeployPatterns != null && redeployPatterns.isEmpty()) {
                 final String redeployPattern = redeployPatterns.stream()
                         .collect(Collectors.joining(","))
@@ -201,15 +202,19 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 Path patternFilePath = Paths.get(baseDir, Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
                 redeployPatterns = new ArrayList<>();
                 redeployPatterns.add(Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
-                redeployArg.append(patternFilePath.toString());
+                redeployArg.append(Constants.VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN);
             }
             redeployArg.append("\"");
             argsList.add(redeployArg.toString());
         }
 
         if (!"stop".equals(vertxCommand)) {
-            argsList.add(Constants.VERTX_ARG_LAUNCHER_CLASS);
-            argsList.add(launcher);
+            StringBuilder argLauncherClass = new StringBuilder();
+            argLauncherClass.append(Constants.VERTX_ARG_LAUNCHER_CLASS);
+            argLauncherClass.append("=\"");
+            argLauncherClass.append(launcher);
+            argLauncherClass.append("\"");
+            argsList.add(argLauncherClass.toString());
 
             if (config != null && config.exists() && config.isFile()) {
                 getLog().info("Using configuration from file: " + config.toString());

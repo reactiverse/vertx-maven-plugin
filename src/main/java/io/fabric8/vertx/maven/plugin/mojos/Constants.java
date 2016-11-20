@@ -36,7 +36,7 @@ public interface Constants {
      *
      */
     String FILE_DELETE = "FILE_DELETE";
-    
+
     /**
      * The vert.x Core Launcher class
      */
@@ -61,6 +61,11 @@ public interface Constants {
      * vert.x redeploy pattern
      */
     String VERTX_REDEPLOY_DEFAULT_PATTERN = "src/main/**/*.java";
+
+    /**
+     * vert.x redeploy pattern
+     */
+    String VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN = "target/classes/**/*";
 
     /**
      * vert.x configuration option

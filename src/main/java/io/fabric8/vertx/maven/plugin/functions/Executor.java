@@ -16,10 +16,10 @@
 
 package io.fabric8.vertx.maven.plugin.functions;
 
+import io.fabric8.vertx.maven.plugin.utils.StreamToLogConsumer;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamPumper;
-import io.fabric8.vertx.maven.plugin.utils.StreamToLogConsumer;
 
 /**
  * @author kameshs
@@ -33,9 +33,8 @@ public interface Executor<R> {
         return new Commandline();
     }
 
-    default String[] argsLine() {
+    default void argsLine(Commandline commandline) {
 
-        return new String[0];
     }
 
     default void redirectOutput(Process process, Log logger) {

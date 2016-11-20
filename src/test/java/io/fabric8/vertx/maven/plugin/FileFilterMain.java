@@ -20,6 +20,7 @@ import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,13 @@ import java.util.stream.Stream;
 public class FileFilterMain {
 
     public static void main(String[] args) {
+
+        Commandline commandline = new Commandline();
+        commandline.setExecutable("java");
+        commandline.createArg().setValue("io.vertx.core.Launcher");
+        commandline.createArg().setValue("--redeploy=target/**/*");
+
+        System.out.println(commandline);
 
         File baseDir = new File("/Users/kameshs/git/fabric8io/vertx-maven-plugin/samples/vertx-demo");
         List<String> includes = new ArrayList<>();
