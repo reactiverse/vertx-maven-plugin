@@ -16,18 +16,17 @@
 
 package io.fabric8.vertx.maven.plugin;
 
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamPumper;
-import io.fabric8.vertx.maven.plugin.utils.StreamToLogConsumer;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author kameshs
@@ -36,45 +35,100 @@ public class FileFilterMain {
 
     public static void main(String[] args) {
 
-        File baseDir = new File("/Users/kameshs/git/maven/plugins/vertx-maven-plugin/samples/vertx-demo");
+        File baseDir = new File("/Users/kameshs/git/fabric8io/vertx-maven-plugin/samples/vertx-demo");
         List<String> includes = new ArrayList<>();
         includes.add("src/**/*.java");
+        //FileAlterationMonitor monitor  = null;
         try {
-            List<Path> inclDirs = FileUtils.getFileAndDirectoryNames(baseDir,
-                    "src/**/*.java", null, true, true, true, false)
-                    .stream().map(FileUtils::dirname).map(Paths::get)
-                    .filter(p -> Files.exists(p) && Files.isDirectory(p))
-                    .collect(Collectors.toList());
 
-            Object[] arrDirs = inclDirs.stream().map(Path::toString).toArray();
-            Commandline cli = new Commandline();
-            cli.setExecutable("java");
+            Set<Path> inclDirs = new HashSet<>();
+
+            includes.forEach(s -> {
+                try {
+
+                    if (s.startsWith("**")) {
+                        Path rootPath = Paths.get(baseDir.toString());
+                        if (Files.exists(rootPath)) {
+                            File[] dirs = rootPath.toFile()
+                                    .listFiles((dir, name) -> dir.isDirectory());
+                            Stream.of(dirs).forEach(f -> {
+                                inclDirs.add(Paths.get(f.toString()));
+                            });
+                        }
+                    } else if (s.contains("**")) {
+                        String root = s.substring(0, s.indexOf("/**"));
+                        Path rootPath = Paths.get(baseDir.toString(), root);
+                        if (Files.exists(rootPath)) {
+                            File[] dirs = rootPath.toFile()
+                                    .listFiles((dir, name) -> dir.isDirectory());
+                            Stream.of(dirs).forEach(f -> {
+                                inclDirs.add(Paths.get(f.toString()));
+                            });
+                        }
+                    }
+
+                    List<Path> dirs = FileUtils.getFileAndDirectoryNames(baseDir,
+                            s, null, true, true, true, true)
+                            .stream().map(FileUtils::dirname).map(Paths::get)
+                            .filter(p -> Files.exists(p) && Files.isDirectory(p))
+                            .collect(Collectors.toList());
+
+                    inclDirs.addAll(dirs);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
 
-            for (int i = 0; i < arrDirs.length; i++) {
-                System.out.println(arrDirs[i]);
-            }
+            FileAlterationMonitor monitor = fileWatcher(inclDirs);
 
+            Runnable monitorTask = () -> {
+                try {
+                    monitor.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
 
-            System.out.println(cli);
-
-            Process process = cli.execute();
-
-            StreamToLogConsumer logConsumer = line -> System.out.println(line);
-
-            StreamPumper outPumper = new StreamPumper(process.getInputStream(), logConsumer);
-            StreamPumper errPumper = new StreamPumper(process.getErrorStream(), logConsumer);
-
-            outPumper.setPriority(Thread.MIN_PRIORITY + 1);
-            errPumper.setPriority(Thread.MIN_PRIORITY + 1);
-
-            outPumper.start();
-            errPumper.start();
+            monitorTask.run();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+
+    }
+
+
+    private static FileAlterationMonitor fileWatcher(Set<Path> inclDirs) {
+        FileAlterationMonitor monitor = new FileAlterationMonitor(1000);
+
+        inclDirs.stream()
+                .forEach(path -> {
+                    System.out.println("Adding Observer to " + path.toString());
+                    FileAlterationObserver observer = new FileAlterationObserver(path.toFile());
+                    observer.addListener(new FileAlterationListenerAdaptor() {
+                        @Override
+                        public void onFileCreate(File file) {
+                            System.out.println("File Create:" + file.toString());
+                        }
+
+                        @Override
+                        public void onFileChange(File file) {
+                            System.out.println("File Change:" + file.toString());
+                        }
+
+                        @Override
+                        public void onFileDelete(File file) {
+                            System.out.println("File Delete:" + file.toString());
+                        }
+
+                    });
+                    monitor.addObserver(observer);
+                });
+
+        return monitor;
 
     }
 

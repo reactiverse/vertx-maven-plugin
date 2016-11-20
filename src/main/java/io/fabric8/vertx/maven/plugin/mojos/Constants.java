@@ -24,6 +24,20 @@ package io.fabric8.vertx.maven.plugin.mojos;
 public interface Constants {
 
     /**
+     *
+     */
+    String FILE_CREATE = "FILE_CREATE";
+
+    /**
+     *
+     */
+    String FILE_CHANGE = "FILE_CHANGE";
+    /**
+     *
+     */
+    String FILE_DELETE = "FILE_DELETE";
+    
+    /**
      * The vert.x Core Launcher class
      */
     String IO_VERTX_CORE_LAUNCHER = "io.vertx.core.Launcher";
@@ -103,4 +117,6 @@ public interface Constants {
      *
      */
     String VERTX_RUN_MODE_JAR = "jar";
+
+
 }

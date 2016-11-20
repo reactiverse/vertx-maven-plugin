@@ -16,18 +16,14 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import io.fabric8.vertx.maven.plugin.utils.ConfigConverterUtil;
-import io.fabric8.vertx.maven.plugin.utils.IncrementalBuilder;
-import io.fabric8.vertx.maven.plugin.utils.JavaProcessExecutor;
-import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import io.fabric8.vertx.maven.plugin.callbacks.Callback;
+import io.fabric8.vertx.maven.plugin.utils.*;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
-import io.fabric8.vertx.maven.plugin.callbacks.Callback;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +33,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -280,20 +275,14 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
             if (redeploy && !("start".equals(vertxCommand) || "start".equals(vertxCommand))) {
 
-                String includes = redeployPatterns.stream().collect(Collectors.joining(","));
+                Set<Path> inclDirs = FileUtils.includedDirs(this.project.getBasedir(), redeployPatterns);
 
-                List<Path> inclDirs = FileUtils.getFileAndDirectoryNames(this.project.getBasedir(),
-                        includes, null, true, true, true, false)
-                        .stream().map(FileUtils::dirname).map(Paths::get)
-                        .filter(p -> Files.exists(p) && Files.isDirectory(p))
-                        .distinct()
-                        .collect(Collectors.toList());
-
+                //TODO - handle exceptions effectively
                 CompletableFuture.runAsync(() -> {
-
                     try {
                         final BuildCallback buildCallback = new BuildCallback();
-                        IncrementalBuilder incrementalBuilder = new IncrementalBuilder(inclDirs, buildCallback, getLog());
+                        IncrementalBuilder2 incrementalBuilder = new IncrementalBuilder2(inclDirs,
+                                buildCallback, getLog(), 1000L);
                         incrementalBuilder.run();
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
@@ -427,12 +416,15 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    public final class BuildCallback implements Callback<WatchEvent.Kind<?>, Path> {
+    public final class BuildCallback implements Callback<String, Path> {
 
         @Override
-        public void call(WatchEvent.Kind<?> kind, Path path) {
+        public void call(String kind, Path path) {
             final MojoUtils mojoUtils = new MojoUtils().withLog(getLog());
-            getLog().info(" Received Build request with kind:" + kind + " for path " + path);
+
+            if (getLog().isDebugEnabled()) {
+                getLog().debug(" Received Build request with kind:" + kind + " for path " + path);
+            }
 
             try {
                 mojoUtils.compile(project, mavenSession, buildPluginManager);
