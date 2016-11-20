@@ -16,8 +16,8 @@
 
 package io.fabric8.vertx.maven.plugin.utils;
 
-import org.apache.maven.plugin.logging.Log;
 import io.fabric8.vertx.maven.plugin.callbacks.Callback;
+import org.apache.maven.plugin.logging.Log;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 /**
  * @author kameshs
+ * @deprecated use {@link IncrementalBuilder2}
  */
 public class IncrementalBuilder implements Runnable {
 

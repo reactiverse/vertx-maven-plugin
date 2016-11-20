@@ -17,6 +17,7 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.cli.Arg;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.File;
@@ -68,22 +69,31 @@ public class JavaProcessExecutor extends JavaExecutor {
     @Override
     public Commandline buildCommandLine() throws Exception {
         Commandline cli = new Commandline();
+
+        //Disable explicit quoting of arguments
+        cli.getShell().setQuotedArgumentsEnabled(false);
+
         cli.setExecutable(javaPath.toString());
 
         cli.setWorkingDirectory(workingDirectory);
 
         addClasspath(this.argsList);
 
-        cli.addArguments(argsLine());
+        argsLine(cli);
 
         return cli;
     }
 
     @Override
-    public String[] argsLine() {
+    public void argsLine(Commandline commandline) {
+
         final String[] args = new String[argsList.size()];
         argsList.toArray(args);
-        return args;
+
+        argsList.forEach(arg -> {
+            Arg cliArg = commandline.createArg();
+            cliArg.setValue(arg);
+        });
     }
 
     public JavaProcessExecutor withArgs(List<String> argsList) {

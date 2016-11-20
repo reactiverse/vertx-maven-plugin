@@ -24,6 +24,20 @@ package io.fabric8.vertx.maven.plugin.mojos;
 public interface Constants {
 
     /**
+     *
+     */
+    String FILE_CREATE = "FILE_CREATE";
+
+    /**
+     *
+     */
+    String FILE_CHANGE = "FILE_CHANGE";
+    /**
+     *
+     */
+    String FILE_DELETE = "FILE_DELETE";
+
+    /**
      * The vert.x Core Launcher class
      */
     String IO_VERTX_CORE_LAUNCHER = "io.vertx.core.Launcher";
@@ -41,12 +55,17 @@ public interface Constants {
     /**
      * vert.x redeploy argument
      */
-    String VERTX_ARG_REDEPLOY = "--redeploy";
+    String VERTX_ARG_REDEPLOY = "--redeploy=";
 
     /**
      * vert.x redeploy pattern
      */
     String VERTX_REDEPLOY_DEFAULT_PATTERN = "src/main/**/*.java";
+
+    /**
+     * vert.x redeploy pattern
+     */
+    String VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN = "target/classes/**/*";
 
     /**
      * vert.x configuration option
@@ -103,4 +122,6 @@ public interface Constants {
      *
      */
     String VERTX_RUN_MODE_JAR = "jar";
+
+
 }
