@@ -190,8 +190,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             getLog().info("VertX application redeploy enabled");
             String baseDir = this.project.getBasedir().toString();
             StringBuilder redeployArg = new StringBuilder();
-            redeployArg.append(Constants.VERTX_ARG_REDEPLOY);
-            redeployArg.append("=\"");
+            redeployArg.append(Constants.VERTX_ARG_REDEPLOY); //fix for redeploy to work
             //TODO - SK - what if user wants redeploy only on specific paths or need to provide patterns
             if (redeployPatterns != null && redeployPatterns.isEmpty()) {
                 final String redeployPattern = redeployPatterns.stream()
@@ -202,9 +201,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 Path patternFilePath = Paths.get(baseDir, Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
                 redeployPatterns = new ArrayList<>();
                 redeployPatterns.add(Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
-                redeployArg.append(Constants.VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN);
+                redeployArg.append(Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
             }
-            redeployArg.append("\"");
             argsList.add(redeployArg.toString());
         }
 

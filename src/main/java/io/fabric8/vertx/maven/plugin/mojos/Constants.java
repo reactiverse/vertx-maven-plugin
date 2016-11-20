@@ -55,7 +55,7 @@ public interface Constants {
     /**
      * vert.x redeploy argument
      */
-    String VERTX_ARG_REDEPLOY = "--redeploy";
+    String VERTX_ARG_REDEPLOY = "--redeploy=";
 
     /**
      * vert.x redeploy pattern
