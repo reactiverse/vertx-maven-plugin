@@ -26,6 +26,8 @@
     <name>Vert.x Maven Plugin</name>
     <description>A plugin to allow package, start, stop, run of Vert.x applications</description>
 
+    <url>http://github.com/fabric8io/vertx-maven-plugin</url>
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/fabric8io/vertx-maven-plugin/issues/</url>
@@ -436,6 +438,29 @@
                     </plugin>
                 </plugins>
                 <defaultGoal>generate-resources asciidoctor:process-asciidoc</defaultGoal>
+            </build>
+        </profile>
+
+        <!-- "release" profiles used for deploying with fabric8 -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
