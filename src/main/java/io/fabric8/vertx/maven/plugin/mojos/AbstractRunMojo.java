@@ -201,7 +201,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 Path patternFilePath = Paths.get(baseDir, Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
                 redeployPatterns = new ArrayList<>();
                 redeployPatterns.add(Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
-                redeployArg.append(Constants.VERTX_REDEPLOY_DEFAULT_PATTERN);
+                redeployArg.append(Constants.VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN);
             }
             argsList.add(redeployArg.toString());
         }
