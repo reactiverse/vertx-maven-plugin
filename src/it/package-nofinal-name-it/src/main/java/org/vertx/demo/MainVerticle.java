@@ -14,13 +14,17 @@
  *   limitations under the License.
  */
 
+package org.vertx.demo;
 
-import io.fabric8.vertx.maven.plugin.Verify;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.*;
 
-File primaryArtifactFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar");
+public class MainVerticle extends AbstractVerticle {
 
-assert primaryArtifactFile.exists();
-
-File fatJarFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT-fat.jar");
-
-Verify.verifyVertxJar(fatJarFile);
+	@Override
+	public void start() {
+		vertx.createHttpServer()
+				.requestHandler(req -> req.response().end("Hello World!"))
+				.listen(8080);
+	}
+}

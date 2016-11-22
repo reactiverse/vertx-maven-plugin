@@ -16,8 +16,6 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
-import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -32,6 +30,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
+
+import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 
 
 /**
@@ -73,9 +74,13 @@ public class PackageMojo extends AbstractVertxMojo {
 
         try {
 
+            String fatJarName = this.project.getBuild().getFinalName();
+            if (fatJarName == null) {
+                fatJarName = this.project.getArtifactId();
+            }
             File fatJarFile = packageHelper
                     .log(getLog())
-                    .build(this.project.getName(), /* name is always != null */
+                    .build(fatJarName, /* name is always != null */
                             Paths.get(this.projectBuildDir), primaryArtifactFile.get());
 
             ArtifactHandler handler = new DefaultArtifactHandler("jar");

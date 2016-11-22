@@ -17,10 +17,10 @@
 
 import io.fabric8.vertx.maven.plugin.Verify;
 
-File primaryArtifactFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar");
+File primaryArtifactFile = new File(basedir, "target/my-vertx-app.jar");
 
 assert primaryArtifactFile.exists();
 
-File fatJarFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT-fat.jar");
+File fatJarFile = new File(basedir, "target/my-vertx-app-fat.jar");
 
 Verify.verifyVertxJar(fatJarFile);

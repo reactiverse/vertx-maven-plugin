@@ -44,6 +44,11 @@ public class MojoUtils {
     public static final String JAR_PLUGIN_KEY = "org.apache.maven.plugins:maven-jar-plugin";
     public static final String VERTX_PACKAGE_PLUGIN_KEY = "io.fabric8:vertx-maven-plugin";
 
+
+    public static final String G_MAVEN_JAR_PLUGIN = "org.apache.maven.plugins";
+    public static final String A_MAVEN_JAR_PLUGIN = "maven-jar-plugin";
+    public static final String V_MAVEN_JAR_PLUGIN = "3.0.2";
+
     public static final String G_MAVEN_COMPILER_PLUGIN = "org.apache.maven.plugins";
     public static final String A_MAVEN_COMPILER_PLUGIN = "maven-compiler-plugin";
     public static final String V_MAVEN_COMPILER_PLUGIN = "3.1";
@@ -78,15 +83,15 @@ public class MojoUtils {
             if (jarPlugin.isPresent()) {
                 executeMojo(
                         jarPlugin.get(),
-                        goal("jar:jar"),
+                        goal("jar"),
                         configuration(element("outputDirectory", "${project.build.outputDir}"),
                                 element("classesDirectory", "${project.build.outputDirectory}")),
                         executionEnvironment(project, mavenSession, buildPluginManager)
                 );
             } else {
                 executeMojo(
-                        plugin("org.apache.maven.plugins", "maven-jar-plugin"),
-                        goal("jar:jar"),
+                        plugin(G_MAVEN_JAR_PLUGIN,A_MAVEN_JAR_PLUGIN,V_MAVEN_JAR_PLUGIN),
+                        goal("jar"),
                         configuration(element("outputDirectory", "${project.build.outputDir}"),
                                 element("classesDirectory", "${project.build.outputDirectory}")),
                         executionEnvironment(project, mavenSession, buildPluginManager)
