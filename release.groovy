@@ -50,7 +50,7 @@ def release(project){
     helmPush = false
     groupId = 'io.fabric8'
     githubOrganisation = 'fabric8io'
-    artifactIdToWatchInCentral = 'fabric8io/vertx-maven-plugin'
+    artifactIdToWatchInCentral = 'vertx-maven-plugin'
     artifactExtensionToWatchInCentral = 'jar'
   }
 }
