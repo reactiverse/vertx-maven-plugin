@@ -20,7 +20,6 @@ import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
  * @author kameshs
  */
 @Mojo(name = "start", threadSafe = true,
-        defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )

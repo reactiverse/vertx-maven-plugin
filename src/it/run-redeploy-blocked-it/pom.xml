@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.3.2</vertx.version>
+        <vertx.version>3.3.3</vertx.version>
         <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
     </properties>
     <build>
@@ -48,7 +48,6 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <forked>true</forked>
                             <redeploy>true</redeploy>
                         </configuration>
                     </execution>
@@ -60,6 +59,10 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-templ-thymeleaf</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>

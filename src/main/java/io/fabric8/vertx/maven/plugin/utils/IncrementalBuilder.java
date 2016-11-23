@@ -17,108 +17,131 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 import io.fabric8.vertx.maven.plugin.callbacks.Callback;
+import io.fabric8.vertx.maven.plugin.mojos.Constants;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.maven.plugin.logging.Log;
 
+import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
 
 /**
  * @author kameshs
- * @deprecated use {@link IncrementalBuilder2}
  */
-public class IncrementalBuilder implements Runnable {
-
-    private final WatchService fileWatcherService;
-
-    private final Callback<WatchEvent.Kind<?>, Path> callback;
+public class IncrementalBuilder extends FileAlterationListenerAdaptor implements Runnable, Closeable {
 
     private final Log logger;
 
-    Hashtable<WatchKey, Path> watchPathKeys = new Hashtable<>();
+    private final Callback<String, Path> callback;
 
-    public IncrementalBuilder(List<Path> inclDirs,
-                              Callback<WatchEvent.Kind<?>, Path> callback,
-                              Log logger)
+    private FileAlterationMonitor monitor;
+
+    private Hashtable<Path, FileAlterationObserver> observers = new Hashtable<>();
+
+    public IncrementalBuilder(Set<Path> inclDirs,
+                              Callback<String, Path> callback,
+                              Log logger, long watchTimeInterval)
             throws IOException {
 
-        this.fileWatcherService = FileSystems.getDefault().newWatchService();
         this.callback = callback;
         this.logger = logger;
+        this.monitor = new FileAlterationMonitor(watchTimeInterval);
+        inclDirs.forEach(this::buildObserver);
 
-
-        Consumer<Path> fnPathRegistration = path -> {
-            try {
-                register(path);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        };
-
-        inclDirs.forEach(fnPathRegistration);
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>) event;
     }
 
     @Override
     public void run() {
+        try {
+            this.monitor.start();
+        } catch (Exception e) {
+            logger.error("Unable to start Incremental Builder", e);
+        }
+    }
 
-        logger.info("Incremental builder watching paths: " + watchPathKeys.values());
-
-        while (true) {
-
-            WatchKey key;
-
+    @Override
+    public void close() throws IOException {
+        if (this.monitor != null) {
             try {
-                key = fileWatcherService.take();
-            } catch (InterruptedException e) {
-                return;
-            }
-
-            watchPathKeys.get(key);
-
-            WatchEvent.Kind<?> kind = null;
-            for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                kind = watchEvent.kind();
-
-                if (StandardWatchEventKinds.ENTRY_MODIFY == kind ||
-                        StandardWatchEventKinds.ENTRY_CREATE == kind ||
-                        StandardWatchEventKinds.ENTRY_DELETE == kind) {
-
-                    WatchEvent<Path> pathEvent = cast(watchEvent);
-                    Path path = pathEvent.context();
-
-                    this.callback.call(kind, path);
-
-                } else {
-                    continue;
-                }
-            }
-
-            if (!key.reset()) {
-                break;
+                this.monitor.stop();
+            } catch (Exception e) {
+                //ignore
             }
         }
     }
 
     /**
      * @param path
-     * @throws IOException
      */
-    protected void register(Path path) throws IOException {
-        try {
-            WatchKey key = path.register(fileWatcherService, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY);
-            watchPathKeys.put(key, path);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    protected synchronized void buildObserver(Path path) {
+
+        logger.info("Observing path:" + path.toString());
+
+        FileAlterationObserver observer = new FileAlterationObserver(path.toFile());
+
+        observer.addListener(this);
+
+        observers.put(path, observer);
+
+        this.monitor.addObserver(observer);
     }
+
+    /**
+     *
+     */
+    protected synchronized void syncMointor() {
+        observers.forEach((path, observer) -> {
+            this.monitor.getObservers().forEach(observer2 -> {
+                Path path1 = Paths.get(observer2.getDirectory().toString());
+                if (!observers.containsKey(path1)) {
+                    this.monitor.removeObserver(observer2);
+                }
+            });
+        });
+    }
+
+
+    @Override
+    public void onDirectoryCreate(File directory) {
+        buildObserver(Paths.get(directory.toString()));
+        syncMointor();
+    }
+
+
+    @Override
+    public void onDirectoryDelete(File directory) {
+        observers.remove(Paths.get(directory.toString()));
+        syncMointor();
+    }
+
+    @Override
+    public void onFileCreate(File file) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("File Created: " + file);
+        }
+        this.callback.call(Constants.FILE_CREATE, Paths.get(file.toString()));
+    }
+
+    @Override
+    public void onFileChange(File file) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("File Changed: " + file);
+        }
+        this.callback.call(Constants.FILE_CHANGE, Paths.get(file.toString()));
+    }
+
+    @Override
+    public void onFileDelete(File file) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("File Deleted: " + file);
+        }
+        this.callback.call(Constants.FILE_DELETE, Paths.get(file.toString()));
+    }
+
 }

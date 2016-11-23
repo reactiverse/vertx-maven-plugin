@@ -124,4 +124,21 @@ public interface Constants {
     String VERTX_RUN_MODE_JAR = "jar";
 
 
+    /**
+     *
+     */
+    String WILDCARD_JSON_FILES = "*.json";
+    /**
+     *
+     */
+    String WILDCARD_YAML_FILES = "*.yaml";
+    /**
+     *
+     */
+    String WILDCARD_YML_FILES = "*.yml";
+
+    /**
+     *
+     */
+    String DEFAULT_CONF_DIR = "/src/main/conf";
 }

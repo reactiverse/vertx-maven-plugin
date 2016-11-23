@@ -18,7 +18,6 @@ package io.fabric8.vertx.maven.plugin.mojos;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -38,7 +37,6 @@ import java.util.UUID;
  * @author kameshs
  */
 @Mojo(name = "stop",
-        defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
