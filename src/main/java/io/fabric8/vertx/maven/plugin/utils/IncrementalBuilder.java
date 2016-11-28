@@ -16,8 +16,6 @@
 
 package io.fabric8.vertx.maven.plugin.utils;
 
-import io.fabric8.vertx.maven.plugin.callbacks.Callback;
-import io.fabric8.vertx.maven.plugin.mojos.AbstractRunMojo;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -30,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * @author kameshs
@@ -38,16 +37,16 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     private final Log logger;
 
-    private final Callback<Path> javaBuildCallBack;
-    private final Callback<Path> resourceBuildCallBack;
+    private final Callable<Void> javaBuildCallBack;
+    private final Callable<Void> resourceBuildCallBack;
 
     private FileAlterationMonitor monitor;
 
     private Hashtable<Path, FileAlterationObserver> observers = new Hashtable<>();
 
     public IncrementalBuilder(Set<Path> inclDirs,
-                              Callback<Path> javaBuildCallBack,
-                              AbstractRunMojo.ResourceBuildCallback resourceBuildCallBack, Log logger, long watchTimeInterval)
+                              Callable<Void> javaBuildCallBack,
+                              Callable<Void> resourceBuildCallBack, Log logger, long watchTimeInterval)
             throws IOException {
 
         this.javaBuildCallBack = javaBuildCallBack;
@@ -124,41 +123,43 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     @Override
     public void onFileCreate(File file) {
+
         if (logger.isDebugEnabled()) {
             logger.debug("File Created: " + file);
         }
 
-        if (isJavaFile(file.getName())) {
-            this.javaBuildCallBack.call(Paths.get(file.toString()));
-        } else {
-            this.resourceBuildCallBack.call(Paths.get(file.toString()));
-        }
-
+        triggerBuild(file);
     }
 
     @Override
     public void onFileChange(File file) {
+
         if (logger.isDebugEnabled()) {
             logger.debug("File Changed: " + file);
         }
 
-        if (isJavaFile(file.getName())) {
-            this.javaBuildCallBack.call(Paths.get(file.toString()));
-        } else {
-            this.resourceBuildCallBack.call(Paths.get(file.toString()));
-        }
+        triggerBuild(file);
     }
 
     @Override
     public void onFileDelete(File file) {
+
         if (logger.isDebugEnabled()) {
             logger.debug("File Deleted: " + file);
         }
 
-        if (isJavaFile(file.getName())) {
-            this.javaBuildCallBack.call(Paths.get(file.toString()));
-        } else {
-            this.resourceBuildCallBack.call(Paths.get(file.toString()));
+        triggerBuild(file);
+    }
+
+    private void triggerBuild(File file) {
+        try {
+            if (isJavaFile(file.getName())) {
+                this.javaBuildCallBack.call();
+            } else {
+                this.resourceBuildCallBack.call();
+            }
+        } catch (Exception e) {
+            //ignore
         }
     }
 

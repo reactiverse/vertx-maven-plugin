@@ -16,7 +16,6 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import io.fabric8.vertx.maven.plugin.callbacks.Callback;
 import io.fabric8.vertx.maven.plugin.utils.*;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.model.Resource;
@@ -34,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -415,10 +415,10 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    public final class JavaBuildCallback implements Callback<Path> {
+    public final class JavaBuildCallback implements Callable {
 
         @Override
-        public void call(Path path) {
+        public Void call() {
 
             final MojoUtils mojoUtils = new MojoUtils().withLog(getLog());
 
@@ -427,16 +427,17 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             } catch (Exception e) {
                 getLog().error("Error while doing incremental build", e);
             }
+            return null;
         }
     }
 
     /**
      *
      */
-    public final class ResourceBuildCallback implements Callback<Path> {
+    public final class ResourceBuildCallback implements Callable<Void> {
 
         @Override
-        public void call(Path path) {
+        public Void call() {
 
             final MojoUtils mojoUtils = new MojoUtils().withLog(getLog());
 
@@ -445,6 +446,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             } catch (Exception e) {
                 getLog().error("Error while doing incremental build", e);
             }
+
+            return null;
         }
     }
 
