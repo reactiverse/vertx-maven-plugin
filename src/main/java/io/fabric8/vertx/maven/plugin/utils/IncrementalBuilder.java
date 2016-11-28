@@ -17,7 +17,7 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 import io.fabric8.vertx.maven.plugin.callbacks.Callback;
-import io.fabric8.vertx.maven.plugin.mojos.Constants;
+import io.fabric8.vertx.maven.plugin.mojos.AbstractRunMojo;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -38,18 +38,20 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     private final Log logger;
 
-    private final Callback<String, Path> callback;
+    private final Callback<Path> javaBuildCallBack;
+    private final Callback<Path> resourceBuildCallBack;
 
     private FileAlterationMonitor monitor;
 
     private Hashtable<Path, FileAlterationObserver> observers = new Hashtable<>();
 
     public IncrementalBuilder(Set<Path> inclDirs,
-                              Callback<String, Path> callback,
-                              Log logger, long watchTimeInterval)
+                              Callback<Path> javaBuildCallBack,
+                              AbstractRunMojo.ResourceBuildCallback resourceBuildCallBack, Log logger, long watchTimeInterval)
             throws IOException {
 
-        this.callback = callback;
+        this.javaBuildCallBack = javaBuildCallBack;
+        this.resourceBuildCallBack = resourceBuildCallBack;
         this.logger = logger;
         this.monitor = new FileAlterationMonitor(watchTimeInterval);
         inclDirs.forEach(this::buildObserver);
@@ -95,7 +97,7 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     /**
      *
      */
-    protected synchronized void syncMointor() {
+    protected synchronized void syncMonitor() {
         observers.forEach((path, observer) -> {
             this.monitor.getObservers().forEach(observer2 -> {
                 Path path1 = Paths.get(observer2.getDirectory().toString());
@@ -110,14 +112,14 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     @Override
     public void onDirectoryCreate(File directory) {
         buildObserver(Paths.get(directory.toString()));
-        syncMointor();
+        syncMonitor();
     }
 
 
     @Override
     public void onDirectoryDelete(File directory) {
         observers.remove(Paths.get(directory.toString()));
-        syncMointor();
+        syncMonitor();
     }
 
     @Override
@@ -125,7 +127,13 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
         if (logger.isDebugEnabled()) {
             logger.debug("File Created: " + file);
         }
-        this.callback.call(Constants.FILE_CREATE, Paths.get(file.toString()));
+
+        if (isJavaFile(file.getName())) {
+            this.javaBuildCallBack.call(Paths.get(file.toString()));
+        } else {
+            this.resourceBuildCallBack.call(Paths.get(file.toString()));
+        }
+
     }
 
     @Override
@@ -133,7 +141,12 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
         if (logger.isDebugEnabled()) {
             logger.debug("File Changed: " + file);
         }
-        this.callback.call(Constants.FILE_CHANGE, Paths.get(file.toString()));
+
+        if (isJavaFile(file.getName())) {
+            this.javaBuildCallBack.call(Paths.get(file.toString()));
+        } else {
+            this.resourceBuildCallBack.call(Paths.get(file.toString()));
+        }
     }
 
     @Override
@@ -141,7 +154,16 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
         if (logger.isDebugEnabled()) {
             logger.debug("File Deleted: " + file);
         }
-        this.callback.call(Constants.FILE_DELETE, Paths.get(file.toString()));
+
+        if (isJavaFile(file.getName())) {
+            this.javaBuildCallBack.call(Paths.get(file.toString()));
+        } else {
+            this.resourceBuildCallBack.call(Paths.get(file.toString()));
+        }
+    }
+
+    private boolean isJavaFile(String fileName) {
+        return "java".equals(org.codehaus.plexus.util.FileUtils.extension(fileName));
     }
 
 }

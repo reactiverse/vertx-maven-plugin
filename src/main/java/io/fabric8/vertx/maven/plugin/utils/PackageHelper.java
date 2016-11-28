@@ -17,7 +17,7 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 
-import io.fabric8.vertx.maven.plugin.mojos.Constants;
+import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
@@ -117,7 +117,7 @@ public class PackageHelper {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        attributes.put(Attributes.Name.MAIN_CLASS, Constants.IO_VERTX_CORE_LAUNCHER);
+        attributes.put(Attributes.Name.MAIN_CLASS, AbstractVertxMojo.IO_VERTX_CORE_LAUNCHER);
         //This is a typical situation when application is launched with custom launcher
         if (mainVerticle != null) {
             attributes.put(MAIN_VERTICLE, mainVerticle);

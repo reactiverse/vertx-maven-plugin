@@ -19,7 +19,7 @@ package io.fabric8.vertx.maven.plugin.callbacks;
 /**
  * @author kameshs
  */
-public interface Callback<T1, T2> {
+public interface Callback<T> {
 
-    void call(T1 t1, T2 t2);
+    void call(T t);
 }

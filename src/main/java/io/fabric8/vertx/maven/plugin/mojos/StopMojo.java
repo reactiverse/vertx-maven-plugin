@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This goal is used to stop the vertx application in background mode identified by vertx process id stored
@@ -51,7 +49,7 @@ public class StopMojo extends AbstractRunMojo {
 
     /**
      * the vertx application id that will be used to stop the process, if left blank this value will be intialized
-     * form the ${project.basedir}/{@link Constants#VERTX_PID_FILE}
+     * form the ${project.basedir}/{@link AbstractVertxMojo#VERTX_PID_FILE}
      */
     @Parameter(alias = "appIds")
     protected Set<String> appIds;
@@ -59,9 +57,11 @@ public class StopMojo extends AbstractRunMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        vertxCommand = Constants.VERTX_COMMAND_STOP;
+        vertxCommand = VERTX_COMMAND_STOP;
 
         getAppId();
+
+        List<String> argsList = new ArrayList<>();
 
         for (String vertxProcId : appIds) {
             try {
@@ -78,7 +78,7 @@ public class StopMojo extends AbstractRunMojo {
 
                 run(argsList);
 
-                Files.delete(Paths.get(workDirectory.toString(), Constants.VERTX_PID_FILE));
+                Files.delete(Paths.get(workDirectory.toString(), VERTX_PID_FILE));
 
             } catch (IOException e) {
                 throw new MojoExecutionException("Unable to read process file from directory :" + workDirectory.toString());
@@ -96,14 +96,14 @@ public class StopMojo extends AbstractRunMojo {
             appIds = new HashSet<>();
         }
 
-        Path vertxPidFile = Paths.get(workDirectory.toString(), Constants.VERTX_PID_FILE);
+        Path vertxPidFile = Paths.get(workDirectory.toString(), VERTX_PID_FILE);
 
         if (Files.exists(vertxPidFile)) {
             try {
                 byte[] bytes = Files.readAllBytes(vertxPidFile);
                 appIds.add(new String(bytes));
             } catch (IOException e) {
-                throw new MojoExecutionException("Error reading " + Constants.VERTX_PID_FILE, e);
+                throw new MojoExecutionException("Error reading " + VERTX_PID_FILE, e);
             }
         }
     }

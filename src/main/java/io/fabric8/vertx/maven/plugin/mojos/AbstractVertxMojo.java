@@ -45,6 +45,96 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractVertxMojo extends AbstractMojo {
 
+    /**
+     * The vert.x Core Launcher class
+     */
+
+    public static final String IO_VERTX_CORE_LAUNCHER = "io.vertx.core.Launcher";
+    /**
+     *
+     */
+    protected static final String[] WILDCARD_CONFIG_FILES = new String[]{"*.yml", "*.yaml", "*.json"};
+    /**
+     * vert.x configuration option
+     */
+
+    protected static final String VERTX_ARG_CONF = "-conf";
+    /**
+     * vert.x launcher argument
+     */
+    protected static final String VERTX_ARG_LAUNCHER_CLASS = "--launcher-class";
+    /**
+     *
+     */
+    protected static final String DEFAULT_CONF_DIR = "/src/main/conf";
+
+    /**
+     * vert.x java-opt argument
+     */
+    protected static final String VERTX_ARG_JAVA_OPT = "--java-opts";
+
+    /**
+     * vert.x redeploy argument
+     */
+    protected static final String VERTX_ARG_REDEPLOY = "--redeploy=";
+
+    /**
+     * vert.x redeploy pattern
+     */
+    protected static final String VERTX_REDEPLOY_DEFAULT_PATTERN = "src/main/**/*.java";
+
+    /**
+     * vert.x redeploy pattern
+     */
+    protected static final String VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN = "target/classes/**/*";
+
+    /**
+     *
+     */
+    protected static final String VERTX_CONFIG_FILE_JSON = "application.json";
+
+    /**
+     *
+     */
+    protected static final String VERTX_CONFIG_FILE_YAML = "application.yaml";
+
+
+    /**
+     *
+     */
+    protected static final String VERTX_CONFIG_FILE_YML = "application.yml";
+
+    /**
+     * vert.x command stop
+     */
+    protected static final String VERTX_COMMAND_STOP = "stop";
+
+    /**
+     * vert.x command start
+     */
+    protected static final String VERTX_COMMAND_START = "start";
+
+    /**
+     *
+     */
+    protected static final String VERTX_PACKAGING = "jar";
+
+    /**
+     *
+     */
+    protected static final String VERTX_PID_FILE = "vertx-start-process.id";
+
+    /**
+     *
+     */
+    protected static final String VERTX_RUN_MODE_JAR = "jar";
+
+
+    /**
+     *
+     */
+    protected static final String VERTX_CLASSIFIER = "vertx";
+
     /* ==== Maven deps ==== */
     /**
      * The Maven project which will define and confiure the vertx-maven-plugin
@@ -151,6 +241,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     /**
      * this method helps in resolving the {@link Artifact} as maven coordinates
      * coordinates ::= group:artifact:version:[packaging]:[classifier]
+     *
      * @param artifact - the artifact which need to be represented as maven coordinate
      * @return string representing the maven coordinate
      */
@@ -176,7 +267,8 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
 
     /**
      * This method returns the project's primary artifact file, this method tries to compute the artifact file name
-     *  based on project finalName is configured or not
+     * based on project finalName is configured or not
+     *
      * @param artifact - the project artifact for which the target file will be needed
      * @return {@link Optional<File>} representing the optional project primary artifact file
      */
