@@ -46,6 +46,7 @@ NOTE: please update the plugin version as needed
     </executions>
 </plugin>
 ---
+
 <1> enabling services relocation in combine mode
 
 [[run-goal-examples]]
