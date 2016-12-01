@@ -79,30 +79,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     protected static final String VERTX_ARG_REDEPLOY = "--redeploy=";
 
     /**
-     * vert.x redeploy pattern
-     */
-    protected static final String VERTX_REDEPLOY_DEFAULT_PATTERN = "src/main/**/*.java";
-
-    /**
-     * vert.x redeploy pattern
-     */
-    protected static final String VERTX_REDEPLOY_DEFAULT_CLASSES_PATTERN = "target/classes/**/*";
-
-    /**
      *
      */
     protected static final String VERTX_CONFIG_FILE_JSON = "application.json";
-
-    /**
-     *
-     */
-    protected static final String VERTX_CONFIG_FILE_YAML = "application.yaml";
-
-
-    /**
-     *
-     */
-    protected static final String VERTX_CONFIG_FILE_YML = "application.yml";
 
     /**
      * vert.x command stop

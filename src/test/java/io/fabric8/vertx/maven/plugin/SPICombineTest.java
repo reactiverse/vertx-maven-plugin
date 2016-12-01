@@ -1,6 +1,7 @@
 package io.fabric8.vertx.maven.plugin;
 
 import io.fabric8.vertx.maven.plugin.utils.ServiceCombinerUtil;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -13,7 +14,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,7 +78,9 @@ public class SPICombineTest {
         List<JavaArchive> jars = Stream.of(archive1, archive2,
                 archive3, archive4).collect(Collectors.toList());
 
-        JavaArchive combinedSpiArchive = ServiceCombinerUtil.combine(jars, Optional.empty());
+        JavaArchive combinedSpiArchive = new ServiceCombinerUtil()
+                .withLog(new SystemStreamLog())
+                .combine(jars);
         combinedSpiArchive.as(ZipExporter.class).exportTo(outputJar, true);
 
         assertNotNull(combinedSpiArchive);
@@ -141,7 +143,9 @@ public class SPICombineTest {
         List<JavaArchive> jars = Stream.of(archive1, archive2,
                 archive3, archive4).collect(Collectors.toList());
 
-        JavaArchive combinedSpiArchive = ServiceCombinerUtil.combine(jars, Optional.empty());
+        JavaArchive combinedSpiArchive = new ServiceCombinerUtil()
+                .withLog(new SystemStreamLog())
+                .combine(jars);
         combinedSpiArchive.as(ZipExporter.class).exportTo(outputJar, true);
 
         assertNotNull(combinedSpiArchive);

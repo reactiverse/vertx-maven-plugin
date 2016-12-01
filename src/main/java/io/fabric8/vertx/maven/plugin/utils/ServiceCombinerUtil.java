@@ -1,5 +1,7 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.codehaus.plexus.util.CollectionUtils;
 import org.jboss.shrinkwrap.api.*;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -13,25 +15,38 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * This utility is used to perform Services relocation - typically moving came Service Providers found in META-INF/services
+ * to a single file
+ * Right now it supports only combine - wherein all same service providers are combined into on file with one line entry
+ * for each Service Provider implementation
+ *
  * @author kameshs
  */
 public class ServiceCombinerUtil {
 
-    /**
-     * @param jars
-     * @return
-     * @throws Exception
-     */
-    public static JavaArchive combine(List<JavaArchive> jars,
-                                      Optional<String> spiServiceInterface) throws Exception {
+    private Log logger = new SystemStreamLog();
 
-        ArchivePath spiPath;
-
-        if (spiServiceInterface.isPresent()) {
-            spiPath = ArchivePaths.create(spiServiceInterface.get());
-        } else {
-            spiPath = ArchivePaths.create("META-INF/services");
+    private static String read(InputStream input) throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+            return buffer.lines().collect(Collectors.joining("\n"));
         }
+    }
+
+    public ServiceCombinerUtil withLog(Log logger) {
+        this.logger = logger;
+        return this;
+    }
+
+    /**
+     * The method to perform the service provider combining
+     *
+     * @param jars - the list of jars which needs to scanned for service provider entries
+     * @return - {@link JavaArchive} which has the same service provider entries combined
+     * @throws Exception - any error that might occur while doing spi combine
+     */
+    public JavaArchive combine(List<JavaArchive> jars) throws Exception {
+
+        ArchivePath spiPath = ArchivePaths.create("META-INF/services");
 
         Set<JavaArchive> serviceProviderArchives = jars.stream()
                 .filter(a -> a.contains(spiPath))
@@ -42,7 +57,6 @@ public class ServiceCombinerUtil {
         JavaArchive prev = null;
 
         Map<Node, Set<JavaArchive>> sameNodeArchives = new HashMap<>();
-
 
         while (archiveIterator.hasNext()) {
 
@@ -66,6 +80,10 @@ public class ServiceCombinerUtil {
                 }
             }
             prev = javaArchive;
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Archives declaring same SPI: " + sameNodeArchives);
         }
 
         JavaArchive combinedSPIArchive = ShrinkWrap.create(JavaArchive.class);
@@ -103,6 +121,10 @@ public class ServiceCombinerUtil {
             spiContent.put(node, spiCombinedStrings);
         });
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("SPI Nodes:" + spiContent);
+        }
+
         spiContent.forEach((spiNode, content) -> {
             String strSpiPath = spiNode.toString();
             String spi = spiNode.toString().substring(strSpiPath.lastIndexOf("/") + 1, strSpiPath.length());
@@ -112,9 +134,4 @@ public class ServiceCombinerUtil {
         return combinedSPIArchive;
     }
 
-    private static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
-    }
 }

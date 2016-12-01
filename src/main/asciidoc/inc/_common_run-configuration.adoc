@@ -19,10 +19,6 @@ If a yaml file is configured then it will be converted to json by the plugin.  T
 be saved in `${project.outputDir}/conf` directory
 | vertx.config
 | `${basedir}/src/main/${project.artifactId}.json` or `${basedir}/src/main/${project.artifactId}.yaml` or `${basedir}/src/main/${project.artifactId}.yml`
-| fork
-| Controls whether the application will be run in forked mode or non-forked mode
-| fork
-| false
 | redeploy
 | controls whether vertx redeploy is enabled
 |
@@ -30,7 +26,7 @@ be saved in `${project.outputDir}/conf` directory
 | redeployPatterns
 | The ant based pattern for scanning changes for redeployment.  If redeploy is *true* and redeployPatterns is empty then a default value is will be applied.  This is list of values following standard maven list/array configuration
 |
-| `src/main/\**/*.java`
+| all compile source paths and project resource paths will be watched for changes
 | workDirectory
 | The working directory of the running process of the application
 | vertx.directory
