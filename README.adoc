@@ -46,5 +46,5 @@ we will try to address it as soon as possible
 
 == Contributing
 
-Thanks to Ronald Huß for his contribution and support. If you wish to contribute a patch or feature, please open
+We love contributions, if you wish to contribute a patch or feature, please open
 a issue in https://github.com/fabric8io/vertx-maven-plugin/issues and send in a PR.
