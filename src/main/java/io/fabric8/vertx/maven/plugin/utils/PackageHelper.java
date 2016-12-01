@@ -126,7 +126,7 @@ public class PackageHelper {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        attributes.put(Attributes.Name.MAIN_CLASS, AbstractVertxMojo.IO_VERTX_CORE_LAUNCHER);
+        attributes.put(Attributes.Name.MAIN_CLASS, mainClass);
         //This is a typical situation when application is launched with custom launcher
         if (mainVerticle != null) {
             attributes.put(MAIN_VERTICLE, mainVerticle);
