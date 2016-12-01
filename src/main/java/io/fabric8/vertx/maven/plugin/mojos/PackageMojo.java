@@ -16,6 +16,9 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
+import io.fabric8.vertx.maven.plugin.model.RelocatorMode;
+import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -24,15 +27,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
-
-import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
-import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 
 
 /**
@@ -49,6 +51,12 @@ public class PackageMojo extends AbstractVertxMojo {
 
 
     final MojoUtils mojoUtils = new MojoUtils();
+
+    /**
+     *
+     */
+    @Parameter(name = "serviceRelocator")
+    protected RelocatorMode serviceRelocator;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -78,16 +86,26 @@ public class PackageMojo extends AbstractVertxMojo {
             if (fatJarName == null) {
                 fatJarName = this.project.getArtifactId();
             }
+
+            Path pathProjectBuildDir = Paths.get(this.projectBuildDir);
+
             File fatJarFile = packageHelper
                     .log(getLog())
-                    .build(fatJarName, /* name is always != null */
-                            Paths.get(this.projectBuildDir), primaryArtifactFile.get());
+                    .build(fatJarName, pathProjectBuildDir, primaryArtifactFile.get());
+
+            /**
+             * Perform the relocation of the service providers when serviceRelocator is defined
+             */
+            if (serviceRelocator != null) {
+                packageHelper.relocateServiceInterfaces(primaryArtifactFile.get(), serviceRelocator,
+                        pathProjectBuildDir, fatJarFile);
+            }
 
             ArtifactHandler handler = new DefaultArtifactHandler("jar");
 
             Artifact vertxJarArtifact = new DefaultArtifact(artifact.getGroupId(),
                     artifact.getArtifactId(), artifact.getBaseVersion(), artifact.getScope()
-                    , Constants.VERTX_PACKAGING, Constants.VERTX_CLASSIFIER, handler);
+                    , VERTX_PACKAGING, VERTX_CLASSIFIER, handler);
             vertxJarArtifact.setFile(fatJarFile);
 
             this.project.addAttachedArtifact(vertxJarArtifact);

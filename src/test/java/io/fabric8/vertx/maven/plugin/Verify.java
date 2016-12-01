@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +36,12 @@ public class Verify {
         VertxJarVerifier vertxJarVerifier = new VertxJarVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
         vertxJarVerifier.verifyManifest();
+    }
+
+    public static void verifyServiceRelocation(File jarFile) throws Exception {
+        VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
+        vertxJarVerifier.verifyJarCreated();
+        vertxJarVerifier.verifyServicesContent();
     }
 
 
@@ -76,6 +83,39 @@ public class Verify {
             String mainVerticle = manifest.getMainAttributes().getValue("Main-Verticle");
             assertThat(mainClass).isNotNull().isEqualTo("io.vertx.core.Launcher");
             assertThat(mainVerticle).isNotNull().isEqualTo("org.vertx.demo.MainVerticle");
+
+        }
+    }
+
+    public static class VertxJarServicesVerifier {
+
+        JarFile jarFile;
+
+        public VertxJarServicesVerifier(File jarFile) throws IOException {
+            try {
+                this.jarFile = new JarFile(jarFile);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        protected void verifyJarCreated() throws Exception {
+            assertThat(jarFile).isNotNull();
+        }
+
+        protected void verifyServicesContent() throws Exception {
+
+            String expected = "com.fasterxml.jackson.core.JsonFactory\n" +
+                    "com.test.my.MyJsonFactoryImpl";
+
+            ZipEntry spiEntry = jarFile.getEntry("META-INF/services/com.fasterxml.jackson.core.JsonFactory");
+
+            assertThat(spiEntry).isNotNull();
+
+            InputStream in = jarFile.getInputStream(spiEntry);
+            String actual = read(in);
+
+            assertThat(actual).isEqualTo(expected);
 
         }
     }

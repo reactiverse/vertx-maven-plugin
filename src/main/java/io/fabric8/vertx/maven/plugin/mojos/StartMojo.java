@@ -20,7 +20,6 @@ import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
  * @author kameshs
  */
 @Mojo(name = "start", threadSafe = true,
-        defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
@@ -82,25 +80,27 @@ public class StartMojo extends AbstractRunMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        vertxCommand = Constants.VERTX_COMMAND_START;
+        vertxCommand = VERTX_COMMAND_START;
 
         String vertxProcId = getAppId();
 
+        List<String> argsList = new ArrayList<>();
+
         try {
 
-            Path pidFilePath = Paths.get(workDirectory.toString(), Constants.VERTX_PID_FILE);
+            Path pidFilePath = Paths.get(workDirectory.toString(), VERTX_PID_FILE);
 
             if (pidFilePath.toFile().exists() && pidFilePath.toFile().isFile()) {
                 Files.delete(pidFilePath);
             }
 
-            Files.write(Paths.get(workDirectory.toString(), Constants.VERTX_PID_FILE), vertxProcId.getBytes());
+            Files.write(Paths.get(workDirectory.toString(), VERTX_PID_FILE), vertxProcId.getBytes());
 
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write process file to directory :" + workDirectory.toString());
         }
 
-        boolean jarMode = Constants.VERTX_RUN_MODE_JAR.equals(runMode);
+        boolean jarMode = VERTX_RUN_MODE_JAR.equals(runMode);
 
         if (jarMode) {
 
@@ -136,7 +136,7 @@ public class StartMojo extends AbstractRunMojo {
         removebaleArgs.add(verticle);
         removebaleArgs.add(launcher);
         removebaleArgs.add(launcher);
-        removebaleArgs.add(Constants.VERTX_ARG_LAUNCHER_CLASS);
+        removebaleArgs.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
 
         if (jarMode) {
             argsList.removeAll(removebaleArgs);
@@ -147,7 +147,7 @@ public class StartMojo extends AbstractRunMojo {
         if (jvmArgs != null && !jvmArgs.isEmpty()) {
             String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
             StringBuilder argJavaOpts = new StringBuilder();
-            argJavaOpts.append(Constants.VERTX_ARG_JAVA_OPT);
+            argJavaOpts.append(VERTX_ARG_JAVA_OPT);
             argJavaOpts.append("=\"");
             argJavaOpts.append(javaOpts);
             argJavaOpts.append("\"");

@@ -8,8 +8,20 @@ as part of the jar
 [[package-configuration]]
 === Configuration
 
-The package goal does not have any additional configuration other the ones mentioned in
+The package goal has the following parameters apart from the ones mentioned in
  **<<common:configurations,Common Configuration>>**
+
+.Package Configuration
+
+[cols="1,5,2,3"]
+|===
+| Element | Description | Property| Default
+
+| serviceRelocator
+| The Service Provider relocation mode that need to be used, right now only `combine` is supported
+| &nbsp;
+| &nbsp;
+|===
 
 === How to add this goal my maven project ?
 

@@ -19,13 +19,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
-    <artifactId>vertx-demo-run</artifactId>
+    <artifactId>vertx-demo-pkg</artifactId>
     <version>0.0.1.BUILD-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.3.3</vertx.version>
-        <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
+        <vertx.version>3.3.2</vertx.version>
+        <vertx.verticle>org.vertx.demo.MainVerticle</vertx.verticle>
     </properties>
     <build>
         <plugins>
@@ -43,12 +43,13 @@
                 <version>@project.version@</version>
                 <executions>
                     <execution>
+                        <id>vmp</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>package</goal>
                         </goals>
                         <configuration>
-                            <redeploy>true</redeploy>
+                            <serviceRelocator>combine</serviceRelocator>
                         </configuration>
                     </execution>
                 </executions>
@@ -59,10 +60,6 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web-templ-thymeleaf</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>

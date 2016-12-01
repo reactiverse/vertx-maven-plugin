@@ -349,7 +349,7 @@
         <profile>
             <id>install</id>
             <properties>
-                <skipTests>true</skipTests>
+                <skipTests>false</skipTests>
             </properties>
             <build>
                 <defaultGoal>clean install</defaultGoal>

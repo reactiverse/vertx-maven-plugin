@@ -14,12 +14,15 @@
  *   limitations under the License.
  */
 
-package io.fabric8.vertx.maven.plugin.callbacks;
 
-/**
- * @author kameshs
- */
-public interface Callback<T1, T2> {
+import io.fabric8.vertx.maven.plugin.Verify
 
-    void call(T1 t1, T2 t2);
-}
+File primaryArtifactFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar")
+
+assert primaryArtifactFile.exists()
+
+File fatJarFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT-fat.jar")
+
+Verify.verifyVertxJar(fatJarFile)
+
+Verify.verifyServiceRelocation(fatJarFile)
