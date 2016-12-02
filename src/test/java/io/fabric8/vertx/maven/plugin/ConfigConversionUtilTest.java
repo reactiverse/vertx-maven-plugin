@@ -17,7 +17,8 @@
 package io.fabric8.vertx.maven.plugin;
 
 import io.fabric8.vertx.maven.plugin.utils.ConfigConverterUtil;
-import io.vertx.core.json.Json;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -47,7 +48,7 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonFilePath);
         String jsonDoc = new String(Files.readAllBytes(jsonFilePath));
         assertNotNull(jsonDoc);
-        Map<Object, Object> jsonMap = Json.decodeValue(jsonDoc, Map.class);
+        JSONObject jsonMap = new JSONObject(jsonDoc);
         assertNotNull(jsonMap);
         assertEquals(jsonMap.get("http.port"), 8080);
 
@@ -64,11 +65,11 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonFilePath);
         String jsonDoc = new String(Files.readAllBytes(jsonFilePath));
         assertNotNull(jsonDoc);
-        Map<Object, Object> jsonMap = Json.decodeValue(jsonDoc, Map.class);
+        JSONObject jsonMap = new JSONObject(jsonDoc);
         assertNotNull(jsonMap);
         assertNotNull(jsonMap.get("names"));
-        List<String> names = (List<String>) jsonMap.get("names");
-        assertTrue(names.size() == 4);
+        JSONArray names = jsonMap.getJSONArray("names");
+        assertTrue(names.length() == 4);
         assertEquals(names.get(0), "kamesh");
 
     }

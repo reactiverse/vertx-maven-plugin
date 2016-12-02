@@ -105,17 +105,33 @@ public class Verify {
 
         protected void verifyServicesContent() throws Exception {
 
-            String expected = "com.fasterxml.jackson.core.JsonFactory\n" +
-                    "com.test.my.MyJsonFactoryImpl";
+            String expected = "foo.bar.baz.MyImpl\ncom.fasterxml.jackson.core.JsonFactory";
 
-            ZipEntry spiEntry = jarFile.getEntry("META-INF/services/com.fasterxml.jackson.core.JsonFactory");
+            ZipEntry spiEntry1 = jarFile.getEntry("META-INF/services/com.fasterxml.jackson.core.JsonFactory");
+            ZipEntry spiEntry2 = jarFile.getEntry("META-INF/services/io.vertx.core.spi.FutureFactory");
 
-            assertThat(spiEntry).isNotNull();
+            assertThat(spiEntry1).isNotNull();
+            assertThat(spiEntry2).isNotNull();
 
-            InputStream in = jarFile.getInputStream(spiEntry);
+            InputStream in = jarFile.getInputStream(spiEntry1);
             String actual = read(in);
-
             assertThat(actual).isEqualTo(expected);
+
+            in = jarFile.getInputStream(spiEntry2);
+            actual = read(in);
+            assertThat(actual).isEqualTo("io.vertx.core.impl.FutureFactoryImpl");
+
+            // This part is going to be used once Vert.x 3.4.0 is released //
+            // TODO Uncomment me once Vert.x 3.4.0 is released
+
+//            ZipEntry spiEntry3 = jarFile.getEntry("META-INF/services/org.codehaus.groovy.runtime.ExtensionModule");
+//            assertThat(spiEntry3).isNotNull();
+//            in = jarFile.getInputStream(spiEntry3);
+//            actual = read(in);
+//            assertThat(actual).contains("moduleName=vertx-demo-pkg")
+//                .contains("moduleVersion=0.0.1")
+//                .contains("io.vertx.groovy.ext.jdbc.GroovyStaticExtension")
+//                .contains("io.vertx.groovy.ext.jdbc.GroovyExtension");
 
         }
     }

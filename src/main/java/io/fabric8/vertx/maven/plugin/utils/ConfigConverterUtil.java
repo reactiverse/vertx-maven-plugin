@@ -16,7 +16,7 @@
 
 package io.fabric8.vertx.maven.plugin.utils;
 
-import io.vertx.core.json.Json;
+import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -36,11 +36,9 @@ public class ConfigConverterUtil {
 
         String yamlDoc = new String(Files.readAllBytes(yamlFile));
         Yaml yaml = new Yaml();
-        Map<Object, Object> jsonMap = (Map<Object, Object>) yaml.load(yamlDoc);
-
-        String jsonDoc = Json.encodePrettily(jsonMap);
-
-        Files.write(jsonFilePath, jsonDoc.getBytes());
+        Map<Object, Object> map = (Map<Object, Object>) yaml.load(yamlDoc);
+        JSONObject jsonObject = new JSONObject(map);
+        Files.write(jsonFilePath, jsonObject.toString().getBytes());
     }
 
 }

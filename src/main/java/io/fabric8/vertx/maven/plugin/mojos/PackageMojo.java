@@ -16,7 +16,7 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import io.fabric8.vertx.maven.plugin.model.RelocatorMode;
+import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 import org.apache.maven.artifact.Artifact;
@@ -55,8 +55,8 @@ public class PackageMojo extends AbstractVertxMojo {
     /**
      *
      */
-    @Parameter(name = "serviceRelocator")
-    protected RelocatorMode serviceRelocator;
+    @Parameter(name = "serviceProviderCombination", defaultValue = "combine")
+    protected CombinationStrategy serviceProviderCombination;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -93,11 +93,11 @@ public class PackageMojo extends AbstractVertxMojo {
                     .log(getLog())
                     .build(fatJarName, pathProjectBuildDir, primaryArtifactFile.get());
 
-            /**
-             * Perform the relocation of the service providers when serviceRelocator is defined
-             */
-            if (serviceRelocator != null) {
-                packageHelper.relocateServiceInterfaces(primaryArtifactFile.get(), serviceRelocator,
+
+            //  Perform the relocation of the service providers when serviceProviderCombination is defined
+            if (serviceProviderCombination == null  || serviceProviderCombination != CombinationStrategy.none) {
+                packageHelper.combineServiceProviders(project,
+                    primaryArtifactFile.get(),
                         pathProjectBuildDir, fatJarFile);
             }
 

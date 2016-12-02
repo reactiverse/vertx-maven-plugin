@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.3.2</vertx.version>
+        <vertx.version>3.3.0</vertx.version>
         <vertx.verticle>org.vertx.demo.MainVerticle</vertx.verticle>
     </properties>
     <build>
@@ -48,9 +48,6 @@
                         <goals>
                             <goal>package</goal>
                         </goals>
-                        <configuration>
-                            <serviceRelocator>combine</serviceRelocator>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -60,6 +57,14 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-service-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-jdbc-client</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
