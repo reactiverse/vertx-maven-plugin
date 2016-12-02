@@ -1,1 +1,2 @@
-com.test.my.MyJsonFactoryImpl
+foo.bar.baz.MyImpl
+${combine}
