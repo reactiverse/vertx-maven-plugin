@@ -17,10 +17,10 @@ The package goal has the following parameters apart from the ones mentioned in
 |===
 | Element | Description | Property| Default
 
-| serviceRelocator
-| The Service Provider relocation mode that need to be used, right now only `combine` is supported
+| serviceProviderCombination
+| The Service Provider combining mode that need to be used, you can either specify `combine` or `none`
 | &nbsp;
-| &nbsp;
+| combine
 |===
 
 === How to add this goal my maven project ?

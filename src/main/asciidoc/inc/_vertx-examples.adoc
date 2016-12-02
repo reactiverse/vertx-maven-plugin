@@ -40,7 +40,7 @@ NOTE: please update the plugin version as needed
                 <goal>package</goal>
             </goals>
             <configuration>
-               <serviceRelocator>combine</serviceRelocator><!--1-->
+               <serviceProviderCombination>combine</serviceProviderCombination><!--1-->
             </configuration>
         </execution>
     </executions>
