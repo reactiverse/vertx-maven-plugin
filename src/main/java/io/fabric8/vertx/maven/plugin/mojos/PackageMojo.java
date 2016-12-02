@@ -29,6 +29,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -53,10 +54,16 @@ public class PackageMojo extends AbstractVertxMojo {
     final MojoUtils mojoUtils = new MojoUtils();
 
     /**
-     *
+     * The service provider combination strategy.
      */
     @Parameter(name = "serviceProviderCombination", defaultValue = "combine")
     protected CombinationStrategy serviceProviderCombination;
+
+    /**
+     * The artifact classifier. If not set, the plugin uses the default final name.
+     */
+    @Parameter(name = "classifier")
+    protected String classifier;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -75,6 +82,7 @@ public class PackageMojo extends AbstractVertxMojo {
         Set<Optional<File>> transitiveDeps = extractArtifactPaths(this.project.getArtifacts());
 
         PackageHelper packageHelper = new PackageHelper(this.launcher, this.verticle)
+                .withOutputName(computeOutputName(project, classifier))
                 .compileAndRuntimeDeps(compileAndRuntimeDeps)
                 .transitiveDeps(transitiveDeps);
 
@@ -91,7 +99,7 @@ public class PackageMojo extends AbstractVertxMojo {
 
             File fatJarFile = packageHelper
                     .log(getLog())
-                    .build(fatJarName, pathProjectBuildDir, primaryArtifactFile.get());
+                    .build(pathProjectBuildDir, primaryArtifactFile.get());
 
 
             //  Perform the relocation of the service providers when serviceProviderCombination is defined
@@ -114,6 +122,27 @@ public class PackageMojo extends AbstractVertxMojo {
             throw new MojoFailureException("Unable to build fat jar", e);
         }
 
+    }
+
+    public static String computeOutputName(MavenProject project, String classifier) {
+        String finalName = project.getBuild().getFinalName();
+        if (finalName != null) {
+            if (finalName.endsWith(".jar")) {
+                finalName = finalName.substring(0, finalName.length() -4);
+            }
+            if (classifier != null  && ! classifier.isEmpty()) {
+                finalName += "-" + classifier;
+            }
+            finalName += ".jar";
+            return finalName;
+        } else {
+            finalName = project.getArtifactId() + "-" + project.getVersion();
+            if (classifier != null  && ! classifier.isEmpty()) {
+                finalName += "-" + classifier;
+            }
+            finalName += ".jar";
+            return finalName;
+        }
     }
 
 }

@@ -15,9 +15,12 @@
  */
 
 
-import io.fabric8.vertx.maven.plugin.Verify
+import io.fabric8.vertx.maven.plugin.Verify;
 
-File primaryArtifactFile = new File(basedir, "target/my-vertx-app.jar")
+File primaryArtifactFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar");
 
 assert primaryArtifactFile.exists()
-Verify.verifyVertxJar(primaryArtifactFile)
+
+File fatJarFile = new File(basedir, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT-uber.jar");
+
+Verify.verifyVertxJar(fatJarFile)
