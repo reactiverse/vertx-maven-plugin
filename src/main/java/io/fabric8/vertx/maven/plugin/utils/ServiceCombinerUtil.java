@@ -1,18 +1,18 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
-import org.codehaus.plexus.util.CollectionUtils;
-import org.jboss.shrinkwrap.api.*;
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This utility is used to perform Services relocation - typically moving came Service Providers found in META-INF/services
@@ -26,112 +26,146 @@ public class ServiceCombinerUtil {
 
     private Log logger = new SystemStreamLog();
 
-    private static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
-    }
+    private String projectName = "no-name";
+    private String projectVersion = "0.0";
+    private File classes;
 
     public ServiceCombinerUtil withLog(Log logger) {
         this.logger = logger;
         return this;
     }
 
+    public ServiceCombinerUtil withProject(String name, String version) {
+        this.projectName = name;
+        this.projectVersion = version;
+        return this;
+    }
+
+    public ServiceCombinerUtil withClassesDirectory(File dir) {
+        this.classes = dir;
+        return this;
+    }
+
     /**
      * The method to perform the service provider combining
      *
-     * @param jars - the list of jars which needs to scanned for service provider entries
+     * @param jars             - the list of jars which needs to scanned for service provider entries
      * @return - {@link JavaArchive} which has the same service provider entries combined
      * @throws Exception - any error that might occur while doing spi combine
      */
     public JavaArchive combine(List<JavaArchive> jars) throws Exception {
-
-        ArchivePath spiPath = ArchivePaths.create("META-INF/services");
-
-        Set<JavaArchive> serviceProviderArchives = jars.stream()
-                .filter(a -> a.contains(spiPath))
-                .collect(Collectors.toSet());
-
-        Iterator<JavaArchive> archiveIterator = serviceProviderArchives.iterator();
-
-        JavaArchive prev = null;
-
-        Map<Node, Set<JavaArchive>> sameNodeArchives = new HashMap<>();
-
-        while (archiveIterator.hasNext()) {
-
-            JavaArchive javaArchive = archiveIterator.next();
-
-            Set<Node> spiDefNodes = javaArchive.get(spiPath).getChildren();
-
-            if (prev != null) {
-                Set<Node> prevSpiDefNodes = prev.get(spiPath).getChildren();
-                Collection<Node> intersection = CollectionUtils.intersection(spiDefNodes, prevSpiDefNodes);
-
-                if (!intersection.isEmpty()) {
-
-                    for (Node node : intersection) {
-                        if (sameNodeArchives.containsKey(node)) {
-                            sameNodeArchives.get(node).add(javaArchive);
-                        } else {
-                            sameNodeArchives.put(node, Stream.of(prev, javaArchive).collect(Collectors.toSet()));
-                        }
-                    }
-                }
-            }
-            prev = javaArchive;
-        }
+        Map<String, Set<String>> locals = findLocalSPI();
+        Map<String, List<Set<String>>> deps = findSPIsFromDependencies(jars);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Archives declaring same SPI: " + sameNodeArchives);
+            logger.debug("SPI declared in the project: " + locals.keySet());
+            logger.debug("SPI declared in dependencies: " + deps.keySet());
         }
 
         JavaArchive combinedSPIArchive = ShrinkWrap.create(JavaArchive.class);
 
-        Map<Node, Set<String>> spiContent = new HashMap<>();
+        Set<String> spisToMerge = new HashSet<>(locals.keySet());
+        spisToMerge.addAll(deps.keySet());
 
-        sameNodeArchives.forEach((node, javaArchives) -> {
-
-            Set<String> spiCombinedStrings = new HashSet<>();
-
-            javaArchives.forEach(javaArchive -> {
-                InputStream in = null;
-                try {
-                    Filter<ArchivePath> spiFilterPath = Filters.include(node.getPath().get());
-                    Map<ArchivePath, Node> nodeMap = javaArchive.getContent(spiFilterPath);
-                    Optional<Node> optNode = nodeMap.values().stream().findFirst();
-                    if (optNode.isPresent()) {
-                        Node archiveNode = optNode.get();
-                        in = archiveNode.getAsset().openStream();
-                        spiCombinedStrings.add(read(in));
-                        in.close();
-                    }
-                } catch (IOException e) {
-                    //ignore
-                } finally {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (IOException e) {
-                            //nothing i can do here :)
-                        }
-                    }
-                }
-            });
-            spiContent.put(node, spiCombinedStrings);
-        });
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("SPI Nodes:" + spiContent);
+        Map<String, List<String>> spis = new HashMap<>();
+        for (String spi : spisToMerge) {
+            spis.put(spi, merge(spi, locals.get(spi), deps.get(spi)));
         }
 
-        spiContent.forEach((spiNode, content) -> {
-            String strSpiPath = spiNode.toString();
-            String spi = spiNode.toString().substring(strSpiPath.lastIndexOf("/") + 1, strSpiPath.length());
-            combinedSPIArchive.addAsServiceProvider(spi, content.stream().toArray(size -> new String[size]));
-        });
+        if (logger.isDebugEnabled()) {
+            logger.debug("SPI:" + spis.keySet());
+        }
+
+        spis.forEach((name, content) -> combinedSPIArchive.addAsServiceProvider(name, content.toArray(new String[]{})));
 
         return combinedSPIArchive;
+    }
+
+    private List<String> merge(String name, Set<String> local, List<Set<String>> deps) {
+        if (name.equals("org.codehaus.groovy.runtime.ExtensionModule")) {
+            return GroovyExtensionCombiner.merge(projectName, projectVersion, local, deps);
+        } else {
+            // Regular merge, concat things.
+            // Start with deps
+            Set<String> fromDeps = new LinkedHashSet<>();
+            if (deps != null) {
+                deps.forEach(fromDeps::addAll);
+            }
+            Set<String> lines = new LinkedHashSet<>();
+            if (local != null) {
+                if (local.isEmpty()) {
+                    // Drop this SPI
+                    return Collections.emptyList();
+                }
+                for (String line : local) {
+                    if (line.trim().equalsIgnoreCase("${combine}")) {
+                        //Copy the ones form the dependencies on this line
+                        lines.addAll(fromDeps);
+                    } else {
+                        // Just copy the line
+                        lines.add(line);
+                    }
+                }
+                return new ArrayList<>(lines);
+            } else {
+                return new ArrayList<>(fromDeps);
+            }
+        }
+    }
+
+
+
+    private Map<String, List<Set<String>>> findSPIsFromDependencies(List<JavaArchive> jars) {
+        Map<String, List<Set<String>>> map = new HashMap<>();
+
+        ArchivePath spiPath = ArchivePaths.create("META-INF/services");
+
+        Set<JavaArchive> serviceProviderArchives = jars.stream()
+            .filter(a -> a.contains(spiPath))
+            .collect(Collectors.toSet());
+
+        for (JavaArchive archive : serviceProviderArchives) {
+            Node node = archive.get(spiPath);
+            Set<Node> children = node.getChildren();
+            for (Node child : children) {
+                String name = child.getPath().get().substring(spiPath.get().length() + 1);
+                try {
+                    List<String> lines = IOUtils.readLines(child.getAsset().openStream(), "UTF-8");
+                    List<Set<String>> items = map.get(name);
+                    if (items == null) {
+                        items = new ArrayList<>();
+                    }
+                    items.add(new LinkedHashSet<>(lines));
+                    map.put(name, items);
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot read  " + node.getPath().get(), e);
+                }
+            }
+        }
+
+        return map;
+    }
+
+    private Map<String, Set<String>> findLocalSPI() {
+        Map<String, Set<String>> map = new HashMap<>();
+        if (classes == null || !classes.isDirectory()) {
+            return map;
+        }
+
+        File spiRoot = new File(classes, "META-INF/services");
+        if (!spiRoot.isDirectory()) {
+            return map;
+        }
+
+        Collection<File> files = FileUtils.listFiles(spiRoot, null, false);
+        for (File file : files) {
+            try {
+                map.put(file.getName(), new LinkedHashSet<>(FileUtils.readLines(file, "UTF-8")));
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot read  " + file.getAbsolutePath(), e);
+            }
+        }
+        return map;
     }
 
 }
