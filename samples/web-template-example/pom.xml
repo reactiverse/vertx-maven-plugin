@@ -22,12 +22,30 @@
                     <execution>
                         <id>vmp</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>initialize</goal>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <redeploy>true</redeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+                <version>1.7.0.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <redeploy>true</redeploy>
+                    <outputDirectory>${project.build.outputDirectory}/webroot/style</outputDirectory>
+                    <compress>true</compress>
                 </configuration>
             </plugin>
             <plugin>

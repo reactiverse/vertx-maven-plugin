@@ -2,6 +2,7 @@ package org.web.template.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 
 public class MainVerticle extends AbstractVerticle {
@@ -12,7 +13,9 @@ public class MainVerticle extends AbstractVerticle {
 
         final ThymeleafTemplateEngine templateEngine = ThymeleafTemplateEngine.create();
 
-        router.get().handler(ctx -> {
+        router.get("/assets*").handler(StaticHandler.create());
+
+        router.get("/").handler(ctx -> {
             ctx.put("welcome", "Hello vert.x!");
 
             templateEngine.render(ctx, "templates/index.html", res -> {

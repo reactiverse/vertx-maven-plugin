@@ -89,6 +89,8 @@ public class PackageMojo extends AbstractVertxMojo {
 
             Path pathProjectBuildDir = Paths.get(this.projectBuildDir);
 
+            //TODO Handle the case where the primary article is NOT there.
+
             File fatJarFile = packageHelper
                     .log(getLog())
                     .build(fatJarName, pathProjectBuildDir, primaryArtifactFile.get());
