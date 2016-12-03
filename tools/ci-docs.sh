@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo ===========================================
 echo Deploying vertx-maven-plugin documentation
 echo ===========================================
