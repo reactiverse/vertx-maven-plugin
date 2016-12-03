@@ -19,6 +19,7 @@ package io.fabric8.vertx.maven.plugin.mojos;
 import io.fabric8.vertx.maven.plugin.utils.*;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.model.Resource;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -60,7 +61,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
     /**
      * The redeployPatterns that will be used to trigger redeployment of the vertx application.
-     * If this this not provided and redeploy is &quot;true&quot; then default value of "src/**\/.*.java" will be
+     * If this this not provided and redeploy is &quot;true&quot; then default value of "src/**\/*" will be
      * used as a redeployment pattern
      */
     @Parameter(name = "redeployPatterns")
@@ -125,8 +126,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             StringBuilder classpath = new StringBuilder();
             for (URL ele : getClassPathUrls()) {
                 classpath = classpath
-                        .append((classpath.length() > 0 ? File.pathSeparator : "")
-                                + new File(ele.toURI()));
+                    .append(classpath.length() > 0 ? File.pathSeparator : "")
+                    .append(new File(ele.toURI()));
             }
             getLog().debug("Classpath for forked process: " + classpath);
             args.add("-cp");
@@ -184,8 +185,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
 
         if (redeploy && !(VERTX_COMMAND_START.equals(vertxCommand)
-                || VERTX_COMMAND_STOP.equals(vertxCommand))) {
-            getLog().info("VertX application redeploy enabled");
+            || VERTX_COMMAND_STOP.equals(vertxCommand))) {
+            getLog().info("Vert.x application redeploy enabled");
 
             StringBuilder redeployArg = new StringBuilder();
             redeployArg.append(VERTX_ARG_REDEPLOY); //fix for redeploy to work
@@ -196,12 +197,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
 
         if (!VERTX_COMMAND_STOP.equals(vertxCommand)) {
-            StringBuilder argLauncherClass = new StringBuilder();
-            argLauncherClass.append(VERTX_ARG_LAUNCHER_CLASS);
-            argLauncherClass.append("=\"");
-            argLauncherClass.append(launcher);
-            argLauncherClass.append("\"");
-            argsList.add(argLauncherClass.toString());
+            String argLauncherClass = VERTX_ARG_LAUNCHER_CLASS +
+                "=\"" +
+                launcher +
+                "\"";
+            argsList.add(argLauncherClass);
 
             if (config != null && config.exists() && config.isFile()) {
                 getLog().info("Using configuration from file: " + config.toString());
@@ -209,7 +209,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 argsList.add(config.toString());
             }
         }
-
     }
 
     private void computeOutputDirsWildcard(StringBuilder redeployArg) {
@@ -219,10 +218,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
     /**
      * Method to check if the Launcher is {@link AbstractRunMojo#IO_VERTX_CORE_LAUNCHER} or instance of
-     * {@link io.vertx.core.Launcher}
+     * {@code io.vertx.core.Launcher}
      *
      * @param launcher - the launcher class as string that needs to be checked
-     * @return true if its {@link AbstractRunMojo#IO_VERTX_CORE_LAUNCHER} or instance of {@link io.vertx.core.Launcher}
+     * @return true if its {@link AbstractRunMojo#IO_VERTX_CORE_LAUNCHER} or instance of
+     * {@code io.vertx.core.Launcher}
      * @throws MojoExecutionException - any error that might occur while checking
      */
     protected boolean isVertxLauncher(String launcher) throws MojoExecutionException {
@@ -236,10 +236,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                     List<Class<?>> superClasses = ClassUtils.getAllSuperclasses(customLauncher);
                     boolean isAssignable = superClasses != null && !superClasses.isEmpty();
 
-                    for (Class<?> superClass : superClasses) {
-                        if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {
-                            isAssignable = true;
-                            break;
+                    if (superClasses != null) {
+                        for (Class<?> superClass : superClasses) {
+                            if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {
+                                isAssignable = true;
+                                break;
+                            }
                         }
                     }
                     return isAssignable;
@@ -259,33 +261,31 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @throws MojoExecutionException - any error that might occur while starting the process
      */
 
-    protected void run(List<String> argsList) throws MojoExecutionException, MojoFailureException {
+    protected void run(List<String> argsList) throws MojoExecutionException {
 
         try {
 
             JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
-                    .withArgs(argsList)
-                    .withClassPath(getClassPathUrls())
-                    .withLogger(getLog())
-                    .withWaitFor(true);
+                .withArgs(argsList)
+                .withClassPath(getClassPathUrls())
+                .withLogger(getLog())
+                .withWaitFor(true);
+
             //When redeploy is enabled spin up the Incremental builder in background
-
             if (redeploy && !(VERTX_COMMAND_START.equals(vertxCommand)
-                    || VERTX_COMMAND_STOP.equals(vertxCommand))) {
+                || VERTX_COMMAND_STOP.equals(vertxCommand))) {
+                getLog().debug("Collected mojos: " + MojoSpy.MOJOS);
 
-                Set<Path> inclDirs = FileUtils.includedDirs(this.project, Optional.ofNullable(redeployPatterns));
+                Set<Path> inclDirs = Collections
+                    .singleton(new File(project.getBasedir(), "src/main").toPath());
 
                 //TODO - handle exceptions effectively
+                // TODO - Not sure about the runAsync here, it uses the default fork join pool
                 CompletableFuture.runAsync(() -> {
-                    try {
-                        final JavaBuildCallback buildCallback = new JavaBuildCallback();
-                        final ResourceBuildCallback resourceBuildCallback = new ResourceBuildCallback();
-                        IncrementalBuilder incrementalBuilder = new IncrementalBuilder(inclDirs,
-                                buildCallback, resourceBuildCallback, getLog(), 1000L);
-                        incrementalBuilder.run();
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+                    List<Callable<Void>> chain = computeExecutionChain();
+                    IncrementalBuilder incrementalBuilder = new IncrementalBuilder(inclDirs,
+                        chain, getLog(), 1000L);
+                    incrementalBuilder.run();
                 });
 
             }
@@ -295,6 +295,37 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Unable to launch incremental builder", e);
         }
+    }
+
+    private List<Callable<Void>> computeExecutionChain() {
+        List<Callable<Void>> list = new ArrayList<>();
+        if (MojoSpy.MOJOS.isEmpty()) {
+            getLog().info("No plugin execution collected. The vertx:initialize goal has not " +
+                "been run beforehand. Only handling resources and java compilation");
+            list.add(new JavaBuildCallback());
+            list.add(new ResourceBuildCallback());
+        } else {
+            list = MojoSpy.MOJOS.stream()
+                // Include only mojo in [generate-source, process-classes]
+                .filter(exec -> MojoSpy.PHASES.contains(exec.getLifecyclePhase()))
+                .map(this::toTask)
+                .collect(Collectors.toList());
+
+        }
+        return list;
+    }
+
+    private Callable<Void> toTask(MojoExecution execution) {
+        MojoExecutor executor = new MojoExecutor(execution, project, mavenSession, buildPluginManager);
+
+        return () -> {
+            try {
+                executor.execute();
+            } catch (Exception e) {
+                getLog().error("Error while doing incremental build", e);
+            }
+            return null;
+        };
     }
 
     /**
@@ -320,7 +351,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 //Check if its JSON
                 if (isJson(configFile)) {
                     config = confPath.toFile();
-                    return;
                 } else if (isYaml(configFile)) {
                     //Check if its YAML or YML
                     Path jsonConfDir = Paths.get(this.projectBuildDir, "conf");
@@ -331,12 +361,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                             ConfigConverterUtil.convertYamlToJson(confPath, jsonConfPath);
                             config = jsonConfPath.toFile();
                         }
-                        return;
                     } catch (IOException e) {
                         throw new MojoExecutionException("Error loading configuration file:" + confPath.toString(), e);
                     } catch (Exception e) {
                         throw new MojoExecutionException("Error loading and converting configuration file:"
-                                + confPath.toString(), e);
+                            + confPath.toString(), e);
                     }
                 }
             }
@@ -373,17 +402,17 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             Set<Optional<File>> transitiveDeps = extractArtifactPaths(this.project.getArtifacts());
 
             classPathUrls.addAll(Stream.concat(compileAndRuntimeDeps.stream(), transitiveDeps.stream())
-                    .filter(file -> file.isPresent())
-                    .map(file -> {
-                        try {
-                            return file.get().toURI().toURL();
-                        } catch (Exception e) {
-                            getLog().error("Error building classpath", e);
-                        }
-                        return null;
-                    })
-                    .filter(url -> url != null)
-                    .collect(Collectors.toList()));
+                .filter(Optional::isPresent)
+                .map(file -> {
+                    try {
+                        return file.get().toURI().toURL();
+                    } catch (Exception e) {
+                        getLog().error("Error building classpath", e);
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
 
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to run:", e);
@@ -396,7 +425,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * Method to check if the file is JSON file
      *
      * @param configFile - the config file to be checked
-     * @return if its json file e.g. applicaiton.json
+     * @return if its json file e.g. application.json
      */
     private boolean isJson(String configFile) {
         return configFile != null && configFile.endsWith(".json");
@@ -406,7 +435,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * Method to check if the file is YAML file
      *
      * @param configFile - the config file to be checked
-     * @return if its YAML file e.g. application.yml or applicaiton.yml
+     * @return if its YAML file e.g. application.yml or application.yml
      */
     private boolean isYaml(String configFile) {
         return configFile != null && (configFile.endsWith(".yaml") || configFile.endsWith(".yml"));
@@ -415,7 +444,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    public final class JavaBuildCallback implements Callable {
+    public final class JavaBuildCallback implements Callable<Void> {
 
         @Override
         public Void call() {

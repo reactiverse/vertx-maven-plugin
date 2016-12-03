@@ -15,12 +15,13 @@
  */
 
 
-import io.fabric8.vertx.maven.plugin.Verify;
+import io.fabric8.vertx.maven.plugin.Verify
 
-File primaryArtifactFile = new File(basedir, "target/my-vertx-app.jar");
+String base = basedir
+File primaryArtifactFile = new File(base, "target/my-vertx-app.jar")
 
-assert primaryArtifactFile.exists();
+assert primaryArtifactFile.exists()
 
-File fatJarFile = new File(basedir, "target/my-vertx-app-fat.jar");
+File fatJarFile = new File(base, "target/my-vertx-app-fat.jar")
 
-Verify.verifyVertxJar(fatJarFile);
+Verify.verifyVertxJar(fatJarFile)

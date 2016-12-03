@@ -34,9 +34,9 @@ import java.util.Optional;
 public abstract class JavaExecutor implements Executor<Optional<Process>> {
 
 
-    protected Collection<URL> classPathUrls = Collections.EMPTY_LIST;
+    Collection<URL> classPathUrls = Collections.emptyList();
 
-    protected Path javaPath;
+    Path javaPath;
 
     public JavaExecutor() {
         this.javaPath = findJava();
@@ -55,8 +55,8 @@ public abstract class JavaExecutor implements Executor<Optional<Process>> {
 
             for (URL ele : this.classPathUrls) {
                 classpath = classpath
-                        .append((classpath.length() > 0 ? File.pathSeparator : "")
-                                + new File(ele.toURI()));
+                    .append(classpath.length() > 0 ? File.pathSeparator : "")
+                    .append(new File(ele.toURI()));
             }
 
             String oldClasspath = System.getProperty("java.class.path");
@@ -79,7 +79,7 @@ public abstract class JavaExecutor implements Executor<Optional<Process>> {
      *
      * @return - the {@link Path} representing the Java executable path
      */
-    protected Path findJava() {
+    private Path findJava() {
         String javaHome = System.getProperty("java.home");
         if (javaHome == null) {
             throw new RuntimeException("unable to locate java binary");

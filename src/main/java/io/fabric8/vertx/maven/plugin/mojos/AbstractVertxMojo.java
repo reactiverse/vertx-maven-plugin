@@ -169,7 +169,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
 
     /**
      * The main launcher class that will be used when launching the Vert.X applications.
-     * It defaults to {@link io.vertx.core.Launcher}
+     * It defaults to {@code io.vertx.core.Launcher}
      */
     @Parameter(defaultValue = "io.vertx.core.Launcher", property = "vertx.launcher")
     protected String launcher;
@@ -212,8 +212,8 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
         return artifacts
                 .stream()
                 .filter(e -> e.getScope().equals("compile") || e.getScope().equals("runtime"))
-                .map(artifact -> asMavenCoordinates(artifact))
-                .map(s -> resolveArtifact(s))
+                .map(this::asMavenCoordinates)
+                .map(this::resolveArtifact)
                 .collect(Collectors.toSet());
     }
 

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -78,7 +79,7 @@ public class PackageHelper {
      * @return
      * @throws IOException
      */
-    public File build(String baseName, Path dir, File primaryArtifactFile) throws IOException {
+    public File build(String baseName, Path dir, File primaryArtifactFile) {
         build(primaryArtifactFile);
         return createFatJar(baseName, dir);
     }
@@ -96,9 +97,11 @@ public class PackageHelper {
      *
      */
     protected void addDependencies() {
+        Set<Optional<File>> all = new LinkedHashSet<>(compileAndRuntimeDeps);
+        all.addAll(transitiveDeps);
 
-        compileAndRuntimeDeps.stream()
-            .filter(dep -> dep.isPresent())
+        all.stream()
+            .filter(Optional::isPresent)
             .forEach(dep -> {
                 File f = dep.get();
                 if (log.isDebugEnabled()) {
@@ -106,17 +109,6 @@ public class PackageHelper {
                 }
                 this.archive.as(ZipImporter.class).importFrom(f);
             });
-
-        transitiveDeps.stream()
-            .filter(dep -> dep.isPresent())
-            .forEach(dep -> {
-                File f = dep.get();
-                if (log.isDebugEnabled()) {
-                    log.debug("Adding Dependency :" + f.toString());
-                }
-                this.archive.as(ZipImporter.class).importFrom(f);
-            });
-
     }
 
     /**

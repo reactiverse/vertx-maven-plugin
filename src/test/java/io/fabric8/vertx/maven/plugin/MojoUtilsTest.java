@@ -19,7 +19,6 @@ package io.fabric8.vertx.maven.plugin;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -30,15 +29,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static org.junit.Assert.*;
+
 /**
  * @author kameshs
  */
-public class MojoUtilsTest extends AbstractMojoTestCase {
+public class MojoUtilsTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
     @Test
     public void testWhenJarPluginIsAbsent() throws Exception {
@@ -55,7 +52,7 @@ public class MojoUtilsTest extends AbstractMojoTestCase {
         assertFalse(jarPlugin.isPresent());
     }
 
-    protected Model buildModel(File pomFile) throws IOException {
+    private Model buildModel(File pomFile) {
         try {
             return new MavenXpp3Reader().read(ReaderFactory.newXmlReader(pomFile));
         } catch (IOException var3) {

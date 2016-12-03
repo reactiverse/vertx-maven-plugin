@@ -38,7 +38,7 @@ public interface Executor<R> {
     }
 
     default void redirectOutput(Process process, Log logger) {
-        StreamToLogConsumer logConsumer = line -> logger.info(line);
+        StreamToLogConsumer logConsumer = logger::info;
 
         StreamPumper outPumper = new StreamPumper(process.getInputStream(), logConsumer);
         StreamPumper errPumper = new StreamPumper(process.getErrorStream(), logConsumer);

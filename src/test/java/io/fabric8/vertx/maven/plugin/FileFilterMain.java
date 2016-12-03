@@ -23,8 +23,9 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,9 +60,8 @@ public class FileFilterMain {
                         if (Files.exists(rootPath)) {
                             File[] dirs = rootPath.toFile()
                                     .listFiles((dir, name) -> dir.isDirectory());
-                            Stream.of(dirs).forEach(f -> {
-                                inclDirs.add(Paths.get(f.toString()));
-                            });
+                            Objects.requireNonNull(dirs);
+                            Stream.of(dirs).forEach(f -> inclDirs.add(Paths.get(f.toString())));
                         }
                     } else if (s.contains("**")) {
                         String root = s.substring(0, s.indexOf("/**"));
@@ -69,9 +69,8 @@ public class FileFilterMain {
                         if (Files.exists(rootPath)) {
                             File[] dirs = rootPath.toFile()
                                     .listFiles((dir, name) -> dir.isDirectory());
-                            Stream.of(dirs).forEach(f -> {
-                                inclDirs.add(Paths.get(f.toString()));
-                            });
+                            Objects.requireNonNull(dirs);
+                            Stream.of(dirs).forEach(f -> inclDirs.add(Paths.get(f.toString())));
                         }
                     }
 
@@ -112,7 +111,7 @@ public class FileFilterMain {
     private static FileAlterationMonitor fileWatcher(Set<Path> inclDirs) {
         FileAlterationMonitor monitor = new FileAlterationMonitor(1000);
 
-        inclDirs.stream()
+        inclDirs
                 .forEach(path -> {
                     System.out.println("Adding Observer to " + path.toString());
                     FileAlterationObserver observer = new FileAlterationObserver(path.toFile());
@@ -138,74 +137,6 @@ public class FileFilterMain {
 
         return monitor;
 
-    }
-
-    private static void startWatcher() {
-        List<String> redeployPatterns = new ArrayList<>();
-        redeployPatterns.add("src/main/**/*.java");
-
-        Hashtable<WatchKey, Path> keys = new Hashtable<>();
-
-        try {
-
-            File baseDir = new File("/Users/kameshs/git/maven/plugins/vertx-maven-plugin/samples/vertx-demo");
-
-            List<Path> inclDirs = FileUtils.getFileAndDirectoryNames(baseDir,
-                    "src/main/**/*.java,src/test/**/*.java", null, true, true, true, false)
-                    .stream().map(FileUtils::dirname).map(Paths::get)
-                    .filter(p -> Files.exists(p) && Files.isDirectory(p))
-                    .collect(Collectors.toList());
-
-            FileSystem fs = FileSystems.getDefault();
-
-            WatchService watcher = fs.newWatchService();
-
-            inclDirs.forEach(path -> {
-                try {
-                    WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_DELETE,
-                            StandardWatchEventKinds.ENTRY_MODIFY);
-                    keys.put(key, path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            while (true) {
-
-                WatchKey key;
-                try {
-                    key = watcher.take();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    return;
-                }
-
-                Path dir = keys.get(key);
-
-                WatchEvent.Kind<?> kind = null;
-                for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                    kind = watchEvent.kind();
-                    if (StandardWatchEventKinds.ENTRY_DELETE == kind ||
-                            StandardWatchEventKinds.ENTRY_CREATE == kind ||
-                            StandardWatchEventKinds.ENTRY_DELETE == kind) {
-
-                        Path path = ((WatchEvent<Path>) watchEvent).context();
-
-                    } else {
-                        continue;
-                    }
-                }
-
-                if (!key.reset()) {
-                    break;
-                }
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 

@@ -51,9 +51,8 @@ public class ServiceCombinerUtil {
      *
      * @param jars             - the list of jars which needs to scanned for service provider entries
      * @return - {@link JavaArchive} which has the same service provider entries combined
-     * @throws Exception - any error that might occur while doing spi combine
      */
-    public JavaArchive combine(List<JavaArchive> jars) throws Exception {
+    public JavaArchive combine(List<JavaArchive> jars) {
         Map<String, Set<String>> locals = findLocalSPI();
         Map<String, List<Set<String>>> deps = findSPIsFromDependencies(jars);
 

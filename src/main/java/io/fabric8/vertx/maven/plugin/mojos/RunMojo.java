@@ -32,7 +32,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RunMojo extends AbstractRunMojo {
 
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
