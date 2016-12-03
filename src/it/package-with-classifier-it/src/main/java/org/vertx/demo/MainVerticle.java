@@ -14,12 +14,17 @@
  *   limitations under the License.
  */
 
+package org.vertx.demo;
 
-import io.fabric8.vertx.maven.plugin.Verify
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.*;
 
-String base = basedir
-File primaryArtifactFile = new File(base, "target/my-vertx-app.jar")
+public class MainVerticle extends AbstractVerticle {
 
-assert primaryArtifactFile.exists()
-assert primaryArtifactFile.exists()
-Verify.verifyVertxJar(primaryArtifactFile)
+	@Override
+	public void start() {
+		vertx.createHttpServer()
+				.requestHandler(req -> req.response().end("Hello World!"))
+				.listen(8080);
+	}
+}

@@ -17,7 +17,6 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 
-import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -54,6 +53,8 @@ public class PackageHelper {
     private Set<Optional<File>> compileAndRuntimeDeps;
     private Set<Optional<File>> transitiveDeps;
     private Log log;
+    private String outputFileName;
+
 
     public PackageHelper(String mainClass, String mainVerticle) {
         this.archive = ShrinkWrap.create(JavaArchive.class);
@@ -73,15 +74,14 @@ public class PackageHelper {
     }
 
     /**
-     * @param baseName
      * @param dir
      * @param primaryArtifactFile
      * @return
      * @throws IOException
      */
-    public File build(String baseName, Path dir, File primaryArtifactFile) {
+    public File build(Path dir, File primaryArtifactFile) {
         build(primaryArtifactFile);
-        return createFatJar(baseName, dir);
+        return createFatJar(dir);
     }
 
     /**
@@ -138,17 +138,21 @@ public class PackageHelper {
     }
 
     /**
-     * @param baseName
      * @param dir
      * @return
      */
-    private synchronized File createFatJar(String baseName, Path dir) {
+    private synchronized File createFatJar(Path dir) {
 
         File jarFile = null;
 
         try {
-
-            jarFile = new File(dir.toFile(), baseName + "-fat.jar");
+            jarFile = new File(dir.toFile(), outputFileName);
+            boolean useTmpFile = false;
+            File theCreatedFile = jarFile;
+            if (jarFile.isFile()) {
+                useTmpFile = true;
+                theCreatedFile = new File(dir.toFile(), outputFileName + "__");
+            }
 
             if (!jarFile.getParentFile().exists() && !jarFile.getParentFile().mkdirs()) {
                 log.error("Failed to create parent directories for :" + jarFile.getAbsolutePath());
@@ -156,9 +160,15 @@ public class PackageHelper {
 
             ZipExporter zipExporter = this.archive.as(ZipExporter.class);
 
-            try (FileOutputStream jarOut = new FileOutputStream(jarFile)) {
+            try (FileOutputStream jarOut = new FileOutputStream(theCreatedFile)) {
                 zipExporter.exportTo(jarOut);
             }
+
+            if (useTmpFile) {
+                jarFile.delete();
+                theCreatedFile.renameTo(jarFile);
+            }
+
         } catch (Exception e) {
             log.error("Error building fat jar ", e);
         }
@@ -261,6 +271,11 @@ public class PackageHelper {
      */
     public PackageHelper log(Log log) {
         this.log = log;
+        return this;
+    }
+
+    public PackageHelper withOutputName(String output) {
+        this.outputFileName = output;
         return this;
     }
 }

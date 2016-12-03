@@ -3,7 +3,7 @@
 
 image:https://circleci.com/gh/fabric8io/vertx-maven-plugin.svg?style=shield["CircleCI", link="https://circleci.com/gh/fabric8io/vertx-maven-plugin"]
 
-This Maven plugin is a one-stop-shop for packaging, running, starting and stoppping  http://vertx.io[vert.x] Java applications.  This plugin
+This Maven plugin is a one-stop-shop for packaging, running, starting and stopping  http://vertx.io[vert.x] Java applications.  This plugin
 combines the goals of Maven Shade, Maven Exec into one, allowing the users to have a simplified pom.xml.
 
 == Features
@@ -18,8 +18,10 @@ start
 - [*] Ability to pass vertx configuration *-conf* automatically if a file named artifactId.json or artifactId.yaml or
 or artifactId.yml is present in project sources under _src/main/conf_.  The users can also configure the same via plugin configuration.
 Refer to https://fabric8io.github.io/vertx-maven-plugin/#vertx:run[vertx:run] for more information
-- [ ] Ability to perform when redeploy is enabled, please check the
+- [*] Ability to perform when redeploy is enabled, please check the
 https://fabric8io.github.io/vertx-maven-plugin/#vertx:run[vertx:run] for more information
+- [*] Ability to perform SPI combining when `serviceProviderCombination` is configured
+https://fabric8io.github.io/vertx-maven-plugin/#vertx:package[vertx:package] for more information
 
 === Plugin Goals
 [cols="1,3"]

@@ -21,9 +21,5 @@ String base = basedir
 File primaryArtifactFile = new File(base, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar")
 
 assert primaryArtifactFile.exists()
-
-File fatJarFile = new File(base, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT-fat.jar")
-
-Verify.verifyVertxJar(fatJarFile)
-
-Verify.verifyServiceRelocation(fatJarFile)
+Verify.verifyVertxJar(primaryArtifactFile)
+Verify.verifyServiceRelocation(primaryArtifactFile)
