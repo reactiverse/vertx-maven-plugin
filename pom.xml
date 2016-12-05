@@ -55,6 +55,16 @@
         </contributor>
     </contributors>
 
+    <contributors>
+        <contributor>
+            <name>Clement Escoffier</name>
+            <email>protected</email>
+            <roles>
+                <role>Contributor</role>
+            </roles>
+        </contributor>
+    </contributors>
+
     <licenses>
         <license>
             <name>Apache License 2</name>
@@ -94,6 +104,7 @@
 
         <commons-io.version>2.5</commons-io.version>
         <vertx-core.version>3.3.3</vertx-core.version>
+        <fabric8.vertx.plugin.version>1.0-SNAPSHOT</fabric8.vertx.plugin.version>
         <skipTests>false</skipTests>
         <assertj-core.version>3.4.1</assertj-core.version>
         <commons-lang3.version>3.4</commons-lang3.version>
@@ -235,6 +246,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
