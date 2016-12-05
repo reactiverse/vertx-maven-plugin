@@ -27,7 +27,6 @@ public class InitializeMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         MavenExecutionRequest request = session.getRequest();
-        getLog().info("Request : " + request);
         ExecutionListener listener = request.getExecutionListener();
         request.setExecutionListener(new MojoSpy(listener, getLog()));
     }
