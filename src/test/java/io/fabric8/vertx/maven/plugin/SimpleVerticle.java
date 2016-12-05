@@ -29,7 +29,8 @@ public class SimpleVerticle extends AbstractVerticle {
         int httpPort = config().getInteger("http.port");
         System.out.println("Configured HTTP Port is :" + httpPort);
 
-        String names = config().getJsonArray("names").stream().map(s -> String.valueOf(s)).collect(Collectors.joining(" "));
+        String names = config().getJsonArray("names").stream().map(String::valueOf)
+            .collect(Collectors.joining(" "));
         System.out.println("Configured Names are :" + names);
         vertx.close();
     }

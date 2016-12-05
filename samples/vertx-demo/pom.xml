@@ -18,12 +18,13 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>0.1-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>vmp</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>initialize</goal>
+                            <goal>package</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -45,7 +46,7 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.3.2</vertx.version>
+        <vertx.version>3.3.3</vertx.version>
         <vertx.verticle>org.vertx.demo.MainVerticle</vertx.verticle>
     </properties>
     <dependencies>

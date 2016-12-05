@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author kameshs
  */
+@SuppressWarnings("unused")
 public class Verify {
 
     public static void verifyVertxJar(File jarFile) throws Exception {
@@ -58,7 +59,7 @@ public class Verify {
     }
 
     public static String argsToString(String[] args) {
-        return Stream.of(args).collect(Collectors.joining(" ")).toString();
+        return Stream.of(args).collect(Collectors.joining(" "));
     }
 
     public static class VertxJarVerifier {
@@ -69,7 +70,7 @@ public class Verify {
             this.jarFile = jarFile;
         }
 
-        protected void verifyJarCreated() throws Exception {
+        protected void verifyJarCreated() {
             assertThat(jarFile).isNotNull();
             assertThat(jarFile).isFile();
         }
@@ -92,14 +93,10 @@ public class Verify {
         JarFile jarFile;
 
         public VertxJarServicesVerifier(File jarFile) throws IOException {
-            try {
-                this.jarFile = new JarFile(jarFile);
-            } catch (IOException e) {
-                throw e;
-            }
+            this.jarFile = new JarFile(jarFile);
         }
 
-        protected void verifyJarCreated() throws Exception {
+        protected void verifyJarCreated() {
             assertThat(jarFile).isNotNull();
         }
 

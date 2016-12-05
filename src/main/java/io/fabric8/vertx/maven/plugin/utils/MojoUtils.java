@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -173,10 +174,9 @@ public class MojoUtils {
      * @return
      */
     private Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
-        Optional<Plugin> jarPlugin = project.getBuildPlugins().stream()
+        return project.getBuildPlugins().stream()
                 .filter(plugin -> pluginKey.equals(plugin.getKey()))
                 .findFirst();
-        return jarPlugin;
     }
 
     public void buildVertxArtifact(MavenProject project, MavenSession mavenSession,
@@ -231,6 +231,15 @@ public class MojoUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private List<String> goals(Object goals) {
+        if (goals instanceof List) {
+            return (List<String>) goals;
+        } else {
+            throw new RuntimeException("The given object is not a list");
+        }
+    }
+
     /**
      * @param project
      * @param artifactId
@@ -250,7 +259,7 @@ public class MojoUtils {
             plugin = pluginOptional.get();
 
             //Goal Level Configuration
-            List<String> goals = (List<String>) plugin.getGoals();
+            List<String> goals = goals(plugin.getGoals());
 
             if (goals != null && goals.contains(goal)) {
                 return Optional.ofNullable((Xpp3Dom) plugin.getConfiguration());
@@ -260,9 +269,8 @@ public class MojoUtils {
             Optional<PluginExecution> executionOptional = plugin.getExecutions().stream()
                     .filter(e -> e.getGoals().contains(goal)).findFirst();
 
-            if (executionOptional.isPresent()) {
-                Optional.ofNullable((Xpp3Dom) executionOptional.get().getConfiguration());
-            }
+            executionOptional
+                .ifPresent(pluginExecution -> Optional.ofNullable((Xpp3Dom) pluginExecution.getConfiguration()));
 
         } else {
             return Optional.empty();

@@ -82,20 +82,17 @@ public class PackageMojo extends AbstractVertxMojo {
         Set<Optional<File>> transitiveDeps = extractArtifactPaths(this.project.getArtifacts());
 
         PackageHelper packageHelper = new PackageHelper(this.launcher, this.verticle)
-                .withOutputName(computeOutputName(project, classifier))
-                .compileAndRuntimeDeps(compileAndRuntimeDeps)
-                .transitiveDeps(transitiveDeps);
+            .withOutputName(computeOutputName(project, classifier))
+            .compileAndRuntimeDeps(compileAndRuntimeDeps)
+            .transitiveDeps(transitiveDeps);
 
         //Step 1: build the jar add classifier and add it to project
 
         try {
 
-            String fatJarName = this.project.getBuild().getFinalName();
-            if (fatJarName == null) {
-                fatJarName = this.project.getArtifactId();
-            }
-
             Path pathProjectBuildDir = Paths.get(this.projectBuildDir);
+
+            //TODO Handle the case where the primary article is NOT there.
 
             File fatJarFile = packageHelper
                     .log(getLog())

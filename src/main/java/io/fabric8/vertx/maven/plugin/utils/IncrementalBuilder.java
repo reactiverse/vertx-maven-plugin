@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -37,20 +38,16 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     private final Log logger;
 
-    private final Callable<Void> javaBuildCallBack;
-    private final Callable<Void> resourceBuildCallBack;
+    private final List<Callable<Void>> chain;
 
     private FileAlterationMonitor monitor;
 
     private Hashtable<Path, FileAlterationObserver> observers = new Hashtable<>();
 
     public IncrementalBuilder(Set<Path> inclDirs,
-                              Callable<Void> javaBuildCallBack,
-                              Callable<Void> resourceBuildCallBack, Log logger, long watchTimeInterval)
-            throws IOException {
-
-        this.javaBuildCallBack = javaBuildCallBack;
-        this.resourceBuildCallBack = resourceBuildCallBack;
+                              List<Callable<Void>> chain,
+                              Log logger, long watchTimeInterval) {
+        this.chain = chain;
         this.logger = logger;
         this.monitor = new FileAlterationMonitor(watchTimeInterval);
         inclDirs.forEach(this::buildObserver);
@@ -97,14 +94,13 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
      *
      */
     protected synchronized void syncMonitor() {
-        observers.forEach((path, observer) -> {
-            this.monitor.getObservers().forEach(observer2 -> {
+        observers.forEach((path, observer)
+            -> this.monitor.getObservers().forEach(observer2 -> {
                 Path path1 = Paths.get(observer2.getDirectory().toString());
                 if (!observers.containsKey(path1)) {
                     this.monitor.removeObserver(observer2);
                 }
-            });
-        });
+        }));
     }
 
 
@@ -153,18 +149,12 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     private void triggerBuild(File file) {
         try {
-            if (isJavaFile(file.getName())) {
-                this.javaBuildCallBack.call();
-            } else {
-                this.resourceBuildCallBack.call();
+            for (Callable<Void> task : chain) {
+                task.call();
             }
         } catch (Exception e) {
             //ignore
         }
-    }
-
-    private boolean isJavaFile(String fileName) {
-        return "java".equals(org.codehaus.plexus.util.FileUtils.extension(fileName));
     }
 
 }

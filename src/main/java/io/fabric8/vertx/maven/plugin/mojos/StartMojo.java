@@ -146,12 +146,11 @@ public class StartMojo extends AbstractRunMojo {
 
         if (jvmArgs != null && !jvmArgs.isEmpty()) {
             String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
-            StringBuilder argJavaOpts = new StringBuilder();
-            argJavaOpts.append(VERTX_ARG_JAVA_OPT);
-            argJavaOpts.append("=\"");
-            argJavaOpts.append(javaOpts);
-            argJavaOpts.append("\"");
-            argsList.add(argJavaOpts.toString());
+            String argJavaOpts = VERTX_ARG_JAVA_OPT +
+                "=\"" +
+                javaOpts +
+                "\"";
+            argsList.add(argJavaOpts);
         }
 
         run(argsList);

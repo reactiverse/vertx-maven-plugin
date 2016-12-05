@@ -4,9 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <title>vert.x:: Demos :: Templates:: thymeleaf</title>
+
+    <link rel="stylesheet" type="text/css" href="/assets/style/style.css">
 </head>
 <body>
 
 <h1 th:text="${context.get('welcome')}">Hello vert.x</h1>
 </body>
+
+<script src="/assets/libs/jquery/dist/jquery.js"></script>
+<script src="/assets/math.js"></script>
+<script>
+    $(document).ready(function() {
+        var sq = square(23);
+        var cu = cube(23);
+        var p = $("<p>" + sq + "</p><p>" + cu + "</p>");
+       $("h1").append(p);
+    });
+</script>
 </html>

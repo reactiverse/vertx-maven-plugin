@@ -17,7 +17,9 @@
 
 import io.fabric8.vertx.maven.plugin.Verify
 
-File primaryArtifactFile = new File(basedir, "target/my-vertx-app.jar")
+String base = basedir
+File primaryArtifactFile = new File(base, "target/my-vertx-app.jar")
 
+assert primaryArtifactFile.exists()
 assert primaryArtifactFile.exists()
 Verify.verifyVertxJar(primaryArtifactFile)

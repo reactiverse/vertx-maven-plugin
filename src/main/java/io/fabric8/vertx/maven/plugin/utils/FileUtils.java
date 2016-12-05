@@ -1,17 +1,11 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
-import org.apache.maven.project.MavenProject;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A bunch of file utility that will be used by the plugin to perform common file operations
@@ -19,25 +13,6 @@ import java.util.stream.Stream;
  * @author kameshs
  */
 public class FileUtils {
-
-    /**
-     * Get a list of {@link Path} typically compileSourceRoots and resources path of the {@link MavenProject}
-     *
-     * @param project  - the project for which the compile source roots and resource roots needs to be retrieved
-     * @param includes - an optional {@link List<String>} for scanning patterns under the directory
-     * @return - {@link Set<Path>}
-     */
-    public static Set<Path> includedDirs(MavenProject project, Optional<List<String>> includes) {
-
-        Set<Path> inclDirs = Stream.concat(project.getCompileSourceRoots().stream(),
-                project.getResources().stream()
-                        .map(resource -> resource.getDirectory()))
-                .map(Paths::get)
-                .filter(p -> Files.exists(p) && Files.isDirectory(p))
-                .collect(Collectors.toSet());
-
-        return inclDirs;
-    }
 
     /**
      * Utility method to perform move of {@link File} source under target directory, the default backup file name
