@@ -39,7 +39,7 @@
             <name>Kamesh Sampath</name>
             <email>kamesh.sampath@hotmail.com</email>
             <roles>
-                <role>Java Developer</role>
+                <role>Plugin Developer</role>
             </roles>
             <timezone>+5:30</timezone>
         </developer>
@@ -51,6 +51,13 @@
             <email>protected</email>
             <roles>
                 <role>Patch Contributor</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Clement Escoffier</name>
+            <email>protected</email>
+            <roles>
+                <role>Contributor</role>
             </roles>
         </contributor>
     </contributors>
@@ -69,9 +76,6 @@
         <url>https://github.com/fabric8io/vertx-maven-plugin</url>
         <tag>HEAD</tag>
     </scm>
-
-
-    <!-- FIXME Add  project's scm, developers etc., -->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,6 +98,7 @@
 
         <commons-io.version>2.5</commons-io.version>
         <vertx-core.version>3.3.3</vertx-core.version>
+        <fabric8.vertx.plugin.version>${project.version}</fabric8.vertx.plugin.version>
         <skipTests>false</skipTests>
         <assertj-core.version>3.4.1</assertj-core.version>
         <commons-lang3.version>3.4</commons-lang3.version>
@@ -235,6 +240,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

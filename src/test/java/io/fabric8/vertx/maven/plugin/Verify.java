@@ -18,14 +18,26 @@ package io.fabric8.vertx.maven.plugin;
 
 //import io.restassured.RestAssured;
 
+import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.project.MavenProject;
+
 import java.io.*;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author kameshs
@@ -43,6 +55,50 @@ public class Verify {
         VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
         vertxJarVerifier.verifyServicesContent();
+    }
+
+    public static void verifySetup(File pomFile) throws Exception {
+        MojoUtils mojoUtils = new MojoUtils();
+        assertNotNull("Unable to find pom.xml", pomFile);
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+
+        MavenProject project = new MavenProject(model);
+
+        Optional<Plugin> vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+
+        //Check if the properties have been set correctly
+        Properties properties = model.getProperties();
+        assertThat(properties.containsKey("vertx.version")).isTrue();
+        assertThat(properties.getProperty("vertx.version"))
+            .isEqualTo(mojoUtils.getVersion("vertx-core-version"));
+
+
+        assertThat(properties.containsKey("fabric8.vertx.plugin.version")).isTrue();
+        assertThat(properties.getProperty("fabric8.vertx.plugin.version"))
+            .isEqualTo(mojoUtils.getVersion("vertx-maven-plugin-version"));
+
+        //Check if the dependencies has been set correctly
+        DependencyManagement dependencyManagement = model.getDependencyManagement();
+        assertThat(dependencyManagement).isNotNull();
+        assertThat(dependencyManagement.getDependencies().isEmpty()).isFalse();
+
+        //Check Vert.x dependencies BOM
+        Optional<Dependency> vertxDeps = dependencyManagement.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-dependencies")
+                && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+
+        assertThat(vertxDeps.isPresent()).isTrue();
+        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.version}");
+
+        //Check Vert.x core dependency
+        Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-core") && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+        assertThat(vertxCoreDep.isPresent()).isTrue();
+        assertThat(vertxCoreDep.get().getVersion()).isNull();
     }
 
 

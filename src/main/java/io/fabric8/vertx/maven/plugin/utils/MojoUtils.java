@@ -18,6 +18,7 @@ package io.fabric8.vertx.maven.plugin.utils;
 
 
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -32,7 +33,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -104,19 +104,19 @@ public class MojoUtils {
             }
 
             executeMojo(
-                    resourcesPlugin.get(),
-                    goal(GOAL_RESOURCES),
-                    pluginConfig,
-                    executionEnvironment(project, mavenSession, buildPluginManager)
+                resourcesPlugin.get(),
+                goal(GOAL_RESOURCES),
+                pluginConfig,
+                executionEnvironment(project, mavenSession, buildPluginManager)
             );
 
         } else {
             executeMojo(
-                    plugin(G_MAVEN_RESOURCES_PLUGIN, A_MAVEN_RESOURCES_PLUGIN,
-                            properties.getProperty(V_MAVEN_RESOURCES_PLUGIN)),
-                    goal(GOAL_RESOURCES),
-                    pluginConfig,
-                    executionEnvironment(project, mavenSession, buildPluginManager)
+                plugin(G_MAVEN_RESOURCES_PLUGIN, A_MAVEN_RESOURCES_PLUGIN,
+                    properties.getProperty(V_MAVEN_RESOURCES_PLUGIN)),
+                goal(GOAL_RESOURCES),
+                pluginConfig,
+                executionEnvironment(project, mavenSession, buildPluginManager)
             );
         }
 
@@ -143,20 +143,20 @@ public class MojoUtils {
 
             if (jarPlugin.isPresent()) {
                 executeMojo(
-                        jarPlugin.get(),
-                        goal(GOAL_PACKAGE),
-                        configuration(element("outputDirectory", "${project.build.outputDir}"),
-                                element("classesDirectory", "${project.build.outputDirectory}")),
-                        executionEnvironment(project, mavenSession, buildPluginManager)
+                    jarPlugin.get(),
+                    goal(GOAL_PACKAGE),
+                    configuration(element("outputDirectory", "${project.build.outputDir}"),
+                        element("classesDirectory", "${project.build.outputDirectory}")),
+                    executionEnvironment(project, mavenSession, buildPluginManager)
                 );
             } else {
                 executeMojo(
-                        plugin(G_MAVEN_JAR_PLUGIN, A_MAVEN_JAR_PLUGIN,
-                                properties.getProperty(V_MAVEN_JAR_PLUGIN)),
-                        goal(GOAL_PACKAGE),
-                        configuration(element("outputDirectory", "${project.build.outputDir}"),
-                                element("classesDirectory", "${project.build.outputDirectory}")),
-                        executionEnvironment(project, mavenSession, buildPluginManager)
+                    plugin(G_MAVEN_JAR_PLUGIN, A_MAVEN_JAR_PLUGIN,
+                        properties.getProperty(V_MAVEN_JAR_PLUGIN)),
+                    goal(GOAL_PACKAGE),
+                    configuration(element("outputDirectory", "${project.build.outputDir}"),
+                        element("classesDirectory", "${project.build.outputDirectory}")),
+                    executionEnvironment(project, mavenSession, buildPluginManager)
                 );
             }
 
@@ -173,10 +173,34 @@ public class MojoUtils {
      * @param pluginKey
      * @return
      */
-    private Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
-        return project.getBuildPlugins().stream()
+    public Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
+        Optional<Plugin> optPlugin = project.getBuildPlugins().stream()
+            .filter(plugin -> pluginKey.equals(plugin.getKey()))
+            .findFirst();
+
+        if (!optPlugin.isPresent() && project.getPluginManagement() != null) {
+            optPlugin = project.getPluginManagement().getPlugins().stream()
                 .filter(plugin -> pluginKey.equals(plugin.getKey()))
                 .findFirst();
+        }
+        return optPlugin;
+    }
+
+    /**
+     * Checks whether the project has the dependency
+     *
+     * @param project    - the project to check existence of dependency
+     * @param groupId    - the dependency groupId
+     * @param artifactId - the dependency artifactId
+     * @return true if the project has the dependency
+     */
+    public boolean hasDependency(MavenProject project, String groupId, String artifactId) {
+
+        Optional<Dependency> dep = project.getDependencies().stream()
+            .filter(d -> groupId.equals(d.getGroupId())
+                && artifactId.equals(d.getArtifactId())).findFirst();
+
+        return dep.isPresent();
     }
 
     public void buildVertxArtifact(MavenProject project, MavenSession mavenSession,
@@ -186,14 +210,14 @@ public class MojoUtils {
 
         if (vertxMavenPlugin == null) {
             throw new MojoExecutionException("Plugin :" + VERTX_PACKAGE_PLUGIN_KEY
-                    + " not found or configured");
+                + " not found or configured");
         }
 
         executeMojo(
-                vertxMavenPlugin,
-                goal(GOAL_PACKAGE),
-                configuration(),
-                executionEnvironment(project, mavenSession, buildPluginManager)
+            vertxMavenPlugin,
+            goal(GOAL_PACKAGE),
+            configuration(),
+            executionEnvironment(project, mavenSession, buildPluginManager)
         );
     }
 
@@ -207,8 +231,8 @@ public class MojoUtils {
                         BuildPluginManager buildPluginManager) throws Exception {
 
         Optional<Plugin> mvnCompilerPlugin = project.getBuildPlugins().stream()
-                .filter(plugin -> A_MAVEN_COMPILER_PLUGIN.equals(plugin.getArtifactId()))
-                .findFirst();
+            .filter(plugin -> A_MAVEN_COMPILER_PLUGIN.equals(plugin.getArtifactId()))
+            .findFirst();
 
         String pluginVersion = properties.getProperty(V_MAVEN_COMPILER_PLUGIN);
 
@@ -223,10 +247,10 @@ public class MojoUtils {
             Xpp3Dom configuration = optConfiguration.get();
 
             executeMojo(
-                    plugin(G_MAVEN_COMPILER_PLUGIN, A_MAVEN_COMPILER_PLUGIN, pluginVersion),
-                    goal(GOAL_COMPILE),
-                    configuration,
-                    executionEnvironment(project, mavenSession, buildPluginManager)
+                plugin(G_MAVEN_COMPILER_PLUGIN, A_MAVEN_COMPILER_PLUGIN, pluginVersion),
+                goal(GOAL_COMPILE),
+                configuration,
+                executionEnvironment(project, mavenSession, buildPluginManager)
             );
         }
     }
@@ -249,8 +273,8 @@ public class MojoUtils {
     public Optional<Xpp3Dom> buildConfiguration(MavenProject project, String artifactId, String goal) {
 
         Optional<Plugin> pluginOptional = project.getBuildPlugins().stream()
-                .filter(plugin -> artifactId
-                        .equals(plugin.getArtifactId())).findFirst();
+            .filter(plugin -> artifactId
+                .equals(plugin.getArtifactId())).findFirst();
 
         Plugin plugin;
 
@@ -267,7 +291,7 @@ public class MojoUtils {
 
             //Execution Configuration
             Optional<PluginExecution> executionOptional = plugin.getExecutions().stream()
-                    .filter(e -> e.getGoals().contains(goal)).findFirst();
+                .filter(e -> e.getGoals().contains(goal)).findFirst();
 
             executionOptional
                 .ifPresent(pluginExecution -> Optional.ofNullable((Xpp3Dom) pluginExecution.getConfiguration()));
@@ -295,4 +319,7 @@ public class MojoUtils {
         }
     }
 
+    public String getVersion(String artifactKey) {
+        return properties.getProperty(artifactKey);
+    }
 }
