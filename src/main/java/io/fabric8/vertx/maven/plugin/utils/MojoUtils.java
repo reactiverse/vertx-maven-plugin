@@ -18,6 +18,7 @@ package io.fabric8.vertx.maven.plugin.utils;
 
 
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -32,7 +33,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -184,6 +184,23 @@ public class MojoUtils {
                 .findFirst();
         }
         return optPlugin;
+    }
+
+    /**
+     * Checks whether the project has the dependency
+     *
+     * @param project    - the project to check existence of dependency
+     * @param groupId    - the dependency groupId
+     * @param artifactId - the dependency artifactId
+     * @return true if the project has the dependency
+     */
+    public boolean hasDependency(MavenProject project, String groupId, String artifactId) {
+
+        Optional<Dependency> dep = project.getDependencies().stream()
+            .filter(d -> groupId.equals(d.getGroupId())
+                && artifactId.equals(d.getArtifactId())).findFirst();
+
+        return dep.isPresent();
     }
 
     public void buildVertxArtifact(MavenProject project, MavenSession mavenSession,

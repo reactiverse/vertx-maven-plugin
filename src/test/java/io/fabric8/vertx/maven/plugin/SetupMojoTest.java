@@ -4,6 +4,7 @@ import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 
@@ -13,16 +14,18 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 /**
  * Created by kameshs on 05-12-2016.
  */
-public class SetupMojoTest {
+public class SetupMojoTest extends AbstractMojoTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
     @Test
     public void testAddVertxMavenPlugin() throws Exception {
@@ -93,5 +96,10 @@ public class SetupMojoTest {
         vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
 
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }
