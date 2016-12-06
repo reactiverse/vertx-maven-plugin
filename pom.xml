@@ -39,7 +39,7 @@
             <name>Kamesh Sampath</name>
             <email>kamesh.sampath@hotmail.com</email>
             <roles>
-                <role>Java Developer</role>
+                <role>Plugin Developer</role>
             </roles>
             <timezone>+5:30</timezone>
         </developer>
@@ -77,9 +77,6 @@
         <tag>HEAD</tag>
     </scm>
 
-
-    <!-- FIXME Add  project's scm, developers etc., -->
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-invoker-plugin.version>2.0.0</maven-invoker-plugin.version>
@@ -101,7 +98,7 @@
 
         <commons-io.version>2.5</commons-io.version>
         <vertx-core.version>3.3.3</vertx-core.version>
-        <fabric8.vertx.plugin.version>1.0-SNAPSHOT</fabric8.vertx.plugin.version>
+        <fabric8.vertx.plugin.version>${project.version}</fabric8.vertx.plugin.version>
         <skipTests>false</skipTests>
         <assertj-core.version>3.4.1</assertj-core.version>
         <commons-lang3.version>3.4</commons-lang3.version>
