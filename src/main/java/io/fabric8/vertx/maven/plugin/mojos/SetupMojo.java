@@ -56,7 +56,8 @@ public class SetupMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Model model = project.getModel();
+        //We should get cloned of the OriginalModel, as project.getModel will return effective model
+        Model model = project.getOriginalModel().clone();
         File pomFile = project.getFile();
 
         Optional<Plugin> vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
