@@ -16,6 +16,7 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
+import io.fabric8.vertx.maven.plugin.utils.WebJars;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -203,18 +204,22 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     }
 
     /**
-     * this method helps in extracting the Artifact paths from the Maven local repository
+     * this method helps in extracting the Artifact paths from the Maven local repository.
+     * If does does not handle WebJars and non-jar dependencies.
      *
      * @param artifacts - the collection of artifacts which needs to be resolved to local {@link File}
      * @return A {@link Set} of {@link Optional} file paths
      */
     protected Set<Optional<File>> extractArtifactPaths(Set<Artifact> artifacts) {
         return artifacts
-                .stream()
-                .filter(e -> e.getScope().equals("compile") || e.getScope().equals("runtime"))
-                .map(this::asMavenCoordinates)
-                .map(this::resolveArtifact)
-                .collect(Collectors.toSet());
+            .stream()
+            .filter(e -> e.getScope().equals("compile") || e.getScope().equals("runtime"))
+            .filter(e -> e.getType().equalsIgnoreCase("jar"))
+            .filter(e -> !WebJars.isWebJar(getLog(), e.getFile()))
+            .map(this::asMavenCoordinates)
+            .distinct()
+            .map(this::resolveArtifact)
+            .collect(Collectors.toSet());
     }
 
     /**
@@ -230,11 +235,11 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
         // although I don't think it will change any time soon since probably many people already
         // rely on it)
         StringBuilder artifactCords = new StringBuilder().
-                append(artifact.getGroupId())
-                .append(":")
-                .append(artifact.getArtifactId())
-                .append(":")
-                .append(artifact.getVersion());
+            append(artifact.getGroupId())
+            .append(":")
+            .append(artifact.getArtifactId())
+            .append(":")
+            .append(artifact.getVersion());
         if (!"jar".equals(artifact.getType())) {
             artifactCords.append(":").append(artifact.getType());
         }
