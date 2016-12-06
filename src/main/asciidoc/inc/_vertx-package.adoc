@@ -1,6 +1,6 @@
 
 [[vertx:package]]
-== *vertx.package*
+== *vertx:package*
 
 This goal will package a vert.x application as fat or uber jar with its dependencies bundled
 as part of the jar
