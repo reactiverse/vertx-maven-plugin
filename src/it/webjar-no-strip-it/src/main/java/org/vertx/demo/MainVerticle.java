@@ -14,17 +14,17 @@
  *   limitations under the License.
  */
 
+package org.vertx.demo;
 
-import io.fabric8.vertx.maven.plugin.Verify
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.*;
 
-import java.util.jar.JarFile
+public class MainVerticle extends AbstractVerticle {
 
-String base = basedir
-File primaryArtifactFile = new File(base, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar")
-assert primaryArtifactFile.exists()
-Verify.verifyVertxJar(primaryArtifactFile)
-
-JarFile jar = new JarFile(primaryArtifactFile)
-assert jar.getEntry("webroot") != null
-assert jar.getEntry("webroot/vertx-web-client.js") != null
-assert jar.getEntry("webroot/jquery/jquery.js") != null
+	@Override
+	public void start() {
+		vertx.createHttpServer()
+				.requestHandler(req -> req.response().end("Hello World!"))
+				.listen(8080);
+	}
+}

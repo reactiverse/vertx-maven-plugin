@@ -38,6 +38,9 @@ public class InitializeMojo extends AbstractVertxMojo {
     @Parameter(defaultValue = "true")
     private boolean stripWebJarVersion;
 
+    @Parameter(defaultValue = "true")
+    private boolean stripJavaScriptDepdendencyVersion;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         // Initialize the web root directory with Vert.x web default.
@@ -95,7 +98,17 @@ public class InitializeMojo extends AbstractVertxMojo {
                 Optional<File> file = getArtifactFile(artifact);
                 if (file.isPresent()) {
                     try {
-                        FileUtils.copyFileToDirectory(file.get(), createWebRootDirIfNeeded());
+                        if (stripJavaScriptDepdendencyVersion) {
+                            String name = artifact.getArtifactId();
+                            if (artifact.getClassifier() != null) {
+                                name += "-" + artifact.getClassifier();
+                            }
+                            name += ".js";
+                            File output = new File(createWebRootDirIfNeeded(), name);
+                            FileUtils.copyFile(file.get(), output);
+                        } else {
+                            FileUtils.copyFileToDirectory(file.get(), createWebRootDirIfNeeded());
+                        }
                     } catch (IOException e) {
                         throw new MojoExecutionException("Unable to copy '"
                             + artifact.toString() + "'", e);

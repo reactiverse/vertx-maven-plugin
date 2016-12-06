@@ -204,7 +204,8 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     }
 
     /**
-     * this method helps in extracting the Artifact paths from the Maven local repository
+     * this method helps in extracting the Artifact paths from the Maven local repository.
+     * If does does not handle WebJars and non-jar dependencies.
      *
      * @param artifacts - the collection of artifacts which needs to be resolved to local {@link File}
      * @return A {@link Set} of {@link Optional} file paths
@@ -217,10 +218,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
             .filter(e -> !WebJars.isWebJar(getLog(), e.getFile()))
             .map(this::asMavenCoordinates)
             .distinct()
-            .map(s -> {
-                System.out.println(">>> " + s);
-                return s;
-            })
             .map(this::resolveArtifact)
             .collect(Collectors.toSet());
     }
