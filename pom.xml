@@ -429,9 +429,10 @@
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>1.5.3</version>
                         <configuration>
                             <backend>html</backend>
-                            <sourceHighlighter>coderay</sourceHighlighter>
+                            <sourceHighlighter>highlightjs</sourceHighlighter>
                             <attributes>
                                 <toc>left</toc>
                             </attributes>
@@ -448,6 +449,7 @@
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>1.5.3</version>
                         <configuration>
                             <backend>pdf</backend>
                             <sourceHighlighter>rouge</sourceHighlighter>
