@@ -8,6 +8,12 @@ in the next sections.
 |===
 |Goal | Description
 
+|**<<vertx:setup>>**
+|Add the vertx-maven-plugin to your `pom.xml` file
+
+|**<<vertx:initialize>>**
+|Copy _js_ dependencies to _webroot_, unpack webjars to _webroot_ and initialize the redeployment mode
+
 |**<<vertx:package>>**
 |Package Vert.x applications
 
@@ -18,5 +24,5 @@ in the next sections.
 |Run a Vert.x application in daemon mode with specific id
 
 |**<<vertx:stop>>**
-|Stops the vert.x applicaiton running in daemon mode
+|Stops the vert.x application running in daemon mode
 |===

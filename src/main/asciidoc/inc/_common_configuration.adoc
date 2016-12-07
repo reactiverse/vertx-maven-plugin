@@ -14,7 +14,7 @@ All goals share the following configuration:
 |`vertx.verticle`
 
 | `launcher`
-| Vert.x launcher to use
+| Main class to use
 | `io.vertx.core.Launcher`
 | `vertx.launcher`
 |===
