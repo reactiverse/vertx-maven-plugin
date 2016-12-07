@@ -145,7 +145,7 @@ public class MojoUtils {
             if (jarPlugin.isPresent()) {
                 executeMojo(
                     jarPlugin.get(),
-                    goal(GOAL_PACKAGE),
+                    goal("jar"),
                     configuration(element("outputDirectory", "${project.build.outputDir}"),
                         element("classesDirectory", "${project.build.outputDirectory}")),
                     executionEnvironment(project, mavenSession, buildPluginManager)
@@ -154,7 +154,7 @@ public class MojoUtils {
                 executeMojo(
                     plugin(G_MAVEN_JAR_PLUGIN, A_MAVEN_JAR_PLUGIN,
                         properties.getProperty(V_MAVEN_JAR_PLUGIN)),
-                    goal(GOAL_PACKAGE),
+                    goal("jar"),
                     configuration(element("outputDirectory", "${project.build.outputDir}"),
                         element("classesDirectory", "${project.build.outputDirectory}")),
                     executionEnvironment(project, mavenSession, buildPluginManager)
@@ -165,8 +165,6 @@ public class MojoUtils {
         } else {
             throw new MojoExecutionException("The packaging :" + packaging + " is not supported as of now");
         }
-
-        throw new MojoExecutionException("The packaging :" + packaging + " is not supported as of now");
     }
 
     /**
