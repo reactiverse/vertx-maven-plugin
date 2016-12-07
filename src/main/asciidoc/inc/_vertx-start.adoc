@@ -9,10 +9,6 @@ This goal allows to start the Vert.x application as a background process from ma
 |===
 | Element | Description | Property| Default
 
-| timeout
-| The time in seconds that will be used to check if the application has started
-| vertx.start.timeout
-| 10
 | startMode
 | The property to decide how the vert.x application will be started in background.  The application can be started in
 *jar* mode in which the application will be packaged as fat jar and started, or can be run in *exploded* mode where the
