@@ -20,6 +20,7 @@ package io.fabric8.vertx.maven.plugin.mojos;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.logging.Log;
 
@@ -42,60 +43,80 @@ public class MojoSpy extends AbstractExecutionListener {
         "compile",
         "process-classes"
     );
+    private final MavenExecutionRequest request;
 
-    private final Log log;
     private ExecutionListener delegate;
 
-    public MojoSpy(ExecutionListener listener, Log log) {
-        this.delegate = listener;
-        this.log = log;
+    public MojoSpy(MavenExecutionRequest request) {
+        this.delegate = request.getExecutionListener();
+        this.request = request;
     }
 
     @Override
     public void projectDiscoveryStarted(ExecutionEvent executionEvent) {
-        delegate.projectDiscoveryStarted(executionEvent);
+        if (delegate != null) {
+            delegate.projectDiscoveryStarted(executionEvent);
+        }
     }
 
     @Override
     public void sessionStarted(ExecutionEvent executionEvent) {
-        delegate.sessionStarted(executionEvent);
+        if (delegate != null) {
+            delegate.sessionStarted(executionEvent);
+        }
     }
 
     @Override
     public void sessionEnded(ExecutionEvent executionEvent) {
-        delegate.sessionEnded(executionEvent);
+        if (delegate != null) {
+            delegate.sessionEnded(executionEvent);
+        }
     }
 
     @Override
     public void projectSkipped(ExecutionEvent executionEvent) {
-        delegate.projectSkipped(executionEvent);
+        if (delegate != null) {
+            delegate.projectSkipped(executionEvent);
+        }
     }
 
     @Override
     public void projectStarted(ExecutionEvent executionEvent) {
-        delegate.projectStarted(executionEvent);
+        if (delegate != null) {
+            delegate.projectStarted(executionEvent);
+        }
     }
 
     @Override
     public void projectSucceeded(ExecutionEvent executionEvent) {
-        // TODO should we cleanup ?
-        delegate.projectSucceeded(executionEvent);
+        if (delegate != null) {
+            delegate.projectSucceeded(executionEvent);
+        }
+        // Cleanup
+        request.setExecutionListener(delegate);
     }
 
     @Override
     public void projectFailed(ExecutionEvent executionEvent) {
-        // TODO should we cleanup ?
-        delegate.projectFailed(executionEvent);
+        if (delegate != null) {
+            delegate.projectFailed(executionEvent);
+        }
+        // Cleanup
+        request.setExecutionListener(delegate);
     }
 
     @Override
     public void mojoSkipped(ExecutionEvent executionEvent) {
-        delegate.mojoSkipped(executionEvent);
+        if (delegate != null) {
+            delegate.mojoSkipped(executionEvent);
+        }
     }
 
     @Override
     public void mojoStarted(ExecutionEvent executionEvent) {
-        delegate.mojoStarted(executionEvent);
+        if (delegate != null) {
+            delegate.mojoStarted(executionEvent);
+        }
     }
 
     @Override
@@ -103,41 +124,61 @@ public class MojoSpy extends AbstractExecutionListener {
         // Unlike mojoStarted, this callback has the lifecycle phase set.
         MojoExecution execution = executionEvent.getMojoExecution();
         MOJOS.add(execution);
-        delegate.mojoSucceeded(executionEvent);
+        if (delegate != null) {
+            delegate.mojoSucceeded(executionEvent);
+        }
     }
 
     @Override
     public void mojoFailed(ExecutionEvent executionEvent) {
-        delegate.mojoFailed(executionEvent);
+        if (delegate != null) {
+            delegate.mojoFailed(executionEvent);
+        }
     }
 
     @Override
     public void forkStarted(ExecutionEvent executionEvent) {
-        delegate.forkStarted(executionEvent);
+        if (delegate != null) {
+            delegate.forkStarted(executionEvent);
+        }
     }
 
     @Override
     public void forkSucceeded(ExecutionEvent executionEvent) {
-        delegate.forkSucceeded(executionEvent);
+        if (delegate != null) {
+            delegate.forkSucceeded(executionEvent);
+        }
     }
 
     @Override
     public void forkFailed(ExecutionEvent executionEvent) {
-        delegate.forkFailed(executionEvent);
+        if (delegate != null) {
+            delegate.forkFailed(executionEvent);
+        }
     }
 
     @Override
     public void forkedProjectStarted(ExecutionEvent executionEvent) {
-        delegate.forkedProjectStarted(executionEvent);
+        if (delegate != null) {
+            delegate.forkedProjectStarted(executionEvent);
+        }
     }
 
     @Override
     public void forkedProjectSucceeded(ExecutionEvent executionEvent) {
-        delegate.forkedProjectSucceeded(executionEvent);
+        if (delegate != null) {
+            delegate.forkedProjectSucceeded(executionEvent);
+        }
     }
 
     @Override
     public void forkedProjectFailed(ExecutionEvent executionEvent) {
-        delegate.forkedProjectFailed(executionEvent);
+        if (delegate != null) {
+            delegate.forkedProjectFailed(executionEvent);
+        }
+    }
+
+    public static void init(MavenExecutionRequest request) {
+        request.setExecutionListener(new MojoSpy(request));
     }
 }
