@@ -25,11 +25,4 @@ Apart from the above list of exclusive start configuration, the goal shares the 
 ignored by the goal,
 
 * redeploy
-* redeployPatterns
 * fork - by default every stop is a forked process
-
-
-=== How to add this goal my maven project ?
-
-You can see **<<stop-goal-examples,Examples>>** on how to to add the start goal to
-your maven project
