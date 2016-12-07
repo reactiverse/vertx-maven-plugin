@@ -75,7 +75,11 @@ public class StartMojo extends AbstractRunMojo {
     @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
     protected List<String> jvmArgs;
 
-    private MojoUtils mojoUtils = new MojoUtils();
+    /**
+     * The artifact classifier. If not set, the plugin uses the default final name.
+     */
+    @Parameter(name = "classifier")
+    protected String classifier;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
