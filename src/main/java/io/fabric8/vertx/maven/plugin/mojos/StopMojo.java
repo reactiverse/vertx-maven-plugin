@@ -42,13 +42,6 @@ import java.util.*;
 public class StopMojo extends AbstractRunMojo {
 
     /**
-     * this control how long the process should to start, if the process does not stop within the time, its deemed as
-     * failed, the default value is 10 seconds
-     */
-    @Parameter(alias = "timeout", property = "vertx.stop.timeout", defaultValue = "10")
-    protected int timeout;
-
-    /**
      * the vertx application id that will be used to stop the process, if left blank this value will be intialized
      * form the ${project.basedir}/{@link AbstractVertxMojo#VERTX_PID_FILE}
      */
@@ -69,11 +62,9 @@ public class StopMojo extends AbstractRunMojo {
 
                 addClasspath(argsList);
 
-                if (isVertxLauncher(launcher)) {
-                    addVertxArgs(argsList);
-                } else {
-                    argsList.add(launcher);
-                }
+                argsList.add(IO_VERTX_CORE_LAUNCHER);
+
+                argsList.add(vertxCommand);
 
                 argsList.add(vertxProcId);
 
