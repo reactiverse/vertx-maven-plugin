@@ -60,14 +60,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     protected boolean redeploy;
 
     /**
-     * The redeployPatterns that will be used to trigger redeployment of the vertx application.
-     * If this this not provided and redeploy is &quot;true&quot; then default value of "src/**\/*" will be
-     * used as a redeployment pattern
-     */
-    @Parameter(name = "redeployPatterns")
-    protected List<String> redeployPatterns;
-
-    /**
      * The default command to use when calling io.vertx.core.Launcher.
      * possible commands are,
      * <ul>
