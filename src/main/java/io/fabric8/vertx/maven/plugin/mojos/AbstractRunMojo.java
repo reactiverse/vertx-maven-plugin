@@ -235,8 +235,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 try {
                     Class customLauncher = buildClassLoader(getClassPathUrls()).loadClass(launcher);
                     List<Class<?>> superClasses = ClassUtils.getAllSuperclasses(customLauncher);
-                    boolean isAssignable = superClasses != null && !superClasses.isEmpty();
-
+                    boolean isAssignable = false;
                     if (superClasses != null) {
                         for (Class<?> superClass : superClasses) {
                             if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {
