@@ -41,17 +41,10 @@ import java.util.stream.Collectors;
  * @author kameshs
  */
 @Mojo(name = "start", threadSafe = true,
-        requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
+    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
 public class StartMojo extends AbstractRunMojo {
-
-    /**
-     * this control how long the process should to start, if the process does not start within the time, its deemed as
-     * failed, the default value is 10 seconds
-     */
-    @Parameter(alias = "timeout", property = "vertx.start.timeout", defaultValue = "10")
-    protected int timeout;
 
     /**
      * this parameter is used to decide which mode the application should be started, it can have two values
@@ -166,17 +159,6 @@ public class StartMojo extends AbstractRunMojo {
 
         run(argsList);
 
-    }
-
-    /**
-     * This will retrieve the attached artifact with classifier &quot;vertx&quot;
-     *
-     * @return - the {@link Artifact} which attached to the project with classifier &quot;vertx&quot;
-     */
-    private Optional<Artifact> getVertxArtifact() {
-        return this.project.getAttachedArtifacts().stream()
-                .filter(artifact -> "vertx".equals(artifact.getClassifier()))
-                .findFirst();
     }
 
     /**
