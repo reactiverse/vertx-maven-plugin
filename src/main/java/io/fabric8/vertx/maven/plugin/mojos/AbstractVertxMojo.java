@@ -20,12 +20,16 @@ package io.fabric8.vertx.maven.plugin.mojos;
 import io.fabric8.vertx.maven.plugin.utils.WebJars;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.lifecycle.LifecycleExecutor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.ArtifactRepository;
@@ -33,6 +37,8 @@ import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +51,7 @@ import java.util.stream.Collectors;
 /**
  * The base Mojo class that will be extended by the other plugin goals
  */
-public abstract class AbstractVertxMojo extends AbstractMojo {
+public abstract class AbstractVertxMojo extends AbstractMojo implements Contextualizable {
 
     /**
      * The vert.x Core Launcher class
@@ -158,6 +164,12 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     @Component
     protected RepositorySystem repositorySystem;
 
+    /**
+     * The component used to execute the second Maven execution.
+     */
+    @Component
+    protected LifecycleExecutor lifecycleExecutor;
+
     /* ==== Config ====  */
     // TODO-ROL: It would be awesome if this would not be required but, if not given,
     // the plugin tries to detect a single verticle. Maybe even decorated with a specific annotation ?
@@ -176,6 +188,8 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
     @Parameter(defaultValue = "io.vertx.core.Launcher", property = "vertx.launcher")
     protected String launcher;
 
+    protected PlexusContainer container;
+
     public MavenProject getProject() {
         return project;
     }
@@ -192,7 +206,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
         try {
             ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
             if (artifactResult.isResolved()) {
-                getLog().info("Resolved :" + artifactResult.getArtifact().getArtifactId());
+                getLog().debug("Resolved :" + artifactResult.getArtifact().getArtifactId());
                 return Optional.of(artifactResult.getArtifact().getFile());
             } else {
                 getLog().error("Unable to resolve:" + artifact);
@@ -268,6 +282,16 @@ public abstract class AbstractVertxMojo extends AbstractMojo {
             return Optional.ofNullable(artifact.getFile());
         }
         return Optional.empty();
+    }
+
+    /**
+     * Retrieves the Plexus container.
+     * @param context the context
+     * @throws ContextException if the container cannot be retrieved.
+     */
+    @Override
+    public void contextualize(Context context) throws ContextException {
+        container = (PlexusContainer) context.get(PlexusConstants.PLEXUS_KEY);
     }
 
 }
