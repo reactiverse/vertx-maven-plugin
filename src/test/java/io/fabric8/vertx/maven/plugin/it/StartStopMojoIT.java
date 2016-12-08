@@ -1,9 +1,8 @@
 package io.fabric8.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableMap;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
@@ -13,6 +12,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -79,10 +79,15 @@ public class StartStopMojoIT {
 
     @After
     public void waitForStop() {
+        try {
+            runStop(verifier);
+        } catch (VerificationException | IOException e) {
+            e.printStackTrace();
+        }
         verifier.resetStreams();
         await().atMost(1, TimeUnit.MINUTES).until(() -> {
             try {
-                RestAssured.get("http://localhost:8080").asString();
+                String resp = get();
                 return false;
             } catch (Exception e) {
                 return true;
@@ -105,8 +110,6 @@ public class StartStopMojoIT {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("123 hello");
-
-        runStop(verifier);
     }
 
     @Test
@@ -123,8 +126,6 @@ public class StartStopMojoIT {
         runStart(verifier);
         String response = getHttpResponse();
         assertThat(response).isEqualTo("bonjour");
-
-        runStop(verifier);
     }
 
     private void prepareProject(File testDir, Verifier verifier) throws IOException {
@@ -148,8 +149,6 @@ public class StartStopMojoIT {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("hello");
-
-        runStop(verifier);
     }
 
     @Test
@@ -167,8 +166,6 @@ public class StartStopMojoIT {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("guten tag");
-
-        runStop(verifier);
     }
 
     @Test
@@ -186,8 +183,6 @@ public class StartStopMojoIT {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
-
-        runStop(verifier);
     }
 
     @Test
@@ -206,7 +201,6 @@ public class StartStopMojoIT {
         String response = getHttpResponse();
         assertThat(response).isEqualTo("Hello Vert.x");
 
-        runStop(verifier);
     }
 
     private void runStart(Verifier verifier) throws VerificationException, IOException {
@@ -221,12 +215,9 @@ public class StartStopMojoIT {
         AtomicReference<String> resp = new AtomicReference<>();
         await().atMost(1, TimeUnit.MINUTES).until(() -> {
             try {
-                Response response = RestAssured.get("http://localhost:8080").andReturn();
-                if (response.statusCode() == 200) {
-                    resp.set(response.asString());
-                    return true;
-                }
-                return false;
+                String content = get();
+                resp.set(content);
+                return true;
             } catch (Exception e) {
                 return false;
             }
@@ -257,8 +248,6 @@ public class StartStopMojoIT {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("Hello !");
-
-        runStop(verifier);
     }
 
     private void runPackage(Verifier verifier) throws VerificationException, IOException {
@@ -303,6 +292,11 @@ public class StartStopMojoIT {
             throw new RuntimeException("Cannot copy project resources", e);
         }
         return out;
+    }
+
+    public String get() throws IOException {
+        URL url = new URL("http://localhost:8080");
+        return IOUtils.toString(url, "UTF-8");
     }
 
 }
