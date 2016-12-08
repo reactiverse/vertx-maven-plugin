@@ -95,6 +95,7 @@ public class PackageMojo extends AbstractVertxMojo {
         Optional<File> primaryArtifactFile = getArtifactFile(artifact);
 
         if (!primaryArtifactFile.isPresent() || !primaryArtifactFile.get().exists()) {
+            // TODO this need to be tested
             mojoUtils.withLog(getLog()).buildPrimaryArtifact(this.project, this.mavenSession, this.buildPluginManager);
         }
 

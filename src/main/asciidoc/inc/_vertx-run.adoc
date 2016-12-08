@@ -1,15 +1,26 @@
 [[vertx:run]]
 == *vertx:run*
-This goal allows to run the vert.x application as part of the maven build.
-The application is always run the vert.x application as a forked process.
+This goal allows to run the Vert.x application as part of the maven build.
+The application is always run as a forked process.
 
 The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
 defines all the applicable configurations for the goal
 
-=== How to add this goal my maven project ?
+[cols="1,5,2,3"]
+|===
+| Element | Description | Property| Default
 
-You can see **<<run-goal-examples,Examples>>** on how to to add the start goal to
-your maven project
+| redeploy
+| Whether or not the redeployment is enabled
+| &nbsp;
+| false
 
+| config
+| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
+run.
+| &nbsp;
+| src/main/config/application.json or src/main/config/application.yml
+|===
 
-NOTE: Currently redeploy pattern is added, but redeploy compilation is work in progress
+When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
+_process-classes_ phases.

@@ -15,8 +15,19 @@
  *   permissions and limitations under the License.
  */
 
-String base = basedir
-def file = new File(base, "build.log")
-assert file.exists()
-assert file.text.contains("Starting vert.x application...")
-assert file.text.contains("Stopping vert.x application")
+package org.vertx.demo;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+
+/**
+ * @author kameshs
+ */
+public class SimpleVerticle extends AbstractVerticle {
+    @Override
+    public void start() throws Exception {
+        vertx.createHttpServer()
+                .requestHandler(req -> req.response().end("Hello World!"))
+                .listen(8080);
+    }
+}

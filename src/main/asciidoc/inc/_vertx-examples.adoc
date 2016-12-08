@@ -3,222 +3,194 @@
 
 The following sections shows example plugin snippets for the goals provided by the plugin.
 
-NOTE: please update the plugin version as needed
+NOTE: please update the plugin version as needed (latest is **{version}**).
 
 [[package-goal-examples]]
 == vert.x:package Examples
 
+This is the default configuration. It builds the fat jar in the _package_ phase, and support `.js`
+ and webjars dependencies. `mvn compile vertx:run` enables the redeployment.
+
 [source,xml]
----
+----
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
         <execution>
-            <phase>package</phase>
+            <id>vmp</id>
             <goals>
+                <goal>initialize</goal>
                 <goal>package</goal>
             </goals>
         </execution>
     </executions>
+    <configuration>
+        <redeploy>true</redeploy>
+    </configuration>
 </plugin>
----
+----
 
-[[package-goal-serviceRelocator-examples]]
-=== package goal with vert.x serviceRelocator
+=== Webjars and javascript dependencies
+
+When the _js_ dependencies and the webjars are handled, it stripped the version by default. Let's illustrate this
+with the following dependencies:
+
 [source,xml]
----
+----
+<dependency>
+    <groupId>io.vertx</groupId>
+    <artifactId>vertx-web</artifactId>
+    <version>3.3.3</version>
+    <classifier>client</classifier>
+    <type>js</type>
+</dependency>
+<dependency>
+    <groupId>org.webjars</groupId>
+    <artifactId>jquery</artifactId>
+    <version>3.1.1</version>
+</dependency>
+----
+
+The first dependency is a `js` dependency (`<type>js</type>`). The plugins resolves the dependency and copy the file
+to the `webroot` directory (the default is `${project.baseDir}/target/classes/webroot`). The output file name is:
+`vertx-web-client.js`.
+
+The second dependency is a webjar. A http://www.webjars.org/[webjar] is a jar file containing web resources. The
+plugin extracts the web resource to the `webroot` directory. In this example, it creates: `${project
+.baseDir}/target/classes/webroot/jquery/jquery.js` (and other includes resources).
+
+=== Using full names for webjars and javascript dependencies
+
+By default the plugin stripped the version. However this behavior can be disabled using:
+
+[source,xml]
+----
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
         <execution>
-            <phase>package</phase>
+            <id>vmp</id>
             <goals>
+                <goal>initialize</goal>
                 <goal>package</goal>
             </goals>
-            <configuration>
-               <serviceProviderCombination>combine</serviceProviderCombination><!--1-->
-            </configuration>
         </execution>
     </executions>
+    <configuration>
+        <redeploy>true</redeploy>
+        <stripWebJarVersion>false</stripWebJarVersion>
+        <stripJavaScriptDependencyVersion>false</stripJavaScriptDependencyVersion>
+    </configuration>
 </plugin>
----
+----
 
-<1> enabling services relocation in combine mode
+In this case, the `vertx-web-client.js` output file is: `vertx-web-3.3.3-client.js`, while for jquery, resources are
+unpacked in `${project.baseDir}/target/classes/webroot/jquery/3.1.1`. You can always look into the
+`target/classes/webroot` directory to check the output files.
 
-[[run-goal-examples]]
-== vert.x:run Examples
+Finally, you can also configure the `webRoot` dir:
 
 [source,xml]
----
+----
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
         <execution>
-            <phase>package</phase>
+            <id>vmp</id>
             <goals>
-                <goal>run</goal>
+                <goal>initialize</goal>
+                <goal>package</goal>
             </goals>
         </execution>
     </executions>
+    <configuration>
+        <webRoot>target/classes/assets</webRoot>
+        <redeploy>true</redeploy>
+    </configuration>
 </plugin>
----
+----
 
-[[run-with-redeploy-default]]
-=== run goal with vert.x redeploy enabled
-[source,xml]
----
-<plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
-    <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>run</goal>
-            </goals>
-            <configuration>
-               <redeploy>true</redeploy><!--1-->
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
----
-
-<1> enabling vert.x redeploy
-
-[[run-with-redeploy-default]]
-=== run goal with vert.x redeploy enabled with custom pattern
-[source,xml]
----
-<plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
-    <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>run</goal>
-            </goals>
-            <configuration>
-               <redeploy>true</redeploy><!--1-->
-               <redeployPatterns> <!--2-->
-                  <redeployPattern>src/main/java/*.java</redeployPattern>
-                  <redeployPattern>src/resources/webroot/*.html</redeployPattern>
-               </redeployPatterns>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
----
-
-<1> enabling vert.x redeploy
-<2> patterns that will be watched for changes and trigger redeploy
+Notice that the `webRoot` directory is relative to the project directory.
 
 [[start-goal-examples]]
 == vert.x:start Examples
 
-=== start goal with defaults
+You can start your application in background using: `mvn clean package vertx:start`. The application is started in
+background. An id is automatically associated with the process. This id can be specified:
+
+[source,sh]
+----
+mvn clean package vertx:start -Dvertx.app.id=my-vertx-app
+----
+
+This id is useful to stop the application:
+
+[source,sh]
+----
+mvn vertx:stop -Dvertx.app.id=my-vertx-app
+----
+
+The application id can be set in the `pom.xml` file:
 
 [source,xml]
 ---
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
         <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>start</goal>
-            </goals>
+          <phase>initialize</phase>
+          <phase>package</phase>
         </execution>
     </executions>
+    <configuration>
+        <appId>my-app-id</appId>
+    </configuration>
 </plugin>
 ---
-
-[[start-with-app-id]]
-=== start goal with custom application id
-
-[source,xml]
----
-<plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
-    <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>start</goal>
-            </goals>
-            <configuration>
-               <appId>my-app-id</appId> <!--1-->
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
----
-
-<1> Custom unique application id
 
 [[start-with-java-opts]]
 === start goal with custom java options
 
+Because it's a forked process, passing Java options needs to be done explicitly using a specific property:
+
 [source,xml]
 ---
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>start</goal>
-            </goals>
-            <configuration>
-               <jvmArgs> <!--1-->
-                  <jvmArg>-Xms512m</jvmArg>
-                  <jvmArg>-Xmx1024m</jvmArg>
-               <jvmArgs>
-            </configuration>
-        </execution>
+      <execution>
+          <phase>initialize</phase>
+          <phase>package</phase>
+      </execution>
     </executions>
+    <configuration>
+       <jvmArgs> <!--1-->
+          <jvmArg>-Xms512m</jvmArg>
+          <jvmArg>-Xmx1024m</jvmArg>
+       </jvmArgs>
+    </configuration>
 </plugin>
 ---
-
 <1> The jvm arguments that gets passed as `--java-opts` to the vert.x application
 
-[[stop-goal-examples]]
-== vert.x:stop Examples
+You can also pass these parameters in the command line:
 
-=== stop with no additional configuration
-[source,xml]
----
-<plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
-    <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>stop</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
----
+[source]
+----
+mvn clean package vertx:start -Dvertx.jvmArguments=-Xms512m -D-Dfoo=far
+----
 
-=== stopping one or more application
+=== stopping one or more applications
 
 When you have configured to <<start-with-app-id>> or know the application ids, then you can add list
 of application ids as shown below to trigger stop of the those applications
@@ -226,9 +198,9 @@ of application ids as shown below to trigger stop of the those applications
 [source,xml]
 ---
 <plugin>
-    <groupId>org.workspace7.maven.plugins</groupId>
+    <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${version}</version>
     <executions>
         <execution>
             <phase>package</phase>
@@ -245,5 +217,12 @@ of application ids as shown below to trigger stop of the those applications
     </executions>
 </plugin>
 ---
-
 <1> List of custom unique application ids
+
+= How does the redeploy work
+
+During the _initialize_ phase, the plugin start observing the mojos (Maven plugins) that are executed. When the Vert.x application is launched, it watches for changed in `src/main`. When a file is changed (created, updated or deleted), it replays the executed mojos. It executes all the mojos from the _generate-sources_ to the _process-classes_ phases, using the same configuration are the initial (observed) one.
+
+When these mojos are executed, they may update files in `target/classes`. The Vert.x application has been launched to observes changed from this location and restart when change happens. The application is restarted completely, _i.e._ stopped and restarted.
+
+Such mechanism let you use any Maven plugin (executed in the right set of phase). The plugin is re-executed and then the Vert.x application is restarted.

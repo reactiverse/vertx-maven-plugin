@@ -1,16 +1,66 @@
 
 = Introduction
 
-This is a Maven plugin for packaging and running http://vertx.io/[vert.x] applications. The plugin tries to add some
-intelligence to build in adding some common options automatically based on conventions, for an example
-if you add file called __application.json or application.yml or application.yml__ in your src/main/conf folder of the maven sources, the file gets automatically
-added as vertx *-conf* option during **<<vertx:package>>** or **<<vertx:start>>** goals.
+http://vertx.io/[Eclipse Vert.x] is a toolkit to build reactive and distributed systems on the top of the JVM. Vert.x
+applications can be  developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby...
+ As a toolkit, Vert.x is un-opinionated.
+
+The maven-vertx-plugin is a plugin for Apache Maven for packaging and running Vert.x applications. The plugin tries
+provide an opinionated way to build Vert.x application:
+
+* applications are packaged as a _fat_ jar (containing your code and all the dependencies including Vert.x)
+* the application is configured  with an `application.json` file or an `application.yml` file (translated to json).
+
+The last version of the Vert.x Maven Plugin is **{version}**.
+
+== Using the plugin
+
+The plugin provides a set of goals such as:
+
+* setup - add the Vert.x Maven Plugin to your `pom.xml`
+* initialize - manage _js_ dependencies and _webjars_, also initiates the redeployment
+* package - package your Vert.x application as a _fat_ jar
+* run - run your application
+* start / stop - start your application in background / stop it
+
+Generally, you will use the following configuration:
+
+[source,xml]
+----
+<project>
+  ...
+  <build>
+    <plugins>
+        ...
+        <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>vertx-maven-plugin</artifactId>
+            <version>${version}</version>
+            <executions>
+                <execution>
+                    <id>vmp</id>
+                    <goals>
+                        <goal>initialize</goal>
+                        <goal>package</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <redeploy>true</redeploy>
+            </configuration>
+        </plugin>
+        ...
+    </plugins>
+  </build>
+  ...
+</project>
+----
 
 == Packaging
 
-The vert.x application needs to be packaged as fat or uber jar, which can then be executed
-using `java -jar <my-app-fat.jar>`.  The packaging also need to add certain *MANIFEST.MF* entires
-that controls the vert.x application launching.  The plugin takes care of adding the required entries
+This plugin packaged the Vert.x application as a fat or über jar. These jars are executable, and so can be launched
+using: `java -jar <my-app.jar>`.  The packaging process adds certain *MANIFEST.MF* entries that control how the
+application is launched.  The plugin takes care of adding the required entries
 to the *MANIFEST.MF* with values configured using the **<<common:configurations,Common Configuration>>**
 
 The following are the Manifest entries that will be added based on the configuration elements:
@@ -22,15 +72,14 @@ The following are the Manifest entries that will be added based on the configura
 
 | vertx.verticle
 | Main-Verticle
-|
+| The main verticle, _i.e._ the entry point of your application. Used when the `Main-Class` is `io.vertx.core.Launcher`.
+
 | vertx.launcher
-| Main-class
-| If custom launcher is used the Main-Class is always defaulted to `io.vertx.core.Launcher`
+| Main-Class
+| The main class used to start the application, defaults to `io.vertx.core.Launcher`
 |===
 
-To package the project as vert.x application, execute the following maven command
-
-`mvn clean package vertx:package`
+The package is generated using:  `mvn clean package`
 
 For more information on packaging refer to **<<vertx:package,vertx:package>>**
 
@@ -42,17 +91,19 @@ The plugin allows running vert.x applications in following ways:
 
 :description:
 
-The vert.x application could also be run without building building the fat jars, typically during the
+The Vert.x application could also be run without building the fat jars, typically during the
 development mode.  The **<<vertx:run,vertx:run>>** goal helps in running the application. The
 application will be run in as forked process with additional configurations based on the goals.
 
 To run the application vert.x application in foreground, execute the following maven command
 
-`mvn clean install vertx:run`
+`mvn clean compile vertx:run`
+
+You can enable the _edeploy_ mode rebuilding and restarting the application upon file changes.
 
 For more information on configuration options refer to  **<<vertx:run,vertx:run>>**
 
-=== As a daemon using **<<vertx:start,vertx:start>>**
+=== In background using **<<vertx:start,vertx:start>>**
 
 :description:
 

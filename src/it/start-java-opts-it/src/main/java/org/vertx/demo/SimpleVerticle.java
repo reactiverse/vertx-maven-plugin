@@ -26,8 +26,10 @@ import io.vertx.core.Future;
 public class SimpleVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
+        String sys = System.getProperty("sys");
+        String sys2 = System.getProperty("sys2");
         vertx.createHttpServer()
-                .requestHandler(req -> req.response().end("Hello World!"))
+                .requestHandler(req -> req.response().end(sys + " " + sys2))
                 .listen(8080);
     }
 }

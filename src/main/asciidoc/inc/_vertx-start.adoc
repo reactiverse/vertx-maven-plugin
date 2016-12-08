@@ -1,7 +1,7 @@
 
 [[vertx:start]]
 == *vertx:start*
-This goal allows to start the vert.x application as a background process from maven build. This goal triggers the vert.x
+This goal allows to start the Vert.x application as a background process from maven build. This goal triggers the vert.x
 `start` command, passing the configuration values as mentioned below.
 
 .Run configuration
@@ -9,10 +9,6 @@ This goal allows to start the vert.x application as a background process from ma
 |===
 | Element | Description | Property| Default
 
-| timeout
-| The time in seconds that will be used to check if the application has started
-| vertx.start.timeout
-| 10
 | startMode
 | The property to decide how the vert.x application will be started in background.  The application can be started in
 *jar* mode in which the application will be packaged as fat jar and started, or can be run in *exploded* mode where the
@@ -35,11 +31,4 @@ Apart from the above list of exclusive start configuration, the goal shares the 
 ignored by the goal,
 
 * redeploy
-* redeployPatterns
-* classesDirectory - if run in jar mode
 * fork - by default every start is a forked process
-
-=== How to add this goal my maven project ?
-
-You can see **<<start-goal-examples,Examples>>** on how to to add the start goal to
-your maven project

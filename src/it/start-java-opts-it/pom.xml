@@ -46,13 +46,15 @@
                     <execution>
                         <phase>package</phase>
                         <goals>
+                            <goal>package</goal>
                             <goal>start</goal>
                             <goal>stop</goal>
                         </goals>
                         <configuration>
                             <jvmArgs>
                                 <jvmArg>-Xms1024m</jvmArg>
-                                <jvmArg>-Xmx1024m</jvmArg>
+                                <jvmArg>-Dsys=123</jvmArg>
+                                <jvmArg>-Dsys2=hello</jvmArg>
                             </jvmArgs>
                         </configuration>
                     </execution>

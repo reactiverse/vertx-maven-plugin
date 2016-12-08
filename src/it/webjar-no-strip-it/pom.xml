@@ -51,7 +51,7 @@
                         <configuration>
                             <webRoot>target/classes/assets</webRoot>
                             <stripWebJarVersion>false</stripWebJarVersion>
-                            <stripJavaScriptDepdendencyVersion>false</stripJavaScriptDepdendencyVersion>
+                            <stripJavaScriptDependencyVersion>false</stripJavaScriptDependencyVersion>
                         </configuration>
                     </execution>
                 </executions>

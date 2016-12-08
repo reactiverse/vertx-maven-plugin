@@ -2,8 +2,7 @@
 [[vertx:package]]
 == *vertx:package*
 
-This goal will package a vert.x application as fat or uber jar with its dependencies bundled
-as part of the jar
+This goal packages a Vert.x application as fat or über jar with its dependencies bundled as part of the jar.
 
 [[package-configuration]]
 === Configuration
@@ -18,12 +17,12 @@ The package goal has the following parameters apart from the ones mentioned in
 | Element | Description | Property| Default
 
 | serviceProviderCombination
-| The Service Provider combining mode that need to be used, you can either specify `combine` or `none`
+| Whether or not SPI files (`META-INF/services`) need to be be combined. Accepted valued as `combine` and `none`.
 | &nbsp;
 | combine
+
+| classifier
+| The classifier to use to for the _fat_ jar. By default, it uses the main artifact name.
+| &nbsp;
+| &nbsp;
 |===
-
-=== How to add this goal my maven project ?
-
-You can see **<<package-goal-examples,Examples>>** on how to to add the start goal to
- your maven project

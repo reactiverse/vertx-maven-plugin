@@ -55,7 +55,7 @@ public class InitializeMojo extends AbstractVertxMojo {
     private boolean stripWebJarVersion;
 
     @Parameter(defaultValue = "true")
-    private boolean stripJavaScriptDepdendencyVersion;
+    private boolean stripJavaScriptDependencyVersion;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -74,8 +74,7 @@ public class InitializeMojo extends AbstractVertxMojo {
 
         // Start the spy
         MavenExecutionRequest request = session.getRequest();
-        ExecutionListener listener = request.getExecutionListener();
-        request.setExecutionListener(new MojoSpy(listener, getLog()));
+        MojoSpy.init(request);
     }
 
     private void unpackWebjars(Set<Artifact> dependencies) throws MojoExecutionException {
@@ -114,7 +113,7 @@ public class InitializeMojo extends AbstractVertxMojo {
                 Optional<File> file = getArtifactFile(artifact);
                 if (file.isPresent()) {
                     try {
-                        if (stripJavaScriptDepdendencyVersion) {
+                        if (stripJavaScriptDependencyVersion) {
                             String name = artifact.getArtifactId();
                             if (artifact.getClassifier() != null) {
                                 name += "-" + artifact.getClassifier();

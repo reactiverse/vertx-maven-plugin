@@ -17,21 +17,20 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
-import org.apache.maven.artifact.Artifact;
+import io.fabric8.vertx.maven.plugin.utils.MavenExecutionUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,17 +41,10 @@ import java.util.stream.Collectors;
  * @author kameshs
  */
 @Mojo(name = "start", threadSafe = true,
-        requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
+    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
 public class StartMojo extends AbstractRunMojo {
-
-    /**
-     * this control how long the process should to start, if the process does not start within the time, its deemed as
-     * failed, the default value is 10 seconds
-     */
-    @Parameter(alias = "timeout", property = "vertx.start.timeout", defaultValue = "10")
-    protected int timeout;
 
     /**
      * this parameter is used to decide which mode the application should be started, it can have two values
@@ -76,7 +68,11 @@ public class StartMojo extends AbstractRunMojo {
     @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
     protected List<String> jvmArgs;
 
-    private MojoUtils mojoUtils = new MojoUtils();
+    /**
+     * The artifact classifier. If not set, the plugin uses the default final name.
+     */
+    @Parameter(name = "classifier")
+    protected String classifier;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -98,75 +94,71 @@ public class StartMojo extends AbstractRunMojo {
             Files.write(Paths.get(workDirectory.toString(), VERTX_PID_FILE), vertxProcId.getBytes());
 
         } catch (IOException e) {
-            throw new MojoExecutionException("Unable to write process file to directory :" + workDirectory.toString());
+            throw new MojoExecutionException("Unable to write process file to directory :"
+                + workDirectory.toString());
         }
 
         boolean jarMode = VERTX_RUN_MODE_JAR.equals(runMode);
 
         if (jarMode) {
+            String name = PackageMojo.computeOutputName(project, classifier);
+            File fatjar = new File(project.getBuild().getDirectory(), name);
 
-            Optional<Artifact> vertxJar = getVertxArtifact();
-
-            if (!vertxJar.isPresent()) {
-                getLog().info("Vertx application jar not found, building ...");
-                mojoUtils.withLog(getLog()).buildVertxArtifact(this.project, this.mavenSession
-                        , this.buildPluginManager);
+            if (! fatjar.isFile()) {
+                getLog().warn("Unable to find the Vert.x application jar, triggering the build");
+                MavenExecutionUtils.execute("package", project, mavenSession, lifecycleExecutor, container);
             }
 
-            //Double check it
-            vertxJar = getVertxArtifact();
-
-            if (vertxJar.isPresent()) {
+            if (fatjar.isFile()  && launcher.equals(IO_VERTX_CORE_LAUNCHER)) {
                 argsList.add("-jar");
-                argsList.add(vertxJar.get().getFile().toString());
+                argsList.add(fatjar.getAbsolutePath());
+            } else if (fatjar.isFile()  && ! launcher.equals(IO_VERTX_CORE_LAUNCHER)) {
+                argsList.add("-cp");
+                argsList.add(fatjar.getAbsolutePath());
+                argsList.add(IO_VERTX_CORE_LAUNCHER);
             } else {
                 throw new MojoFailureException("Unable to find vertx application jar --> "
-                        + this.project.getArtifactId() + "-fat.jar");
+                    + fatjar.getAbsolutePath());
             }
         } else {
             addClasspath(argsList);
+            argsList.add(IO_VERTX_CORE_LAUNCHER);
         }
 
-        if (isVertxLauncher(launcher)) {
-            addVertxArgs(argsList);
-        } else {
+        argsList.add(vertxCommand);
+
+
+        if (! jarMode) {
+            // The run command should not be required when using Vert.x 3.4.x+
+            argsList.add("run");
+            argsList.add(verticle);
+        }
+
+        if (config != null && config.exists() && config.isFile()) {
+            getLog().info("Using configuration from file: " + config.toString());
+            argsList.add(VERTX_ARG_CONF);
+            argsList.add(config.toString());
+        }
+
+        argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
+        if (launcher != null) {
             argsList.add(launcher);
+        } else {
+            argsList.add(IO_VERTX_CORE_LAUNCHER);
         }
 
-        ArrayList<String> removebaleArgs = new ArrayList<>();
-        removebaleArgs.add(verticle);
-        removebaleArgs.add(launcher);
-        removebaleArgs.add(launcher);
-        removebaleArgs.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
-
-        if (jarMode) {
-            argsList.removeAll(removebaleArgs);
-        }
         argsList.add("-id");
         argsList.add(vertxProcId);
 
         if (jvmArgs != null && !jvmArgs.isEmpty()) {
             String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
             String argJavaOpts = VERTX_ARG_JAVA_OPT +
-                "=\"" +
-                javaOpts +
-                "\"";
+                "=" + javaOpts;
             argsList.add(argJavaOpts);
         }
 
         run(argsList);
 
-    }
-
-    /**
-     * This will retrieve the attached artifact with classifier &quot;vertx&quot;
-     *
-     * @return - the {@link Artifact} which attached to the project with classifier &quot;vertx&quot;
-     */
-    private Optional<Artifact> getVertxArtifact() {
-        return this.project.getAttachedArtifacts().stream()
-                .filter(artifact -> "vertx".equals(artifact.getClassifier()))
-                .findFirst();
     }
 
     /**

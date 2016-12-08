@@ -1,0 +1,12 @@
+[[vertx:setup]]
+== *vertx:setup*
+
+This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is configured with a default configuration.
+
+=== Example
+
+[source,subs="attributes"]
+----
+mvn io.fabric8:vertx-maven-plugin:{version}:setup
+----
+

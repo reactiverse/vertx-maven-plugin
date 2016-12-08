@@ -1,10 +1,10 @@
-= vert.x Maven Plugin
+= Vert.x Maven Plugin
 Kamesh Sampath, Roland Huß, Clement Escoffier;
 :revnumber: {version}
 :revdate: {localdate}
 :toc: macro
 :toclevels: 3
-:toc-title: Vert.X Maven Plugin
+:toc-title: Vert.x Maven Plugin
 :doctype: book
 :icons: font
 
@@ -21,6 +21,8 @@ include::inc/_introduction.adoc[]
 include::inc/_configurations-index.adoc[toc::[]]
 
 include::inc/_goals.adoc[]
+include::inc/_vertx-setup.adoc[]
+include::inc/_vertx-initialize.adoc[]
 include::inc/_vertx-package.adoc[]
 include::inc/_vertx-run.adoc[]
 include::inc/_vertx-start.adoc[]

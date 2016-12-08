@@ -60,14 +60,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     protected boolean redeploy;
 
     /**
-     * The redeployPatterns that will be used to trigger redeployment of the vertx application.
-     * If this this not provided and redeploy is &quot;true&quot; then default value of "src/**\/*" will be
-     * used as a redeployment pattern
-     */
-    @Parameter(name = "redeployPatterns")
-    protected List<String> redeployPatterns;
-
-    /**
      * The default command to use when calling io.vertx.core.Launcher.
      * possible commands are,
      * <ul>
@@ -104,10 +96,20 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         boolean isVertxLauncher = isVertxLauncher(launcher);
 
-        getLog().info("Launching vert.x Application");
+        getLog().info("Launching Vert.x Application");
 
         if (isVertxLauncher) {
             addVertxArgs(argsList);
+        } else if (redeploy) {
+            getLog().info("Vert.x application redeploy enabled");
+            argsList.add(IO_VERTX_CORE_LAUNCHER);
+            argsList.add("run");
+            StringBuilder redeployArg = new StringBuilder();
+            redeployArg.append(VERTX_ARG_REDEPLOY); //fix for redeploy to work
+            computeOutputDirsWildcard(redeployArg);
+            argsList.add(redeployArg.toString());
+            argsList.add(VERTX_ARG_LAUNCHER_CLASS);
+            argsList.add(launcher);
         } else {
             argsList.add(launcher);
         }
@@ -226,7 +228,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @throws MojoExecutionException - any error that might occur while checking
      */
     protected boolean isVertxLauncher(String launcher) throws MojoExecutionException {
-
         if (launcher != null) {
             if (IO_VERTX_CORE_LAUNCHER.equals(launcher)) {
                 return true;
@@ -234,8 +235,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 try {
                     Class customLauncher = buildClassLoader(getClassPathUrls()).loadClass(launcher);
                     List<Class<?>> superClasses = ClassUtils.getAllSuperclasses(customLauncher);
-                    boolean isAssignable = superClasses != null && !superClasses.isEmpty();
-
+                    boolean isAssignable = false;
                     if (superClasses != null) {
                         for (Class<?> superClass : superClasses) {
                             if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {

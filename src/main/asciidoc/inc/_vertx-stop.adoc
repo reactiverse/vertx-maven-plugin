@@ -9,10 +9,6 @@ This goal allows to stop the vert.x application running as background process fr
 |===
 | Element | Description | Property| Default
 
-| timeout
-| The time in seconds that will be used to check if the application has stopped
-| vertx.stop.timeout
-| 10
 | appIds
 | The application id's that will stopped using the vert.x stop command
 |
@@ -25,11 +21,4 @@ Apart from the above list of exclusive start configuration, the goal shares the 
 ignored by the goal,
 
 * redeploy
-* redeployPatterns
 * fork - by default every stop is a forked process
-
-
-=== How to add this goal my maven project ?
-
-You can see **<<stop-goal-examples,Examples>>** on how to to add the start goal to
-your maven project

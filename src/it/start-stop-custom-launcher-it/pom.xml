@@ -52,6 +52,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <launcher>org.vertx.demo.Main</launcher>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -46,12 +46,14 @@
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>package</goal>
                             <goal>start</goal>
                             <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <mode>exploded</mode>
+                </configuration>
             </plugin>
         </plugins>
     </build>
