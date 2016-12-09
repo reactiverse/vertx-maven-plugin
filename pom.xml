@@ -80,6 +80,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Current plugin version -->
+        <fabric8.vertx.plugin.version>${project.version}</fabric8.vertx.plugin.version>
+
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
+        <!-- Plugin versions -->
         <maven-invoker-plugin.version>2.0.0</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-plugin-api.version>3.2.5</maven-plugin-api.version>
@@ -88,25 +97,34 @@
         <asciidoctor-maven-plugin.version>1.5.3</asciidoctor-maven-plugin.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
         <asciidoctorj-pdf.version>1.5.0-alpha.11</asciidoctorj-pdf.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+
+
+        <!-- Compile dependency versions -->
         <plexus-utils.version>3.0.24</plexus-utils.version>
-        <junit.version>4.8.2</junit.version>
         <aether-util.version>1.0.0.v20140518</aether-util.version>
         <maven-aether-provider.version>3.2.5</maven-aether-provider.version>
-
-        <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-
-        <commons-io.version>2.5</commons-io.version>
-        <vertx-core.version>3.3.3</vertx-core.version>
-        <fabric8.vertx.plugin.version>${project.version}</fabric8.vertx.plugin.version>
-        <skipTests>false</skipTests>
-        <assertj-core.version>3.4.1</assertj-core.version>
-        <commons-lang3.version>3.4</commons-lang3.version>
+        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
-        <snakeyaml.version>1.17</snakeyaml.version>
+        <commons-io.version>2.5</commons-io.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
         <mojo-executor.version>2.2.0</mojo-executor.version>
+        <snakeyaml.version>1.17</snakeyaml.version>
+        <org.json.version>20160212</org.json.version>
+        <guava.version>19.0</guava.version>
+        <shrinkwrap.version>1.2.6</shrinkwrap.version>
+
+        <!-- Test dependency versions -->
+        <vertx-core.version>3.3.3</vertx-core.version>
+        <assertj-core.version>3.4.1</assertj-core.version>
+        <junit.version>4.8.2</junit.version>
         <mockito-all.version>1.10.19</mockito-all.version>
+        <maven-verifier.version>1.6</maven-verifier.version>
+        <awaitility.version>1.7.0</awaitility.version>
+        <maven-compat.version>3.3.9</maven-compat.version>
+        <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
+
+        <skipTests>false</skipTests>
     </properties>
 
     <dependencies>
@@ -148,12 +166,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20160212</version>
+            <version>${org.json.version}</version>
         </dependency>
 
         <!-- Mojo Utils-->
@@ -187,30 +205,30 @@
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
             <artifactId>shrinkwrap-api</artifactId>
-            <version>1.2.6</version>
+            <version>${shrinkwrap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
             <artifactId>shrinkwrap-spi</artifactId>
-            <version>1.2.6</version>
+            <version>${shrinkwrap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
             <artifactId>shrinkwrap-impl-base</artifactId>
-            <version>1.2.6</version>
+            <version>${shrinkwrap.version}</version>
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>3.3.0</version>
+            <version>${maven-plugin-testing-harness.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
-            <version>3.3.9</version>
+            <version>${maven-compat.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -235,20 +253,20 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>3.3.3</version>
+            <version>${vertx-core.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
-            <version>1.6</version>
+            <version>${maven-verifier.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>1.7.0</version>
+            <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -384,7 +402,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.19.1</version>
+                        <version>${maven-failsafe-plugin.version}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -456,7 +474,7 @@
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>1.5.3</version>
+                        <version>${asciidoctor-maven-plugin.version}</version>
                         <configuration>
                             <backend>html</backend>
                             <sourceHighlighter>highlightjs</sourceHighlighter>
@@ -476,7 +494,7 @@
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>1.5.3</version>
+                        <version>${asciidoctor-maven-plugin.version}</version>
                         <configuration>
                             <backend>pdf</backend>
                             <sourceHighlighter>rouge</sourceHighlighter>
@@ -502,7 +520,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
