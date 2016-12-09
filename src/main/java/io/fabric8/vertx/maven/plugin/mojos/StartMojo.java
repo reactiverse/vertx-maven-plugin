@@ -80,6 +80,7 @@ public class StartMojo extends AbstractRunMojo {
         vertxCommand = VERTX_COMMAND_START;
 
         String vertxProcId = getAppId();
+        scanAndLoadConfigs();
 
         List<String> argsList = new ArrayList<>();
 
