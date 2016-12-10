@@ -97,12 +97,5 @@ public class RunningVerifier extends Verifier {
             Properties envVars = CommandLineUtils.getSystemEnvVars();
             defaultMavenHome = envVars.getProperty("M2_HOME");
         }
-
-        if (defaultMavenHome == null) {
-            File f = new File(System.getProperty("user.home"), "m2");
-            if (new File(f, "bin/mvn").isFile()) {
-                defaultMavenHome = f.getAbsolutePath();
-            }
-        }
     }
 }
