@@ -50,6 +50,10 @@ public class StopMojo extends AbstractRunMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("vertx:stop skipped by configuration");
+            return;
+        }
 
         vertxCommand = VERTX_COMMAND_STOP;
 

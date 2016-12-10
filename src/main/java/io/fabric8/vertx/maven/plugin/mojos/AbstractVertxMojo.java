@@ -148,6 +148,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     @Parameter(alias = "remoteRepositories", defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
     protected List<ArtifactRepository> remoteRepositories;
 
+
     /* ==== Maven Components ==== */
     @Component
     protected MavenProjectHelper mavenProjectHelper;
@@ -187,6 +188,12 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Parameter(defaultValue = "io.vertx.core.Launcher", property = "vertx.launcher")
     protected String launcher;
+
+    /**
+     * Skip (globally) the processing made by this plugin. All mojos are impacted by this parameter.
+     */
+    @Parameter(property = "vertx.skip", defaultValue = "false")
+    protected boolean skip;
 
     protected PlexusContainer container;
 

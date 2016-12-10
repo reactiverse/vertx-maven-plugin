@@ -59,6 +59,11 @@ public class InitializeMojo extends AbstractVertxMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("vertx:initialize skipped by configuration");
+            return;
+        }
+
         // Initialize the web root directory with Vert.x web default.
         // The directory is only created on demand.
         if (webRoot == null) {
