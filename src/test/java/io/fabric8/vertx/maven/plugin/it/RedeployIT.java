@@ -2,7 +2,7 @@ package io.fabric8.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.fabric8.vertx.maven.plugin.it.invoker.ControlledVerifier;
+import io.fabric8.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class RedeployIT extends VertxMojoTestBase {
 
-    private ControlledVerifier verifier;
+    private RunningVerifier verifier;
 
     private void initVerifier(File root) throws VerificationException {
-        verifier = new ControlledVerifier(root.getAbsolutePath());
+        verifier = new RunningVerifier(root.getAbsolutePath());
         verifier.setAutoclean(false);
         verifier.setDebug(true);
         verifier.setForkJvm(true);

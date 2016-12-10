@@ -1,28 +1,31 @@
 package io.fabric8.vertx.maven.plugin.it.invoker;
 
+import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
+ * Result of {@link MavenProcessInvoker#execute(InvocationRequest)}. It keeps a reference on the created process.
+ *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class ControlledInvocationResult implements InvocationResult {
+public class MavenProcessInvocationResult implements InvocationResult {
 
     private Process process;
     private CommandLineException exception;
 
     void destroy() {
-        if (process != null  && process.isAlive()) {
+        if (process != null && process.isAlive()) {
             process.destroy();
         }
     }
 
-    ControlledInvocationResult setProcess(Process process) {
+    MavenProcessInvocationResult setProcess(Process process) {
         this.process = process;
         return this;
     }
 
-    public ControlledInvocationResult setException(CommandLineException exception) {
+    public MavenProcessInvocationResult setException(CommandLineException exception) {
         this.exception = exception;
         return this;
     }

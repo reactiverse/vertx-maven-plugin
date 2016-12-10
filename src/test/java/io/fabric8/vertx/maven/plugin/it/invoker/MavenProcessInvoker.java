@@ -9,9 +9,12 @@ import org.codehaus.plexus.util.cli.StreamPumper;
 import java.io.File;
 
 /**
+ * An implementation of {@link DefaultInvoker} launching Maven, but does not wait for the termination of the process.
+ * The launched process is passed in the {@link InvocationResult}.
+ *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class ControlledInvoker extends DefaultInvoker {
+public class MavenProcessInvoker extends DefaultInvoker {
 
     private static final InvocationOutputHandler DEFAULT_OUTPUT_HANDLER = new SystemOutHandler();
 
@@ -56,7 +59,7 @@ public class ControlledInvoker extends DefaultInvoker {
             throw new MavenInvocationException("Error configuring command-line. Reason: " + e.getMessage(), e);
         }
 
-        ControlledInvocationResult result = new ControlledInvocationResult();
+        MavenProcessInvocationResult result = new MavenProcessInvocationResult();
 
         try {
             Process process = executeCommandLine(cli, request);
@@ -76,10 +79,6 @@ public class ControlledInvoker extends DefaultInvoker {
         InvocationOutputHandler outputHandler = request.getOutputHandler(this.outputHandler);
         InvocationOutputHandler errorHandler = request.getErrorHandler(this.errorHandler);
 
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug("Executing: " + cli);
-        }
-
         return executeCommandLine(cli, outputHandler, errorHandler);
     }
 
@@ -87,20 +86,18 @@ public class ControlledInvoker extends DefaultInvoker {
     private static Process executeCommandLine(Commandline cl, StreamConsumer systemOut, StreamConsumer systemErr)
         throws CommandLineException {
         if (cl == null) {
-            throw new IllegalArgumentException("cl cannot be null.");
+            throw new IllegalArgumentException("the command line cannot be null.");
         } else {
-            System.out.println("Executing " + cl);
             final Process p = cl.execute();
             final StreamPumper outputPumper = new StreamPumper(p.getInputStream(), systemOut);
             final StreamPumper errorPumper = new StreamPumper(p.getErrorStream(), systemErr);
-
 
             outputPumper.start();
             errorPumper.start();
 
             new Thread(() -> {
-                // Wait for termination
                 try {
+                    // Wait for termination
                     p.waitFor();
                     outputPumper.waitUntilDone();
                     errorPumper.waitUntilDone();

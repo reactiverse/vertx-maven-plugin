@@ -17,15 +17,16 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Created by clement on 09/12/16.
+ * Implementation of verifier using a forked process that is still running while verifying. The process is stop when
+ * {@link RunningVerifier#stop()} is called.
  */
-public class ControlledVerifier extends Verifier {
+public class RunningVerifier extends Verifier {
 
     private String defaultMavenHome;
 
-    private ControlledInvocationResult result;
+    private MavenProcessInvocationResult result;
 
-    public ControlledVerifier(String basedir) throws VerificationException {
+    public RunningVerifier(String basedir) throws VerificationException {
         super(basedir, true);
     }
 
@@ -39,7 +40,7 @@ public class ControlledVerifier extends Verifier {
     @Override
     public void executeGoals(List<String> goals, Map<String, String> envVars) throws VerificationException {
         DefaultInvocationRequest request = new DefaultInvocationRequest();
-        ControlledInvoker invoker = new ControlledInvoker();
+        MavenProcessInvoker invoker = new MavenProcessInvoker();
 
         List<String> allGoals = new ArrayList<>();
 
@@ -70,12 +71,8 @@ public class ControlledVerifier extends Verifier {
         }
 
         try {
-//            MavenProcessLauncher launcher =
-//                new MavenProcessLauncher( defaultMavenHome, envVars, isDebugJvm() );
-
             request.setBaseDirectory(new File(getBasedir()));
             request.setPomFile(new File(getBasedir(), "pom.xml"));
-
 
             PrintStream log = new PrintStream(logFile);
             invoker.setErrorHandler(new PrintStreamHandler(log, true));
@@ -86,7 +83,7 @@ public class ControlledVerifier extends Verifier {
             invoker.setWorkingDirectory(new File(getBasedir()));
             request.setOutputHandler(new PrintStreamHandler(log, true));
 
-            result = (ControlledInvocationResult) invoker.execute(request);
+            result = (MavenProcessInvocationResult) invoker.execute(request);
         } catch (Exception e) {
             throw new VerificationException(e);
         }
