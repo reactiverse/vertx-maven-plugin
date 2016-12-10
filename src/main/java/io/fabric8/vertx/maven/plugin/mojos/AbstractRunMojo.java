@@ -89,6 +89,10 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("vertx:run skipped by configuration");
+            return;
+        }
 
         List<String> argsList = new ArrayList<>();
 

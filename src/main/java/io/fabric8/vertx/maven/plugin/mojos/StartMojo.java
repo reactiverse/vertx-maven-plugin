@@ -76,6 +76,10 @@ public class StartMojo extends AbstractRunMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("vertx:start skipped by configuration");
+            return;
+        }
 
         vertxCommand = VERTX_COMMAND_START;
 

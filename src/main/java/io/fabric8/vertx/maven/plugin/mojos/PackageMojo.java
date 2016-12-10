@@ -89,6 +89,10 @@ public class PackageMojo extends AbstractVertxMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("vertx:package skipped by configuration");
+            return;
+        }
 
         final Artifact artifact = this.project.getArtifact();
 

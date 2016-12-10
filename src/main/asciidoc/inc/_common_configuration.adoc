@@ -17,4 +17,10 @@ All goals share the following configuration:
 | Main class to use
 | `io.vertx.core.Launcher`
 | `vertx.launcher`
+
+| `skip`
+| Skip the processing executed by this plugin
+| `false`
+| `vertx.skip`
+
 |===
