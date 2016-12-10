@@ -41,6 +41,8 @@ public class JavaProcessExecutor extends JavaExecutor {
 
     protected File workingDirectory;
 
+    protected Thread watchdog;
+
     @Override
     public Optional<Process> execute() throws Exception {
 
@@ -49,15 +51,25 @@ public class JavaProcessExecutor extends JavaExecutor {
         Process process;
 
         try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Executing command :" + commandLine);
-            }
+
+            logger.debug("Executing command :" + commandLine);
 
             process = commandLine.execute();
+
+            watchdog = new Thread(() -> {
+               if (process != null  && process.isAlive()) {
+                   process.destroy();
+               }
+            });
+
+            Runtime.getRuntime().addShutdownHook(watchdog);
 
             if (waitFor) {
                 redirectOutput(process, logger);
                 process.waitFor();
+                if (! process.isAlive()) {
+                    Runtime.getRuntime().removeShutdownHook(watchdog);
+                }
             }
 
             return Optional.of(process);
@@ -109,11 +121,6 @@ public class JavaProcessExecutor extends JavaExecutor {
 
     public JavaProcessExecutor withClassPath(Collection<URL> classPathUrls) {
         this.classPathUrls = classPathUrls;
-        return this;
-    }
-
-    public JavaProcessExecutor withWorkingDirectory(File workingDirectory) {
-        this.workingDirectory = workingDirectory;
         return this;
     }
 
