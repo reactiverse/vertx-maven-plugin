@@ -44,15 +44,9 @@ public class MojoUtils {
 
     /*===  Plugin Keys ====*/
 
-    private static final String JAR_PLUGIN_KEY = "org.apache.maven.plugins:maven-jar-plugin";
     private static final String RESOURCES_PLUGIN_KEY = "org.apache.maven.plugins:maven-resources-plugin";
-    private static final String VERTX_PACKAGE_PLUGIN_KEY = "io.fabric8:vertx-maven-plugin";
 
     /*===  Plugins ====*/
-
-    private static final String G_MAVEN_JAR_PLUGIN = "org.apache.maven.plugins";
-    private static final String A_MAVEN_JAR_PLUGIN = "maven-jar-plugin";
-    private static final String V_MAVEN_JAR_PLUGIN = "maven-jar-plugin-version";
 
     private static final String G_MAVEN_RESOURCES_PLUGIN = "org.apache.maven.plugins";
     private static final String A_MAVEN_RESOURCES_PLUGIN = "maven-resources-plugin";
@@ -64,23 +58,12 @@ public class MojoUtils {
 
     /*===  Goals ====*/
     private static final String GOAL_COMPILE = "compile";
-    private static final String GOAL_PACKAGE = "package";
     private static final String GOAL_RESOURCES = "resources";
 
     private final Properties properties = new Properties();
-    private Log logger;
 
     public MojoUtils() {
-        logger = new SystemStreamLog();
         loadProperties();
-    }
-
-    public MojoUtils withLog(Log log) {
-        if (properties == null || properties.isEmpty()) {
-            loadProperties();
-        }
-        this.logger = log;
-        return this;
     }
 
     /**
@@ -125,50 +108,6 @@ public class MojoUtils {
 
     /**
      * @param project
-     * @param mavenSession
-     * @param buildPluginManager
-     * @throws MojoExecutionException
-     */
-    public void buildPrimaryArtifact(MavenProject project, MavenSession mavenSession,
-                                     BuildPluginManager buildPluginManager) throws MojoExecutionException {
-
-        if (logger != null && logger.isDebugEnabled()) {
-            logger.debug("Primary artifact does not exist, building ...");
-        }
-
-        String packaging = project.getPackaging();
-
-        if ("jar".equals(packaging)) {
-
-            Optional<Plugin> jarPlugin = hasPlugin(project, JAR_PLUGIN_KEY);
-
-            if (jarPlugin.isPresent()) {
-                executeMojo(
-                    jarPlugin.get(),
-                    goal("jar"),
-                    configuration(element("outputDirectory", "${project.build.outputDir}"),
-                        element("classesDirectory", "${project.build.outputDirectory}")),
-                    executionEnvironment(project, mavenSession, buildPluginManager)
-                );
-            } else {
-                executeMojo(
-                    plugin(G_MAVEN_JAR_PLUGIN, A_MAVEN_JAR_PLUGIN,
-                        properties.getProperty(V_MAVEN_JAR_PLUGIN)),
-                    goal("jar"),
-                    configuration(element("outputDirectory", "${project.build.outputDir}"),
-                        element("classesDirectory", "${project.build.outputDirectory}")),
-                    executionEnvironment(project, mavenSession, buildPluginManager)
-                );
-            }
-
-
-        } else {
-            throw new MojoExecutionException("The packaging :" + packaging + " is not supported as of now");
-        }
-    }
-
-    /**
-     * @param project
      * @param pluginKey
      * @return
      */
@@ -200,24 +139,6 @@ public class MojoUtils {
                 && artifactId.equals(d.getArtifactId())).findFirst();
 
         return dep.isPresent();
-    }
-
-    public void buildVertxArtifact(MavenProject project, MavenSession mavenSession,
-                                   BuildPluginManager buildPluginManager) throws MojoExecutionException {
-
-        Plugin vertxMavenPlugin = project.getPlugin(VERTX_PACKAGE_PLUGIN_KEY);
-
-        if (vertxMavenPlugin == null) {
-            throw new MojoExecutionException("Plugin :" + VERTX_PACKAGE_PLUGIN_KEY
-                + " not found or configured");
-        }
-
-        executeMojo(
-            vertxMavenPlugin,
-            goal(GOAL_PACKAGE),
-            configuration(),
-            executionEnvironment(project, mavenSession, buildPluginManager)
-        );
     }
 
     /**

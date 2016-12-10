@@ -449,7 +449,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         @Override
         public Void call() {
 
-            final MojoUtils mojoUtils = new MojoUtils().withLog(getLog());
+            final MojoUtils mojoUtils = new MojoUtils();
 
             try {
                 mojoUtils.compile(project, mavenSession, buildPluginManager);
@@ -468,7 +468,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         @Override
         public Void call() {
 
-            final MojoUtils mojoUtils = new MojoUtils().withLog(getLog());
+            final MojoUtils mojoUtils = new MojoUtils();
 
             try {
                 mojoUtils.copyResources(project, mavenSession, buildPluginManager);

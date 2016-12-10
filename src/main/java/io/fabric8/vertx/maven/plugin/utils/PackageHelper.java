@@ -81,15 +81,24 @@ public class PackageHelper {
      * @throws IOException
      */
     public File build(Path dir, File primaryArtifactFile) {
-        build(primaryArtifactFile);
+        File classes = new File(dir.toFile(), "classes");
+        build(classes, primaryArtifactFile);
         return createFatJar(dir);
     }
 
     /**
      * @param primaryArtifactFile
      */
-    private synchronized void build(File primaryArtifactFile) {
-        this.archive.as(ZipImporter.class).importFrom(primaryArtifactFile);
+    private synchronized void build(File classes, File primaryArtifactFile) {
+        if (primaryArtifactFile != null  && primaryArtifactFile.isFile()) {
+            this.archive.as(ZipImporter.class).importFrom(primaryArtifactFile);
+        } else if (classes.isDirectory()) {
+            this.archive.addAsResource(classes, "/");
+        } else {
+            throw new RuntimeException("Cannot build the fat jar for the Vert.x application, neither jar file nor " +
+                "classes are present");
+        }
+
         addDependencies();
         generateManifest();
     }
@@ -182,14 +191,12 @@ public class PackageHelper {
      * across the dependencies
      *
      * @param project          - the Maven project (must not be {@code null}
-     * @param sourceJarFile    - the source jar {@link File}, typically the primary artifact of the project
      * @param backupDir        - the {@link File} path that can be used to perform backups
      * @param targetJarFile    - the vertx fat jar file where the spi files will be updated - typically remove and add
      * @throws MojoExecutionException - any error that might occur while doing relocation
      */
     public void combineServiceProviders(
         MavenProject project,
-        File sourceJarFile,
         Path backupDir, File targetJarFile) throws MojoExecutionException {
 
         try {
@@ -238,7 +245,7 @@ public class PackageHelper {
 
             org.apache.commons.io.FileUtils.deleteQuietly(vertxJarOriginalFile.toFile());
         } catch (Exception e) {
-            throw new MojoExecutionException("Unable to combine SPI files in " + sourceJarFile, e);
+            throw new MojoExecutionException("Unable to combine SPI files for " + project.getArtifactId(), e);
         }
     }
 

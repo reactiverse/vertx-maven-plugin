@@ -94,11 +94,6 @@ public class PackageMojo extends AbstractVertxMojo {
 
         Optional<File> primaryArtifactFile = getArtifactFile(artifact);
 
-        if (!primaryArtifactFile.isPresent() || !primaryArtifactFile.get().exists()) {
-            // TODO this need to be tested
-            mojoUtils.withLog(getLog()).buildPrimaryArtifact(this.project, this.mavenSession, this.buildPluginManager);
-        }
-
         //Step 0: Resolve and Collect Dependencies as g:a:v:t:c coordinates
 
         Set<Optional<File>> compileAndRuntimeDeps = extractArtifactPaths(this.project.getDependencyArtifacts());
@@ -115,18 +110,20 @@ public class PackageMojo extends AbstractVertxMojo {
 
             Path pathProjectBuildDir = Paths.get(this.projectBuildDir);
 
-            //TODO Handle the case where the primary article is NOT there.
+            File primaryFile = null;
+            if (primaryArtifactFile.isPresent()) {
+                primaryFile = primaryArtifactFile.get();
+            }
 
             File fatJarFile = packageHelper
                     .log(getLog())
-                    .build(pathProjectBuildDir, primaryArtifactFile.get());
+                    .build(pathProjectBuildDir, primaryFile);
 
 
             //  Perform the relocation of the service providers when serviceProviderCombination is defined
             if (serviceProviderCombination == null  || serviceProviderCombination != CombinationStrategy.none) {
                 packageHelper.combineServiceProviders(project,
-                    primaryArtifactFile.get(),
-                        pathProjectBuildDir, fatJarFile);
+                    pathProjectBuildDir, fatJarFile);
             }
 
             ArtifactHandler handler = new DefaultArtifactHandler("jar");
