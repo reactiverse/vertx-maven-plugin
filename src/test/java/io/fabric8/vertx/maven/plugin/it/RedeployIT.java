@@ -35,7 +35,6 @@ public class RedeployIT extends VertxMojoTestBase {
     @After
     public void waitForStop() {
         if (verifier != null) {
-            System.out.println("Stopping forked process");
             verifier.stop();
         }
         awaitUntilServerDown();
