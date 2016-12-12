@@ -16,9 +16,10 @@
  */
 
 #!/usr/bin/groovy
-
-node{
-  ws{
+@Library('github.com/rawlingsj/fabric8-pipeline-library@master')
+def dummy
+mavenNode {
+  dockerNode {
     checkout scm
     sh "git remote set-url origin git@github.com:fabric8io/vertx-maven-plugin.git"
 
