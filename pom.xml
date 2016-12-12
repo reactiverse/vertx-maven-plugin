@@ -25,7 +25,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>Vert.x Maven Plugin</name>
-    <description>A plugin to allow package, start, stop, run of Vertx applications</description>
+    <description>A plugin to allow package, start, stop, run of Vert.x applications</description>
 
     <url>http://github.com/fabric8io/vertx-maven-plugin</url>
 
