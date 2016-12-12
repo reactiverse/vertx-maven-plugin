@@ -1,3 +1,4 @@
+#!/usr/bin/groovy
 /*
  *
  *   Copyright (c) 2016 Red Hat, Inc.
@@ -15,7 +16,6 @@
  *   permissions and limitations under the License.
  */
 
-#!/usr/bin/groovy
 
 def updateDependencies(source){
 
