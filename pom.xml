@@ -21,11 +21,11 @@
 
     <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Vert.x Maven Plugin</name>
-    <description>A plugin to allow package, start, stop, run of Vert.x applications</description>
+    <description>A plugin to allow package, start, stop, run of Vertx applications</description>
 
     <url>http://github.com/fabric8io/vertx-maven-plugin</url>
 
