@@ -116,12 +116,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     protected static final String VERTX_RUN_MODE_JAR = "jar";
 
-
-    /**
-     *
-     */
-    protected static final String VERTX_CLASSIFIER = "vertx";
-
     /* ==== Maven deps ==== */
     /**
      * The Maven project which will define and confiure the vertx-maven-plugin

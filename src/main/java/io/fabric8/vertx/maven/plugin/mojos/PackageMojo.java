@@ -132,12 +132,13 @@ public class PackageMojo extends AbstractVertxMojo {
 
             ArtifactHandler handler = new DefaultArtifactHandler("jar");
 
-            Artifact vertxJarArtifact = new DefaultArtifact(artifact.getGroupId(),
+            if (classifier != null  && ! classifier.isEmpty()) {
+                Artifact vertxJarArtifact = new DefaultArtifact(artifact.getGroupId(),
                     artifact.getArtifactId(), artifact.getBaseVersion(), artifact.getScope()
-                    , VERTX_PACKAGING, VERTX_CLASSIFIER, handler);
-            vertxJarArtifact.setFile(fatJarFile);
-
-            this.project.addAttachedArtifact(vertxJarArtifact);
+                    , VERTX_PACKAGING, classifier, handler);
+                vertxJarArtifact.setFile(fatJarFile);
+                this.project.addAttachedArtifact(vertxJarArtifact);
+            }
 
         } catch (Exception e) {
             throw new MojoFailureException("Unable to build fat jar", e);

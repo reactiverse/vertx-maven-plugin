@@ -180,7 +180,7 @@ public class MojoUtils {
         if (goals instanceof List) {
             return (List<String>) goals;
         } else {
-            throw new RuntimeException("The given object is not a list");
+            return null;
         }
     }
 
