@@ -34,6 +34,9 @@ mavenNode {
     stage 'Approve'
     pipeline.approveRelease(stagedProject)
 
+    stage 'Website'
+    pipeline.website(stagedProject)
+
     stage 'Promote'
     pipeline.release(stagedProject)
     if (prId != null){
