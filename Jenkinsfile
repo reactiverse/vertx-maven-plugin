@@ -16,7 +16,7 @@
  *   permissions and limitations under the License.
  */
 
-@Library('github.com/rawlingsj/fabric8-pipeline-library@master')
+@Library('github.com/fabric8io/fabric8-pipeline-library@master')
 def dummy
 mavenNode {
   dockerNode {
