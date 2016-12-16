@@ -48,7 +48,7 @@ public class JavaProcessExecutor extends JavaExecutor {
 
         Commandline commandLine = buildCommandLine();
 
-        Process process;
+        Process process = null;
 
         try {
 
@@ -56,9 +56,10 @@ public class JavaProcessExecutor extends JavaExecutor {
 
             process = commandLine.execute();
 
+            Process reference = process;
             watchdog = new Thread(() -> {
-               if (process != null  && process.isAlive()) {
-                   process.destroy();
+               if (reference != null  && reference.isAlive()) {
+                   reference.destroy();
                }
             });
 
@@ -74,9 +75,18 @@ public class JavaProcessExecutor extends JavaExecutor {
 
             return Optional.of(process);
 
+        } catch (InterruptedException e) {
+            if (process.isAlive()) {
+                process.destroy();
+            }
+            return Optional.empty();
         } catch (Exception e) {
-            throw new Exception("Error running command :" + commandLine, e);
+            if (process != null  && process.isAlive()) {
+                process.destroy();
+            }
+            throw new Exception("Error running java command : " + e.getMessage(), e);
         }
+
     }
 
     @Override

@@ -266,14 +266,14 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      */
 
     protected void run(List<String> argsList) throws MojoExecutionException {
-
+        JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
+            .withArgs(argsList)
+            .withClassPath(getClassPathUrls())
+            .withLogger(getLog())
+            .withWaitFor(true);
         try {
 
-            JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
-                .withArgs(argsList)
-                .withClassPath(getClassPathUrls())
-                .withLogger(getLog())
-                .withWaitFor(true);
+
 
             //When redeploy is enabled spin up the Incremental builder in background
             if (redeploy && !(VERTX_COMMAND_START.equals(vertxCommand)
@@ -458,7 +458,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             try {
                 mojoUtils.compile(project, mavenSession, buildPluginManager);
             } catch (Exception e) {
-                getLog().error("Error while doing incremental build", e);
+                getLog().error("Error while doing incremental Java build: " + e.getMessage(), e);
             }
             return null;
         }
@@ -477,7 +477,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             try {
                 mojoUtils.copyResources(project, mavenSession, buildPluginManager);
             } catch (Exception e) {
-                getLog().error("Error while doing incremental build", e);
+                getLog().error("Error while doing incremental resource processing: " + e.getMessage(), e);
             }
 
             return null;
