@@ -25,6 +25,7 @@ import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import java.io.File;
@@ -146,13 +147,22 @@ public class ServiceCombinerUtil {
             for (Node child : children) {
                 String name = child.getPath().get().substring(spiPath.get().length() + 1);
                 try {
-                    List<String> lines = IOUtils.readLines(child.getAsset().openStream(), "UTF-8");
-                    List<Set<String>> items = map.get(name);
-                    if (items == null) {
-                        items = new ArrayList<>();
+                    /*
+                     * Check if Asset is not null, the directories are usually will be null asset
+                     * e.g when reading with reading a path like /META-INF/services/org
+                     * there will be no asset associated with it since its a directory, hence
+                     * we need to check if the asset is null before reading the stream of Asset content
+                     */
+                    Asset asset = child.getAsset();
+                    if (asset != null) {
+                        List<String> lines = IOUtils.readLines(asset.openStream(), "UTF-8");
+                        List<Set<String>> items = map.get(name);
+                        if (items == null) {
+                            items = new ArrayList<>();
+                        }
+                        items.add(new LinkedHashSet<>(lines));
+                        map.put(name, items);
                     }
-                    items.add(new LinkedHashSet<>(lines));
-                    map.put(name, items);
                 } catch (IOException e) {
                     throw new RuntimeException("Cannot read  " + node.getPath().get(), e);
                 }
