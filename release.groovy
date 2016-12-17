@@ -17,52 +17,62 @@
  */
 
 
-def updateDependencies(source){
+def updateDependencies(source) {
 
-  def properties = []
-  properties << ['<vertx-core.version>','io/vertx/vertx-core']
+    def properties = []
+    properties << ['<vertx-core.version>', 'io/vertx/vertx-core']
 
-  updatePropertyVersion{
-    updates = properties
-    repository = source
-    project = 'fabric8io/vertx-maven-plugin'
-  }
+    updatePropertyVersion {
+        updates = properties
+        repository = source
+        project = 'fabric8io/vertx-maven-plugin'
+    }
 }
 
-def stage(){
-  return stageProject{
-    project = 'fabric8io/vertx-maven-plugin'
-    useGitTagForNextVersion = true
-  }
+def stage() {
+    return stageProject {
+        project = 'fabric8io/vertx-maven-plugin'
+        useGitTagForNextVersion = true
+    }
 }
 
-def approveRelease(project){
-  def releaseVersion = project[1]
-  approve{
-    room = null
-    version = releaseVersion
-    console = null
-    environment = 'fabric8'
-  }
+def approveRelease(project) {
+    def releaseVersion = project[1]
+    approve {
+        room = null
+        version = releaseVersion
+        console = null
+        environment = 'fabric8'
+    }
 }
 
-def release(project){
-  releaseProject{
-    stagedProject = project
-    useGitTagForNextVersion = true
-    helmPush = false
-    groupId = 'io.fabric8'
-    githubOrganisation = 'fabric8io'
-    artifactIdToWatchInCentral = 'vertx-maven-plugin'
-    artifactExtensionToWatchInCentral = 'jar'
-  }
+def release(project) {
+    releaseProject {
+        stagedProject = project
+        useGitTagForNextVersion = true
+        helmPush = false
+        groupId = 'io.fabric8'
+        githubOrganisation = 'fabric8io'
+        artifactIdToWatchInCentral = 'vertx-maven-plugin'
+        artifactExtensionToWatchInCentral = 'jar'
+    }
 }
 
-def mergePullRequest(prId){
-  mergeAndWaitForPullRequest{
-    project = 'fabric8io/fabric8io/vertx-maven-plugin'
-    pullRequestId = prId
-  }
+def mergePullRequest(prId) {
+    mergeAndWaitForPullRequest {
+        project = 'fabric8io/fabric8io/vertx-maven-plugin'
+        pullRequestId = prId
+    }
 
 }
+
+def website(stagedProject) {
+    Model m = readMavenPom file: 'pom.xml'
+    def projectArtifactId = m.artifactId
+    genWebsiteDocs {
+        project = stagedProject
+        artifactId = projectArtifactId
+    }
+}
+
 return this
