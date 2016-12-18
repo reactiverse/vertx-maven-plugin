@@ -23,13 +23,15 @@ run.
 
 | jvmArgs
 | The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts. This parameter is only used in combination to the `redeploy` parameter.
+typically passed to vert.x applications using --java-opts.
 | vertx.jvmArguments
 | _no arguments_
 |===
 
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
 _process-classes_ phases.
+
+**IMPORTANT**: `vertx:run` starts the application in a forked JVM.
 
 [[vertx:debug]]
 == *vertx:debug*
@@ -50,7 +52,7 @@ run.
 
 | jvmArgs
 | The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts. This parameter is only used in combination to the `redeploy` parameter.
+typically passed to vert.x applications using --java-opts.
 | vertx.jvmArguments
 | _no arguments_
 

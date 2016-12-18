@@ -94,9 +94,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * The additional arguments that will be passed as program arguments to the JVM, all standard vertx arguments are
      * automatically applied.
      * <p>
-     * NOTE: the use of JVM arguments is only supported in vertx:run with the redeploy mode enabled and in
-     * vertx:start
-     *
      * @since 1.0.2
      */
     @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
