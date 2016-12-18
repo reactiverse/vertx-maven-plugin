@@ -87,6 +87,22 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     @Parameter(alias = "workDirectory", property = "vertx.directory", defaultValue = "${project.basedir}")
     File workDirectory;
 
+    /**
+     * JVM arguments that should be associated with the forked process used to run the
+     * application. On command line, make sure to wrap multiple values between quotes.
+     * <p>
+     * The additional arguments that will be passed as program arguments to the JVM, all standard vertx arguments are
+     * automatically applied.
+     * <p>
+     * NOTE: the use of JVM arguments is only supported in vertx:run with the redeploy mode enabled and in
+     * vertx:start
+     *
+     * @since 1.0.2
+     */
+    @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
+    protected List<String> jvmArgs;
+
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -114,6 +130,13 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             argsList.add(redeployArg.toString());
             argsList.add(VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
+
+            if (jvmArgs != null && !jvmArgs.isEmpty()) {
+                String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
+                String argJavaOpts = VERTX_ARG_JAVA_OPT +
+                    "=" + javaOpts;
+                argsList.add(argJavaOpts);
+            }
         } else {
             argsList.add(launcher);
         }
@@ -200,6 +223,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             computeOutputDirsWildcard(redeployArg);
 
             argsList.add(redeployArg.toString());
+
+            if (jvmArgs != null && !jvmArgs.isEmpty()) {
+                String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
+                argsList.add(VERTX_ARG_JAVA_OPT + "=" + javaOpts);
+            }
         }
 
         if (!VERTX_COMMAND_STOP.equals(vertxCommand)) {
@@ -267,12 +295,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
     protected void run(List<String> argsList) throws MojoExecutionException {
         JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
+            .withJvmOpts(redeploy ? Collections.emptyList() : jvmArgs)
             .withArgs(argsList)
             .withClassPath(getClassPathUrls())
             .withLogger(getLog())
             .withWaitFor(true);
         try {
-
 
 
             //When redeploy is enabled spin up the Incremental builder in background
@@ -452,11 +480,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         @Override
         public Void call() {
-
-            final MojoUtils mojoUtils = new MojoUtils();
-
             try {
-                mojoUtils.compile(project, mavenSession, buildPluginManager);
+                MojoUtils.compile(project, mavenSession, buildPluginManager);
             } catch (Exception e) {
                 getLog().error("Error while doing incremental Java build: " + e.getMessage(), e);
             }
@@ -471,11 +496,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         @Override
         public Void call() {
-
-            final MojoUtils mojoUtils = new MojoUtils();
-
             try {
-                mojoUtils.copyResources(project, mavenSession, buildPluginManager);
+                MojoUtils.copyResources(project, mavenSession, buildPluginManager);
             } catch (Exception e) {
                 getLog().error("Error while doing incremental resource processing: " + e.getMessage(), e);
             }
