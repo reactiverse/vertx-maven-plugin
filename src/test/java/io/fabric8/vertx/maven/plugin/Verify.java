@@ -59,26 +59,25 @@ public class Verify {
     }
 
     public static void verifySetup(File pomFile) throws Exception {
-        MojoUtils mojoUtils = new MojoUtils();
         assertNotNull("Unable to find pom.xml", pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
         Model model = xpp3Reader.read(new FileInputStream(pomFile));
 
         MavenProject project = new MavenProject(model);
 
-        Optional<Plugin> vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
 
         //Check if the properties have been set correctly
         Properties properties = model.getProperties();
         assertThat(properties.containsKey("vertx.version")).isTrue();
         assertThat(properties.getProperty("vertx.version"))
-            .isEqualTo(mojoUtils.getVersion("vertx-core-version"));
+            .isEqualTo(MojoUtils.getVersion("vertx-core-version"));
 
 
         assertThat(properties.containsKey("fabric8.vertx.plugin.version")).isTrue();
         assertThat(properties.getProperty("fabric8.vertx.plugin.version"))
-            .isEqualTo(mojoUtils.getVersion("vertx-maven-plugin-version"));
+            .isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         //Check if the dependencies has been set correctly
         DependencyManagement dependencyManagement = model.getDependencyManagement();

@@ -24,14 +24,14 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -60,10 +60,14 @@ public class MojoUtils {
     private static final String GOAL_COMPILE = "compile";
     private static final String GOAL_RESOURCES = "resources";
 
-    private final Properties properties = new Properties();
+    private static final Properties properties = new Properties();
 
-    public MojoUtils() {
+    static {
         loadProperties();
+    }
+
+    private MojoUtils() {
+        // Avoid direct instantiation
     }
 
     /**
@@ -72,8 +76,8 @@ public class MojoUtils {
      * @param buildPluginManager
      * @throws MojoExecutionException
      */
-    public void copyResources(MavenProject project, MavenSession mavenSession,
-                              BuildPluginManager buildPluginManager) throws MojoExecutionException {
+    public static void copyResources(MavenProject project, MavenSession mavenSession,
+                                     BuildPluginManager buildPluginManager) throws MojoExecutionException {
 
         Optional<Plugin> resourcesPlugin = hasPlugin(project, RESOURCES_PLUGIN_KEY);
 
@@ -111,7 +115,7 @@ public class MojoUtils {
      * @param pluginKey
      * @return
      */
-    public Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
+    public static Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
         Optional<Plugin> optPlugin = project.getBuildPlugins().stream()
             .filter(plugin -> pluginKey.equals(plugin.getKey()))
             .findFirst();
@@ -132,7 +136,7 @@ public class MojoUtils {
      * @param artifactId - the dependency artifactId
      * @return true if the project has the dependency
      */
-    public boolean hasDependency(MavenProject project, String groupId, String artifactId) {
+    public static boolean hasDependency(MavenProject project, String groupId, String artifactId) {
 
         Optional<Dependency> dep = project.getDependencies().stream()
             .filter(d -> groupId.equals(d.getGroupId())
@@ -147,8 +151,8 @@ public class MojoUtils {
      * @param buildPluginManager
      * @throws Exception
      */
-    public void compile(MavenProject project, MavenSession mavenSession,
-                        BuildPluginManager buildPluginManager) throws Exception {
+    public static void compile(MavenProject project, MavenSession mavenSession,
+                               BuildPluginManager buildPluginManager) throws Exception {
 
         Optional<Plugin> mvnCompilerPlugin = project.getBuildPlugins().stream()
             .filter(plugin -> A_MAVEN_COMPILER_PLUGIN.equals(plugin.getArtifactId()))
@@ -176,7 +180,7 @@ public class MojoUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> goals(Object goals) {
+    private static List<String> goals(Object goals) {
         if (goals instanceof List) {
             return (List<String>) goals;
         } else {
@@ -190,7 +194,7 @@ public class MojoUtils {
      * @param goal
      * @return
      */
-    public Optional<Xpp3Dom> buildConfiguration(MavenProject project, String artifactId, String goal) {
+    public static Optional<Xpp3Dom> buildConfiguration(MavenProject project, String artifactId, String goal) {
 
         Optional<Plugin> pluginOptional = project.getBuildPlugins().stream()
             .filter(plugin -> artifactId
@@ -224,22 +228,18 @@ public class MojoUtils {
         return Optional.ofNullable((Xpp3Dom) plugin.getConfiguration());
     }
 
-    private void loadProperties() {
-        InputStream in = this.getClass().getResourceAsStream("/vertx-maven-plugin.properties");
-        try {
+    private static void loadProperties() {
+        URL url = MojoUtils.class.getClassLoader().getResource("vertx-maven-plugin.properties");
+        Objects.requireNonNull(url);
+        try (InputStream in = url.openStream()) {
             properties.load(in);
         } catch (IOException e) {
-            //ignore it mostly this means its not packaged rightly
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                //ignore it mostly this means its not packaged rightly
-            }
+            throw new RuntimeException("Invalid packaging of the vertx-maven-plugin, the vertx-maven-plugin" +
+                ".properties file cannot be read", e);
         }
     }
 
-    public String getVersion(String artifactKey) {
-        return properties.getProperty(artifactKey);
+    public static String getVersion(String key) {
+        return properties.getProperty(key);
     }
 }

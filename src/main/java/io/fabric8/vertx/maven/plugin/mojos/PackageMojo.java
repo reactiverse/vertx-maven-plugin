@@ -18,7 +18,6 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
 import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
-import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -51,8 +50,6 @@ import java.util.Set;
 )
 public class PackageMojo extends AbstractVertxMojo {
 
-
-    final MojoUtils mojoUtils = new MojoUtils();
 
     /**
      * The service provider combination strategy.
