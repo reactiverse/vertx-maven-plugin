@@ -21,4 +21,3 @@ Apart from the above list of exclusive start configuration, the goal shares the 
 ignored by the goal,
 
 * redeploy
-* fork - by default every stop is a forked process

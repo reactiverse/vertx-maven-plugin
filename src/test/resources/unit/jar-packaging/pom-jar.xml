@@ -35,7 +35,6 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <forked>true</forked>
                             <redeploy>true</redeploy>
                         </configuration>
                     </execution>

@@ -388,10 +388,6 @@
                             <addTestClassPath>true</addTestClassPath>
                             <skipInvocation>${skipTests}</skipInvocation>
                             <streamLogs>true</streamLogs>
-                            <pomExcludes>
-                                <exclude>run-redeploy-blocked-it/pom.xml</exclude>
-                                <pomExclude>run-redeploy-blocked-it/pom.xml</pomExclude>
-                            </pomExcludes>
                             <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
                         </configuration>
                         <executions>

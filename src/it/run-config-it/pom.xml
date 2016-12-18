@@ -48,9 +48,6 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <configuration>
-                            <forked>true</forked>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
