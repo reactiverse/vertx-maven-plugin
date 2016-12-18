@@ -20,6 +20,9 @@ in the next sections.
 |**<<vertx:run>>**
 |Run a Vert.x application in foreground
 
+|**<<vertx:debug>>**
+|Debug a Vert.x application in foreground
+
 |**<<vertx:start>>**
 |Run a Vert.x application in daemon mode with specific id
 

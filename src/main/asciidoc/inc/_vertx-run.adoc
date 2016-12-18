@@ -20,7 +20,50 @@ defines all the applicable configurations for the goal
 run.
 | &nbsp;
 | src/main/config/application.json or src/main/config/application.yml
+
+| jvmArgs
+| The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts. This parameter is only used in combination to the `redeploy` parameter.
+| vertx.jvmArguments
+| _no arguments_
 |===
 
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
 _process-classes_ phases.
+
+[[vertx:debug]]
+== *vertx:debug*
+This goal allows to debug the Vert.x application.
+
+The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
+defines all the applicable configurations for the goal
+
+[cols="1,5,2,3"]
+|===
+| Element | Description | Property| Default
+
+| config
+| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
+run.
+| &nbsp;
+| src/main/config/application.json or src/main/config/application.yml
+
+| jvmArgs
+| The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts. This parameter is only used in combination to the `redeploy` parameter.
+| vertx.jvmArguments
+| _no arguments_
+
+| debugPort
+| The debugger port
+| debug.port
+| 5005
+
+| debugSuspend
+| Whether or not the application must wait until a debugger is attached to start
+| debug.suspend
+| false
+|===
+
+**IMPORTANT**: the redeploy mode and debug cannot be used together. When `vertx:debug` is launched, the redeployment
+mode is disabled.
