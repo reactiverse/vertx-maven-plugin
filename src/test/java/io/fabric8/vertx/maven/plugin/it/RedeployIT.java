@@ -157,7 +157,7 @@ public class RedeployIT extends VertxMojoTestBase {
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
     }
 
-    private void run(Verifier verifier) throws VerificationException, IOException {
+    private void run(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
         verifier.executeGoals(ImmutableList.of("compile", "vertx:run"));
     }

@@ -22,7 +22,6 @@ import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.logging.Log;
 
 import java.util.Arrays;
 import java.util.List;

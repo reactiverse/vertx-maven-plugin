@@ -20,7 +20,6 @@ package io.fabric8.vertx.maven.plugin.mojos;
 import io.fabric8.vertx.maven.plugin.utils.WebJars;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;

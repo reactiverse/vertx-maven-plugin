@@ -408,7 +408,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @return an instance of {@link URLClassLoader}
      * @throws MojoExecutionException - any error that might occur while building the {@link URLClassLoader}
      */
-    protected ClassLoader buildClassLoader(Collection<URL> classPathUrls) throws MojoExecutionException {
+    protected ClassLoader buildClassLoader(Collection<URL> classPathUrls) {
         return new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]));
     }
 
