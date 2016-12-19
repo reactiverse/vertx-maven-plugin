@@ -89,8 +89,7 @@ public class RunningVerifier extends Verifier {
         }
     }
 
-    private void findDefaultMavenHome()
-        throws VerificationException {
+    private void findDefaultMavenHome() {
         defaultMavenHome = System.getProperty("maven.home");
 
         if (defaultMavenHome == null) {

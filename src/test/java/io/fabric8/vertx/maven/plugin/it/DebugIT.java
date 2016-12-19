@@ -1,7 +1,6 @@
 package io.fabric8.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.fabric8.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -10,10 +9,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -88,7 +84,7 @@ public class DebugIT extends VertxMojoTestBase {
         verifier.verifyTextInLog("Listening for transport dt_socket at address: 5005");
     }
 
-    private void debug(Verifier verifier) throws VerificationException, IOException {
+    private void debug(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
         verifier.executeGoals(ImmutableList.of("compile", "vertx:debug"));
     }

@@ -21,7 +21,6 @@ import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 
@@ -31,15 +30,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
-/**
- * Created by kameshs on 05-12-2016.
- */
 public class SetupMojoTest {
 
 

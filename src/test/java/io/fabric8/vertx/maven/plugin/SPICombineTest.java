@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -45,19 +46,6 @@ import static org.junit.Assert.assertTrue;
  * @author kameshs
  */
 public class SPICombineTest {
-
-
-    public static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
-    }
-
-    @Before
-    public void setup() throws Exception {
-
-
-    }
 
     @Test
     public void testCombine() throws Exception {
@@ -109,7 +97,7 @@ public class SPICombineTest {
         assertNotNull(combinedSpiArchive);
 
         String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl";
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl\n";
 
         assertTrue(Files.exists(Paths.get(outputJar.toString())));
 
@@ -119,10 +107,11 @@ public class SPICombineTest {
         Node outputNode = acutalOutput.get("/META-INF/services/com.test.demo.DemoSPI");
 
         InputStream in = outputNode.getAsset().openStream();
-        String strContent = read(in);
-        in.close();
+        String strContent = IOUtils.toString(in, "UTF-8");
+        IOUtils.closeQuietly(in);
 
         assertEquals(expected, strContent);
+
 
         Stream.of(jar1, jar2, jar3, jar4, outputJar).forEach(File::delete);
     }
