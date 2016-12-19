@@ -23,10 +23,7 @@ import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author kameshs
@@ -42,6 +39,8 @@ public class JavaProcessExecutor extends JavaExecutor {
     protected File workingDirectory;
 
     protected Thread watchdog;
+
+    protected List<String> jvmArgs;
 
     @Override
     public Optional<Process> execute() throws Exception {
@@ -109,11 +108,10 @@ public class JavaProcessExecutor extends JavaExecutor {
 
     @Override
     public void argsLine(Commandline commandline) {
+        List<String> full = new ArrayList<>(jvmArgs);
+        full.addAll(argsList);
 
-        final String[] args = new String[argsList.size()];
-        argsList.toArray(args);
-
-        argsList.forEach(arg -> {
+        full.forEach(arg -> {
             Arg cliArg = commandline.createArg();
             cliArg.setValue(arg);
         });
@@ -139,4 +137,12 @@ public class JavaProcessExecutor extends JavaExecutor {
         return this;
     }
 
+    public JavaProcessExecutor withJvmOpts(List<String> jvmArgs) {
+        if (jvmArgs == null) {
+            this.jvmArgs = Collections.emptyList();
+        } else {
+            this.jvmArgs = jvmArgs;
+        }
+        return this;
+    }
 }

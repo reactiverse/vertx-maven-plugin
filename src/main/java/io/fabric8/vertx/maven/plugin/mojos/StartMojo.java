@@ -62,13 +62,6 @@ public class StartMojo extends AbstractRunMojo {
     protected String appId;
 
     /**
-     * The additional arguments that will be passed as program arguments to the JVM, all standard vertx arguments are
-     * automatically applied
-     */
-    @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
-    protected List<String> jvmArgs;
-
-    /**
      * The artifact classifier. If not set, the plugin uses the default final name.
      */
     @Parameter(name = "classifier")

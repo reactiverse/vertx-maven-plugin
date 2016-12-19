@@ -45,7 +45,6 @@ public class SetupMojo extends AbstractMojo {
     final String PLUGIN_GROUPID = "io.fabric8";
     final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
     final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
-    final MojoUtils mojoUtils = new MojoUtils();
 
     /**
      * The Maven project which will define and confiure the vertx-maven-plugin
@@ -60,15 +59,15 @@ public class SetupMojo extends AbstractMojo {
         Model model = project.getOriginalModel().clone();
         File pomFile = project.getFile();
 
-        Optional<Plugin> vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
 
         if (!vmPlugin.isPresent()) {
             try {
 
                 //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
                 model.getProperties().putIfAbsent("fabric8.vertx.plugin.version",
-                    mojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
-                model.getProperties().putIfAbsent("vertx.version", mojoUtils.getVersion("vertx-core-version"));
+                    MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
+                model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
 
                 //Add Vert.x BOM
                 addVertxBom(model);
@@ -127,7 +126,7 @@ public class SetupMojo extends AbstractMojo {
     private void addVertxDependencies(Model model) {
         if (model.getDependencies() != null) {
 
-            if (!mojoUtils.hasDependency(project, "io.vertx", "vertx-core")) {
+            if (!MojoUtils.hasDependency(project, "io.vertx", "vertx-core")) {
                 model.getDependencies().add(
                     dependency("io.vertx", "vertx-core", null));
             }
@@ -149,7 +148,7 @@ public class SetupMojo extends AbstractMojo {
         vertxBom.setScope("import");
 
         if (model.getDependencyManagement() != null) {
-            if (!mojoUtils.hasDependency(project, "io.vertx", "vertx-dependencies")) {
+            if (!MojoUtils.hasDependency(project, "io.vertx", "vertx-dependencies")) {
                 model.getDependencyManagement().addDependency(vertxBom);
             }
         } else {

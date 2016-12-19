@@ -139,7 +139,7 @@ mvn vertx:stop -Dvertx.app.id=my-vertx-app
 The application id can be set in the `pom.xml` file:
 
 [source,xml]
----
+----
 <plugin>
     <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
@@ -154,7 +154,7 @@ The application id can be set in the `pom.xml` file:
         <appId>my-app-id</appId>
     </configuration>
 </plugin>
----
+----
 
 [[start-with-java-opts]]
 === start goal with custom java options
@@ -162,7 +162,7 @@ The application id can be set in the `pom.xml` file:
 Because it's a forked process, passing Java options needs to be done explicitly using a specific property:
 
 [source,xml]
----
+----
 <plugin>
     <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
@@ -180,7 +180,7 @@ Because it's a forked process, passing Java options needs to be done explicitly 
        </jvmArgs>
     </configuration>
 </plugin>
----
+----
 <1> The jvm arguments that gets passed as `--java-opts` to the vert.x application
 
 You can also pass these parameters in the command line:
@@ -196,7 +196,7 @@ When you have configured to <<start-with-app-id>> or know the application ids, t
 of application ids as shown below to trigger stop of the those applications
 
 [source,xml]
----
+----
 <plugin>
     <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
@@ -216,7 +216,7 @@ of application ids as shown below to trigger stop of the those applications
         </execution>
     </executions>
 </plugin>
----
+----
 <1> List of custom unique application ids
 
 = How does the redeploy work

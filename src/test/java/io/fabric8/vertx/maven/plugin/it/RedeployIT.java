@@ -63,6 +63,28 @@ public class RedeployIT extends VertxMojoTestBase {
     }
 
     @Test
+    public void testRedeployWithJvmArgs() throws Exception {
+        File testDir = initProject("projects/redeploy-with-jvmArgs-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha prop");
+
+        // Touch the java source code
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("aloha", uuid));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid + " prop"));
+    }
+
+    @Test
     public void testRedeployOnJavaChangeWithCustomLauncher() throws Exception {
         File testDir = initProject("projects/redeploy-with-custom-launcher-it");
         assertThat(testDir).isDirectory();

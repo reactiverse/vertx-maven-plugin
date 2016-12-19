@@ -31,22 +31,20 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 /**
  * Created by kameshs on 05-12-2016.
  */
-public class SetupMojoTest extends AbstractMojoTestCase {
+public class SetupMojoTest {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
 
     @Test
     public void testAddVertxMavenPlugin() throws Exception {
-        MojoUtils mojoUtils = new MojoUtils();
         InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
         assertNotNull(pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
@@ -54,11 +52,11 @@ public class SetupMojoTest extends AbstractMojoTestCase {
 
         MavenProject project = new MavenProject(model);
 
-        Optional<Plugin> vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertFalse(vmPlugin.isPresent());
 
         Plugin vertxMavenPlugin = plugin("io.fabric8", "vertx-maven-plugin",
-            mojoUtils.getVersion("vertx-maven-plugin-version"));
+            MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
@@ -68,7 +66,7 @@ public class SetupMojoTest extends AbstractMojoTestCase {
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
-        model.getProperties().putIfAbsent("vertx.version", mojoUtils.getVersion("vertx-core-version"));
+        model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
 
         Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
         vertxBom.setType("pom");
@@ -110,13 +108,7 @@ public class SetupMojoTest extends AbstractMojoTestCase {
 
         model = xpp3Reader.read(new StringReader(updatedPom.toString()));
         project = new MavenProject(model);
-        vmPlugin = mojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
-
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 }

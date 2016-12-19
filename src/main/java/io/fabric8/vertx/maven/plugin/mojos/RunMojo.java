@@ -23,7 +23,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * This Goal helps in running VertX applications as part of maven build.
+ * This goal helps in running Vert.x applications as part of maven build.
  * Pressing <code>Ctrl+C</code> will then terminate the application
  *
  * @since 1.0.0
