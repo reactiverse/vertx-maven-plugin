@@ -3,15 +3,19 @@ package io.fabric8.vertx.maven.plugin.it;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.fabric8.vertx.maven.plugin.it.invoker.RunningVerifier;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileReader;
+import java.util.List;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -155,6 +159,55 @@ public class RedeployIT extends VertxMojoTestBase {
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
+    }
+
+    //FIXME - need to find a way to test this scenario for redeploy* properties in more robust pattern
+    @Test
+    public void testRedeployScanPeriod() throws Exception {
+        File testDir = initProject("projects/redeploy-scan-period-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier);
+
+        Stack<Long> scanTimes = new Stack<>();
+        scanTimes.add(System.currentTimeMillis());
+        String response = getHttpResponse();
+        assertThat(response).startsWith("Hello");
+
+        //Start timer and check the next redeploy happens after only 300 ms secs
+        // Touch the java source code
+        File source = new File(testDir, "src/main/resources/some-text.txt");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("Hello", uuid));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid));
+
+        source = new File(testDir, "src/main/resources/some-text.txt");
+        String uuid2 = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of(uuid, uuid2));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
+
+        final String redeployingLogRegex = "^(\\[INFO])\\s*INFO: Redeploying!";
+        Pattern pattern = Pattern.compile(redeployingLogRegex);
+
+        File buildLog = new File(testDir, "build-run.log");
+        assertThat(buildLog).isNotNull();
+        assertThat(buildLog.exists()).isTrue();
+        assertThat(buildLog.isFile()).isTrue();
+        List<String> lines = IOUtils.readLines(new FileReader(buildLog));
+        assertThat(lines.isEmpty()).isFalse();
+        long redeployCount = lines.stream()
+            .filter(s -> pattern.matcher(s).matches())
+            .map(s -> pattern.matcher(s))
+            .filter(m -> m.find())
+            .count();
+        assertThat(redeployCount).isEqualTo(2);
     }
 
     private void run(Verifier verifier) throws VerificationException {
