@@ -15,6 +15,24 @@ defines all the applicable configurations for the goal
 | &nbsp;
 | false
 
+| redeployScanPeriod
+| The file system check period (in milliseconds)
+| vertx.redeploy.scan.period
+| 250
+
+| redeployGracePeriod
+| The amount of time (in milliseconds) to wait between 2 re-deployments
+| vertx.redeploy.grace.period
+| 1000
+
+
+| redeployTerminationPeriod
+| the amount of time (in millisecods) to wait after having stopped the application (before launching user command).
+  This is useful on Windows, where the process is not killed immediately.
+| vertx.redeploy.termination.period
+| 0
+
+
 | config
 | The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
 run.
