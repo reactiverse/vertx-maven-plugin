@@ -63,19 +63,19 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period", defaultValue = "250")
+    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period")
     long redeployScanPeriod;
 
     /**
      *
      */
-    @Parameter(alias = "redeployGracePeriod", property = "vertx.redeploy.grace.period", defaultValue = "1000")
+    @Parameter(alias = "redeployGracePeriod", property = "vertx.redeploy.grace.period")
     long redeployGracePeriod;
 
     /**
      *
      */
-    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period", defaultValue = "0")
+    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period")
     long redeployTerminationPeriod;
 
 
@@ -283,9 +283,15 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @param argsList - the argument list to be appended
      */
     private void addRedeployExtraArgs(List<String> argsList) {
-        argsList.add(VERTX_ARG_REDEPLOY_SCAN_PERIOD+redeployScanPeriod);
-        argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD+redeployGracePeriod);
-        argsList.add(VERTX_ARG_REDEPLOY_TERMINIATION_PERIOD+redeployTerminationPeriod);
+        if(redeployScanPeriod > 0 ) {
+            argsList.add(VERTX_ARG_REDEPLOY_SCAN_PERIOD + redeployScanPeriod);
+        }
+        if(redeployGracePeriod > 0 ) {
+            argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
+        }
+        if(redeployTerminationPeriod >= 0) {
+            argsList.add(VERTX_ARG_REDEPLOY_TERMINIATION_PERIOD + redeployTerminationPeriod);
+        }
     }
 
     /**
