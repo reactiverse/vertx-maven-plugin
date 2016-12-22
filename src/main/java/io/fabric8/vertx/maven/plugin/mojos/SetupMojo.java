@@ -96,11 +96,18 @@ public class SetupMojo extends AbstractMojo {
                 pluginExec.setId("vmp-init-package");
                 vertxMavenPlugin.addExecution(pluginExec);
 
-                if (model.getBuild().getPlugins() == null) {
-                    model.getBuild().setPlugins(new ArrayList<>());
+                Build build = model.getBuild();
+
+                if(build == null){
+                    build = new Build();
+                    model.setBuild(build);
                 }
 
-                model.getBuild().getPlugins().add(vertxMavenPlugin);
+                if (build.getPlugins() == null) {
+                    build.setPlugins(new ArrayList<>());
+                }
+
+                build.getPlugins().add(vertxMavenPlugin);
 
                 MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
                 final FileWriter pomFileWriter = new FileWriter(pomFile);
