@@ -66,6 +66,76 @@ public class SetupMojoTest {
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 
+        addDependencies(model, vertxBom);
+
+        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+        StringWriter updatedPom = new StringWriter();
+
+        xpp3Writer.write(updatedPom, model);
+        updatedPom.flush();
+        updatedPom.close();
+
+        //System.out.println(updatedPom);
+
+        //Check if it has been added
+
+        model = xpp3Reader.read(new StringReader(updatedPom.toString()));
+        project = new MavenProject(model);
+        vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+    }
+
+    @Test
+    public void testAddVertxMavenPluginWithNoBuildPom() throws Exception {
+        InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-nobuild-pom.xml");
+        assertNotNull(pomFile);
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(pomFile);
+
+        MavenProject project = new MavenProject(model);
+
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertFalse(vmPlugin.isPresent());
+
+        Plugin vertxMavenPlugin = plugin("io.fabric8", "vertx-maven-plugin",
+            MojoUtils.getVersion("vertx-maven-plugin-version"));
+
+        PluginExecution pluginExec = new PluginExecution();
+        pluginExec.addGoal("initialize");
+        pluginExec.addGoal("package");
+        pluginExec.setId("vmp-init-package");
+        vertxMavenPlugin.addExecution(pluginExec);
+
+        Build build = new Build();
+        model.setBuild(build);
+        build.getPlugins().add(vertxMavenPlugin);
+
+        model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
+
+        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        vertxBom.setType("pom");
+        vertxBom.setScope("import");
+
+        addDependencies(model, vertxBom);
+
+        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+        StringWriter updatedPom = new StringWriter();
+
+        xpp3Writer.write(updatedPom, model);
+        updatedPom.flush();
+        updatedPom.close();
+
+        //System.out.println(updatedPom);
+
+        //Check if it has been added
+
+        model = xpp3Reader.read(new StringReader(updatedPom.toString()));
+        project = new MavenProject(model);
+        vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+    }
+
+    private void addDependencies(Model model, Dependency vertxBom) {
         if (model.getDependencyManagement() != null) {
             Optional<Dependency> vertxCore =
                 model.getDependencyManagement().getDependencies().stream()
@@ -88,21 +158,5 @@ public class SetupMojoTest {
             model.setDependencies(new ArrayList<>());
             model.getDependencies().add(dependency("io.vertx", "vertx-core", null));
         }
-
-        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
-        StringWriter updatedPom = new StringWriter();
-
-        xpp3Writer.write(updatedPom, model);
-        updatedPom.flush();
-        updatedPom.close();
-
-        //System.out.println(updatedPom);
-
-        //Check if it has been added
-
-        model = xpp3Reader.read(new StringReader(updatedPom.toString()));
-        project = new MavenProject(model);
-        vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
-        assertTrue(vmPlugin.isPresent());
     }
 }
