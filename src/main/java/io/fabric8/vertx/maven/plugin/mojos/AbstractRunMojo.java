@@ -59,6 +59,26 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     @Parameter(name = "redeploy")
     protected boolean redeploy;
 
+
+    /**
+     *
+     */
+    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period")
+    long redeployScanPeriod;
+
+    /**
+     *
+     */
+    @Parameter(alias = "redeployGracePeriod", property = "vertx.redeploy.grace.period")
+    long redeployGracePeriod;
+
+    /**
+     *
+     */
+    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period")
+    long redeployTerminationPeriod;
+
+
     /**
      * The default command to use when calling io.vertx.core.Launcher.
      * possible commands are,
@@ -125,6 +145,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             redeployArg.append(VERTX_ARG_REDEPLOY); //fix for redeploy to work
             computeOutputDirsWildcard(redeployArg);
             argsList.add(redeployArg.toString());
+            addRedeployExtraArgs(argsList);
             argsList.add(VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
 
@@ -221,6 +242,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
             argsList.add(redeployArg.toString());
 
+            addRedeployExtraArgs(argsList);
+
             if (jvmArgs != null && !jvmArgs.isEmpty()) {
                 String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
                 argsList.add(VERTX_ARG_JAVA_OPT + "=" + javaOpts);
@@ -242,9 +265,33 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
     }
 
+    /**
+     * The method that will compute the Output directory wildcard that will be added to the
+     * --redeploy argument to Vert.x to trigger redeployment for scanning for changes to trigger
+     * redeployment
+     * @param redeployArg - the redeploy {@link StringBuilder} to which the values will be appended
+     */
     private void computeOutputDirsWildcard(StringBuilder redeployArg) {
         final String wildcardClassesDir = this.classesDirectory.toString() + "/**/*";
         redeployArg.append(wildcardClassesDir);
+    }
+
+
+    /**
+     * This method will add the extra redeployment arguments as mentioned in
+     * @see <a href="http://vertx.io/docs/vertx-core/java/#_live_redeploy">Live Redeploy</a>
+     * @param argsList - the argument list to be appended
+     */
+    private void addRedeployExtraArgs(List<String> argsList) {
+        if(redeployScanPeriod > 0 ) {
+            argsList.add(VERTX_ARG_REDEPLOY_SCAN_PERIOD + redeployScanPeriod);
+        }
+        if(redeployGracePeriod > 0 ) {
+            argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
+        }
+        if(redeployTerminationPeriod >= 0) {
+            argsList.add(VERTX_ARG_REDEPLOY_TERMINIATION_PERIOD + redeployTerminationPeriod);
+        }
     }
 
     /**
@@ -313,7 +360,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 CompletableFuture.runAsync(() -> {
                     List<Callable<Void>> chain = computeExecutionChain();
                     IncrementalBuilder incrementalBuilder = new IncrementalBuilder(inclDirs,
-                        chain, getLog(), 1000L);
+                        chain, getLog(), redeployScanPeriod);
                     incrementalBuilder.run();
                 });
 
