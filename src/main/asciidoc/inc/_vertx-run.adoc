@@ -18,7 +18,7 @@ defines all the applicable configurations for the goal
 | redeployScanPeriod
 | The file system check period (in milliseconds)
 | vertx.redeploy.scan.period
-| 250
+| 1000
 
 | redeployGracePeriod
 | The amount of time (in milliseconds) to wait between 2 re-deployments
