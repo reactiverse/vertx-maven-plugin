@@ -395,6 +395,10 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         return () -> {
             try {
+                //--- vertx-maven-plugin:1.0-SNAPSHOT:run (default-cli) @ vertx-demo
+                getLog().info(">>> "
+                    + execution.getArtifactId() + ":" + execution.getVersion() + ":" + execution.getGoal()
+                    + " (" +execution.getExecutionId() + ") @" + project.getArtifactId());
                 executor.execute();
             } catch (Exception e) {
                 getLog().error("Error while doing incremental build", e);
