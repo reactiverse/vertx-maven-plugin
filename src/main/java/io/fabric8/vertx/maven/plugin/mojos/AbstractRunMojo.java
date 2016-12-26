@@ -127,6 +127,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             return;
         }
 
+        compileIfNeeded();
+
         List<String> argsList = new ArrayList<>();
 
         scanAndLoadConfigs();
@@ -160,6 +162,13 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
 
         run(argsList);
+    }
+
+    private void compileIfNeeded() {
+        File classes = new File(project.getBuild().getOutputDirectory());
+        if (! classes.isDirectory()) {
+            MavenExecutionUtils.execute("compile", project, mavenSession, lifecycleExecutor, container);
+        }
     }
 
     /**

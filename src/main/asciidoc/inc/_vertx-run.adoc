@@ -49,6 +49,15 @@ typically passed to vert.x applications using --java-opts.
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
 _process-classes_ phases.
 
+So to start a Vert.x application just launch:
+
+[source]
+----
+mvn vertx:run
+----
+
+If the sources are not compiled, the plugin executes `mvn compile` for you.
+
 **IMPORTANT**: `vertx:run` starts the application in a forked JVM.
 
 [[vertx:debug]]

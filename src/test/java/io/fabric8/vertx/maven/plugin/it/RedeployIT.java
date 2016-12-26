@@ -68,6 +68,28 @@ public class RedeployIT extends VertxMojoTestBase {
     }
 
     @Test
+    public void testRedeployOnJavaChangeWithClean() throws Exception {
+        File testDir = initProject("projects/redeploy-it", "projects/redeploy-without-classes-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier, "clean");
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha");
+
+        // Touch the java source code
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("aloha", uuid));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+    }
+
+    @Test
     public void testRedeployWithJvmArgs() throws Exception {
         File testDir = initProject("projects/redeploy-with-jvmArgs-it");
         assertThat(testDir).isDirectory();
@@ -212,6 +234,14 @@ public class RedeployIT extends VertxMojoTestBase {
     private void run(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
         verifier.executeGoals(ImmutableList.of("compile", "vertx:run"));
+    }
+
+    private void run(Verifier verifier, String ... previous) throws VerificationException {
+        verifier.setLogFileName("build-run.log");
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        builder.add(previous);
+        builder.add("vertx:run");
+        verifier.executeGoals(builder.build());
     }
 
 }

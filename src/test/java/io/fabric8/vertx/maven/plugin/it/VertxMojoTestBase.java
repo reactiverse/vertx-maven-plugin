@@ -76,6 +76,10 @@ public class VertxMojoTestBase {
     }
 
     public static File initProject(String name) {
+        return initProject(name, name);
+    }
+
+    public static File initProject(String name, String output) {
         File tc = new File("target/test-classes");
         if (!tc.isDirectory()) {
             tc.mkdirs();
@@ -86,7 +90,7 @@ public class VertxMojoTestBase {
             throw new RuntimeException("Cannot find directory: " + in.getAbsolutePath());
         }
 
-        File out = new File(tc, name);
+        File out = new File(tc, output);
         if (out.isDirectory()) {
             FileUtils.deleteQuietly(out);
         }
@@ -94,6 +98,10 @@ public class VertxMojoTestBase {
         try {
             System.out.println("Copying " + in.getAbsolutePath() + " to " + out.getParentFile().getAbsolutePath());
             FileUtils.copyDirectoryToDirectory(in, out.getParentFile());
+            File x = new File(out.getParentFile(), in.getName());
+            if (! x.getName().equals(out.getName())) {
+                x.renameTo(out);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy project resources", e);
         }
