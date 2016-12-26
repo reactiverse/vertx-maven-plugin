@@ -27,7 +27,7 @@ defines all the applicable configurations for the goal
 
 
 | redeployTerminationPeriod
-| the amount of time (in millisecods) to wait after having stopped the application (before launching user command).
+| the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
   This is useful on Windows, where the process is not killed immediately.
 | vertx.redeploy.termination.period
 | 0
