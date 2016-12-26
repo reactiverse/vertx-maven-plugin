@@ -63,7 +63,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period")
+    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period", defaultValue = "1000")
     long redeployScanPeriod;
 
     /**
@@ -290,7 +290,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
         }
         if(redeployTerminationPeriod >= 0) {
-            argsList.add(VERTX_ARG_REDEPLOY_TERMINIATION_PERIOD + redeployTerminationPeriod);
+            argsList.add(VERTX_ARG_REDEPLOY_TERMINATION_PERIOD + redeployTerminationPeriod);
         }
     }
 
@@ -386,7 +386,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 .filter(exec -> MojoSpy.PHASES.contains(exec.getLifecyclePhase()))
                 .map(this::toTask)
                 .collect(Collectors.toList());
-
         }
         return list;
     }
