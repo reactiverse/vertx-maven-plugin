@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -172,8 +173,6 @@ public class RedeployIT extends VertxMojoTestBase {
 
         run(verifier);
 
-        Stack<Long> scanTimes = new Stack<>();
-        scanTimes.add(System.currentTimeMillis());
         String response = getHttpResponse();
         assertThat(response).startsWith("Hello");
 
@@ -204,8 +203,8 @@ public class RedeployIT extends VertxMojoTestBase {
         assertThat(lines.isEmpty()).isFalse();
         long redeployCount = lines.stream()
             .filter(s -> pattern.matcher(s).matches())
-            .map(s -> pattern.matcher(s))
-            .filter(m -> m.find())
+            .map(pattern::matcher)
+            .filter(Matcher::find)
             .count();
         assertThat(redeployCount).isEqualTo(2);
     }
