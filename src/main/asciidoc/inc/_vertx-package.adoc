@@ -14,7 +14,7 @@ The package goal has the following parameters apart from the ones mentioned in
 
 [cols="1,5,2,3"]
 |===
-| Element | Description | Property| Default
+| Element | Description | Property | Default
 
 | serviceProviderCombination
 | Whether or not SPI files (`META-INF/services`) need to be be combined. Accepted valued as `combine` and `none`.
@@ -22,7 +22,18 @@ The package goal has the following parameters apart from the ones mentioned in
 | combine
 
 | classifier
-| The classifier to use to for the _fat_ jar. By default, it uses the main artifact name.
+| The classifier to add to the artifact generated. If given, the artifact will be attached with that classifier
+  and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
+  the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
+  artifact allows to deploy it alongside to the original one. Attachment is controlled using the `attach`
+  parameter.
 | &nbsp;
 | &nbsp;
+
+| attach
+| Whether or not the created archive needs to be attached to the project. If attached, the _fat_ jar is
+  installed and deployed alongside the main artifact (plain jar). Notice that you can't disable attachment if
+  the classifier is not set (it would mean detaching the main artifact).
+| &nbsp;
+| true
 |===
