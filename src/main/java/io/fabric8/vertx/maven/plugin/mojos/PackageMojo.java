@@ -44,9 +44,9 @@ import java.util.Set;
  * @since 1.0.0
  */
 @Mojo(name = "package",
-        defaultPhase = LifecyclePhase.PACKAGE,
-        requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
+    defaultPhase = LifecyclePhase.PACKAGE,
+    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
 public class PackageMojo extends AbstractVertxMojo {
 
@@ -58,10 +58,22 @@ public class PackageMojo extends AbstractVertxMojo {
     protected CombinationStrategy serviceProviderCombination;
 
     /**
-     * The artifact classifier. If not set, the plugin uses the default final name.
+     * Classifier to add to the artifact generated. If given, the artifact will be attached with that classifier and
+     * the main artifact will be deployed as the main artifact. If this is not given (default), it will replace the
+     * main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
+     * artifact allows to deploy it alongside to the original one. Attachment is controlled using the `attach`
+     * parameter.
      */
     @Parameter(name = "classifier")
     protected String classifier;
+
+    /**
+     * Whether or not the created archive needs to be attached to the project. If attached, the fat jar is
+     * installed and deployed alongside the main artifact. Notice that you can't disable attachment if the classifier
+     * is not set (it would mean detaching the main artifact).
+     */
+    @Parameter(name = "attach", defaultValue = "true")
+    protected boolean attach;
 
     public static String computeOutputName(MavenProject project, String classifier) {
         String finalName = project.getBuild().getFinalName();
@@ -91,6 +103,17 @@ public class PackageMojo extends AbstractVertxMojo {
             return;
         }
 
+        // Fix empty classifier.
+        if (classifier != null  && classifier.trim().isEmpty()) {
+            getLog().debug("The classifier is empty, it won't be used");
+            classifier = null;
+        }
+
+        if (classifier == null && !attach) {
+            throw new MojoExecutionException("Cannot disable attachment of the created archive when it's the main " +
+                "artifact");
+        }
+
         final Artifact artifact = this.project.getArtifact();
 
         Optional<File> primaryArtifactFile = getArtifactFile(artifact);
@@ -117,26 +140,26 @@ public class PackageMojo extends AbstractVertxMojo {
             }
 
             File fatJarFile = packageHelper
-                    .log(getLog())
-                    .build(pathProjectBuildDir, primaryFile);
+                .log(getLog())
+                .build(pathProjectBuildDir, primaryFile);
 
 
             //  Perform the relocation of the service providers when serviceProviderCombination is defined
-            if (serviceProviderCombination == null  || serviceProviderCombination != CombinationStrategy.none) {
+            if (serviceProviderCombination == null || serviceProviderCombination != CombinationStrategy.none) {
                 packageHelper.combineServiceProviders(project,
                     pathProjectBuildDir, fatJarFile);
             }
 
             ArtifactHandler handler = new DefaultArtifactHandler("jar");
-
-            if (classifier != null  && ! classifier.isEmpty()) {
+            if (classifier != null) {
                 Artifact vertxJarArtifact = new DefaultArtifact(artifact.getGroupId(),
                     artifact.getArtifactId(), artifact.getBaseVersion(), artifact.getScope()
                     , VERTX_PACKAGING, classifier, handler);
                 vertxJarArtifact.setFile(fatJarFile);
-                this.project.addAttachedArtifact(vertxJarArtifact);
+                if (attach) {
+                    this.project.addAttachedArtifact(vertxJarArtifact);
+                }
             }
-
         } catch (Exception e) {
             throw new MojoFailureException("Unable to build fat jar", e);
         }
