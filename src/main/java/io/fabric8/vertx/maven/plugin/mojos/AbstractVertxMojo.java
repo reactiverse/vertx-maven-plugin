@@ -99,7 +99,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     /**
      * vert.x redeploy termination period
      */
-    protected static final String VERTX_ARG_REDEPLOY_TERMINIATION_PERIOD = "redeploy-termination-period=";
+    protected static final String VERTX_ARG_REDEPLOY_TERMINATION_PERIOD = "redeploy-termination-period=";
 
     /**
      *

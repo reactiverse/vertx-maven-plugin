@@ -122,10 +122,23 @@ public class MojoSpy extends AbstractExecutionListener {
     public void mojoSucceeded(ExecutionEvent executionEvent) {
         // Unlike mojoStarted, this callback has the lifecycle phase set.
         MojoExecution execution = executionEvent.getMojoExecution();
-        MOJOS.add(execution);
+        addExecutionIfNotContainedAlready(execution);
         if (delegate != null) {
             delegate.mojoSucceeded(executionEvent);
         }
+    }
+
+    private void addExecutionIfNotContainedAlready(MojoExecution execution) {
+        String artifact = execution.getArtifactId();
+        String id = execution.getExecutionId();
+        // We must avoid duplicates in the list
+        for (MojoExecution exec : MOJOS) {
+            if (exec.getArtifactId().equals(artifact)  && exec.getExecutionId().equals(id)) {
+                // Duplicate found.
+                return;
+            }
+        }
+        MOJOS.add(execution);
     }
 
     @Override

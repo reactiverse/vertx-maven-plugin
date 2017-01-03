@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -53,6 +54,28 @@ public class RedeployIT extends VertxMojoTestBase {
         prepareProject(testDir, verifier);
 
         run(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha");
+
+        // Touch the java source code
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("aloha", uuid));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+    }
+
+    @Test
+    public void testRedeployOnJavaChangeWithClean() throws Exception {
+        File testDir = initProject("projects/redeploy-it", "projects/redeploy-without-classes-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier, "clean");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
@@ -172,8 +195,6 @@ public class RedeployIT extends VertxMojoTestBase {
 
         run(verifier);
 
-        Stack<Long> scanTimes = new Stack<>();
-        scanTimes.add(System.currentTimeMillis());
         String response = getHttpResponse();
         assertThat(response).startsWith("Hello");
 
@@ -204,8 +225,8 @@ public class RedeployIT extends VertxMojoTestBase {
         assertThat(lines.isEmpty()).isFalse();
         long redeployCount = lines.stream()
             .filter(s -> pattern.matcher(s).matches())
-            .map(s -> pattern.matcher(s))
-            .filter(m -> m.find())
+            .map(pattern::matcher)
+            .filter(Matcher::find)
             .count();
         assertThat(redeployCount).isEqualTo(2);
     }
@@ -213,6 +234,14 @@ public class RedeployIT extends VertxMojoTestBase {
     private void run(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
         verifier.executeGoals(ImmutableList.of("compile", "vertx:run"));
+    }
+
+    private void run(Verifier verifier, String ... previous) throws VerificationException {
+        verifier.setLogFileName("build-run.log");
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        builder.add(previous);
+        builder.add("vertx:run");
+        verifier.executeGoals(builder.build());
     }
 
 }
