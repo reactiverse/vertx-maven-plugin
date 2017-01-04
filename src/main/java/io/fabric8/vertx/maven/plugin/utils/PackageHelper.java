@@ -75,10 +75,11 @@ public class PackageHelper {
     }
 
     /**
-     * @param dir
-     * @param primaryArtifactFile
-     * @return
-     * @throws IOException
+     * Creates a fat jar packaging the Vert.x application.
+     *
+     * @param dir                 the target directory
+     * @param primaryArtifactFile the primary artifact if it exists
+     * @return the created fat jar
      */
     public File build(Path dir, File primaryArtifactFile) {
         File classes = new File(dir.toFile(), "classes");
@@ -86,11 +87,8 @@ public class PackageHelper {
         return createFatJar(dir);
     }
 
-    /**
-     * @param primaryArtifactFile
-     */
     private synchronized void build(File classes, File primaryArtifactFile) {
-        if (primaryArtifactFile != null  && primaryArtifactFile.isFile()) {
+        if (primaryArtifactFile != null && primaryArtifactFile.isFile()) {
             this.archive.as(ZipImporter.class).importFrom(primaryArtifactFile);
         } else if (classes.isDirectory()) {
             this.archive.addAsResource(classes, "/");
@@ -104,7 +102,7 @@ public class PackageHelper {
     }
 
     /**
-     *
+     * Add dependencies to the über jar that is under creation.
      */
     protected void addDependencies() {
         Set<Optional<File>> all = new LinkedHashSet<>(compileAndRuntimeDeps);
@@ -122,7 +120,7 @@ public class PackageHelper {
     }
 
     /**
-     *
+     * Generate the manifest for the über jar.
      */
     protected void generateManifest() {
         Manifest manifest = new Manifest();
@@ -147,10 +145,6 @@ public class PackageHelper {
 
     }
 
-    /**
-     * @param dir
-     * @return
-     */
     private synchronized File createFatJar(Path dir) {
 
         File jarFile = null;
@@ -187,12 +181,12 @@ public class PackageHelper {
     }
 
     /**
-     * This method will perform the service provider combination by `combining` contents of same spi
-     * across the dependencies
+     * This method performs the service provider combination by `combining` contents of same spi
+     * across the dependencies.
      *
-     * @param project          - the Maven project (must not be {@code null}
-     * @param backupDir        - the {@link File} path that can be used to perform backups
-     * @param targetJarFile    - the vertx fat jar file where the spi files will be updated - typically remove and add
+     * @param project       - the Maven project (must not be {@code null}
+     * @param backupDir     - the {@link File} path that can be used to perform backups
+     * @param targetJarFile - the vertx fat jar file where the spi files will be updated - typically remove and add
      * @throws MojoExecutionException - any error that might occur while doing relocation
      */
     public void combineServiceProviders(
@@ -250,38 +244,44 @@ public class PackageHelper {
     }
 
     /**
-     * @param compileAndRuntimeDeps
-     * @return
+     * Sets the compile and runtime dependencies to include in the über jar.
+     *
+     * @param compileAndRuntimeDeps the set of files to embed
+     * @return the current instance of {@link PackageHelper}
      */
-
     public PackageHelper compileAndRuntimeDeps(Set<Optional<File>> compileAndRuntimeDeps) {
-
         this.compileAndRuntimeDeps = compileAndRuntimeDeps;
-
         return this;
     }
 
     /**
-     * @param transitiveDeps
-     * @return
+     * Sets the transitive dependencies to include in the über jar.
+     *
+     * @param transitiveDeps the set of files to embed
+     * @return the current instance of {@link PackageHelper}
      */
-
     public PackageHelper transitiveDeps(Set<Optional<File>> transitiveDeps) {
-
         this.transitiveDeps = transitiveDeps;
-
         return this;
     }
 
     /**
-     * @param log
-     * @return
+     * Sets the log to use to report info, warnings and errors to the user.
+     *
+     * @param log the logger, must not be {@code null}
+     * @return the current instance of {@link PackageHelper}
      */
     public PackageHelper log(Log log) {
         this.log = log;
         return this;
     }
 
+    /**
+     * Sets the name of the final file (the über jar) that need to be generated.
+     *
+     * @param output the name
+     * @return the current instance of {@link PackageHelper}
+     */
     public PackageHelper withOutputName(String output) {
         this.outputFileName = output;
         return this;

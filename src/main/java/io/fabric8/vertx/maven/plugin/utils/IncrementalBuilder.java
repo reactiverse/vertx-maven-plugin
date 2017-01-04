@@ -76,7 +76,9 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     }
 
     /**
-     * @param path
+     * Adds an observer listening for changes in the given path.
+     *
+     * @param path the path to observe
      */
     protected synchronized void buildObserver(Path path) {
 
@@ -97,10 +99,10 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     protected synchronized void syncMonitor() {
         observers.forEach((path, observer)
             -> this.monitor.getObservers().forEach(observer2 -> {
-                Path path1 = Paths.get(observer2.getDirectory().toString());
-                if (!observers.containsKey(path1)) {
-                    this.monitor.removeObserver(observer2);
-                }
+            Path path1 = Paths.get(observer2.getDirectory().toString());
+            if (!observers.containsKey(path1)) {
+                this.monitor.removeObserver(observer2);
+            }
         }));
     }
 
