@@ -102,7 +102,6 @@
 
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.0.24</plexus-utils.version>
-        <aether-util.version>1.0.0.v20140518</aether-util.version>
         <maven-aether-provider.version>3.2.5</maven-aether-provider.version>
         <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
@@ -118,11 +117,8 @@
         <vertx-core.version>3.3.3</vertx-core.version>
         <assertj-core.version>3.4.1</assertj-core.version>
         <junit.version>4.8.2</junit.version>
-        <mockito-all.version>1.10.19</mockito-all.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <maven-compat.version>3.3.9</maven-compat.version>
-        <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
 
         <skipTests>false</skipTests>
     </properties>
@@ -189,12 +185,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-util</artifactId>
-            <version>${aether-util.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${snakeyaml.version}</version>
@@ -220,27 +210,9 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>${maven-plugin-testing-harness.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-compat</artifactId>
-            <version>${maven-compat.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
