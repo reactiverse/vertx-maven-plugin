@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
-import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;

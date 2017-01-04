@@ -1,23 +1,14 @@
 package io.fabric8.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.fabric8.vertx.maven.plugin.it.invoker.RunningVerifier;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileReader;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
