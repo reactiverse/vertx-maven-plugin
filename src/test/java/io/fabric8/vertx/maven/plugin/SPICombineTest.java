@@ -25,7 +25,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
@@ -37,7 +36,6 @@ import java.util.stream.Stream;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

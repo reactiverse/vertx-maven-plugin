@@ -159,11 +159,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
 
 
     /* ==== Maven Components ==== */
-    @Component
-    protected MavenProjectHelper mavenProjectHelper;
 
     /**
-     * this will get the current maven session
+     * The Maven Session.
      */
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
@@ -204,6 +202,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     @Parameter(property = "vertx.skip", defaultValue = "false")
     protected boolean skip;
 
+    /**
+     * The Plexus container.
+     */
     protected PlexusContainer container;
 
     public MavenProject getProject() {

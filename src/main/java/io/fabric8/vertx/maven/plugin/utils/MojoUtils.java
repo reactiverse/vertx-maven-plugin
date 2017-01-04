@@ -71,10 +71,12 @@ public class MojoUtils {
     }
 
     /**
-     * @param project
-     * @param mavenSession
-     * @param buildPluginManager
-     * @throws MojoExecutionException
+     * Executes the Maven Resource Plugin to copy resources to `target/classes`
+     *
+     * @param project            the project
+     * @param mavenSession       the maven session
+     * @param buildPluginManager the build plugin manager
+     * @throws MojoExecutionException if the copy cannot be completed successfully
      */
     public static void copyResources(MavenProject project, MavenSession mavenSession,
                                      BuildPluginManager buildPluginManager) throws MojoExecutionException {
@@ -111,9 +113,12 @@ public class MojoUtils {
     }
 
     /**
-     * @param project
-     * @param pluginKey
-     * @return
+     * Checks whether or not the given project has a plugin with the given key. The key is given using the
+     * "groupId:artifactId" syntax.
+     *
+     * @param project   the project
+     * @param pluginKey the plugin
+     * @return an Optional completed if the plugin is found.
      */
     public static Optional<Plugin> hasPlugin(MavenProject project, String pluginKey) {
         Optional<Plugin> optPlugin = project.getBuildPlugins().stream()
@@ -146,10 +151,12 @@ public class MojoUtils {
     }
 
     /**
-     * @param project
-     * @param mavenSession
-     * @param buildPluginManager
-     * @throws Exception
+     * Execute the Maven Compiler Plugin to compile java sources.
+     *
+     * @param project            the project
+     * @param mavenSession       the session
+     * @param buildPluginManager the build plugin manager
+     * @throws Exception if the compilation fails for any reason
      */
     public static void compile(MavenProject project, MavenSession mavenSession,
                                BuildPluginManager buildPluginManager) throws Exception {

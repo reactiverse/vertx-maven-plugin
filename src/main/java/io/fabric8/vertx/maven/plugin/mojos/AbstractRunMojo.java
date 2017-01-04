@@ -75,7 +75,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period")
+    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period",
+        defaultValue = "1000")
     long redeployTerminationPeriod;
 
 
@@ -298,7 +299,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         if(redeployGracePeriod > 0 ) {
             argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
         }
-        if(redeployTerminationPeriod >= 0) {
+        if(redeployTerminationPeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_TERMINATION_PERIOD + redeployTerminationPeriod);
         }
     }
@@ -465,7 +466,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      *
      * @param classPathUrls - the classpath urls which will be used to build the {@link URLClassLoader}
      * @return an instance of {@link URLClassLoader}
-     * @throws MojoExecutionException - any error that might occur while building the {@link URLClassLoader}
      */
     protected ClassLoader buildClassLoader(Collection<URL> classPathUrls) {
         return new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]));
