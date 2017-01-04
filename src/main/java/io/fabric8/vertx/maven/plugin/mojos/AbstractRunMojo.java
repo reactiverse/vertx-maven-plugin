@@ -75,7 +75,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      *
      */
-    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period")
+    @Parameter(alias = "redeployTerminationPeriod", property = "vertx.redeploy.termination.period",
+        defaultValue = "1000")
     long redeployTerminationPeriod;
 
 
@@ -298,7 +299,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         if(redeployGracePeriod > 0 ) {
             argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
         }
-        if(redeployTerminationPeriod >= 0) {
+        if(redeployTerminationPeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_TERMINATION_PERIOD + redeployTerminationPeriod);
         }
     }
