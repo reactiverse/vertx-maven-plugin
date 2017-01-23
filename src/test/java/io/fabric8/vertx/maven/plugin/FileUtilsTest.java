@@ -49,19 +49,14 @@ public class FileUtilsTest {
 
     @Test
     public void testBackup() throws Exception {
-
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.addAsServiceProvider("com.test.demo.DemoSPI",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl");
-
         jarArchive1.as(ZipExporter.class).exportTo(fileOut);
-
+        fileOut.close();
         assertNotNull(Files.exists(Paths.get(jar1.toURI())));
-
         FileUtils.backup(jar1, new File("target"));
-
         assertNotNull(Files.exists(Paths.get(jar1.toString() + ".original")));
-
     }
 
     @After
