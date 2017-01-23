@@ -41,16 +41,14 @@ public class FileUtils {
      * @throws IOException - the exception that might occur while backing up
      */
     public static Path backup(File source, File backupDir) throws IOException {
-
         Path sourceFilePath = Paths.get(source.toURI());
         String targetName = org.codehaus.plexus.util.FileUtils.basename(source.toString()) + "original.jar";
 
         Path backupFilePath = Paths.get(backupDir.toURI().resolve(targetName));
 
-        if (backupDir.exists() && backupDir.isDirectory()) {
-
-            Files.move(sourceFilePath, Paths.get(backupDir.toString(), targetName)
-                , StandardCopyOption.ATOMIC_MOVE);
+        if (backupDir.isDirectory()) {
+            Files.move(sourceFilePath, Paths.get(backupDir.toString(), targetName),
+                StandardCopyOption.ATOMIC_MOVE);
         }
 
         return backupFilePath;

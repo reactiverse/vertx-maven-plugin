@@ -18,6 +18,7 @@
 package io.fabric8.vertx.maven.plugin.utils;
 
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -29,10 +30,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -89,7 +87,7 @@ public class PackageHelper {
 
     private synchronized void build(File classes, File primaryArtifactFile) {
         if (primaryArtifactFile != null && primaryArtifactFile.isFile()) {
-            this.archive.as(ZipImporter.class).importFrom(primaryArtifactFile);
+            importFromFile(primaryArtifactFile);
         } else if (classes.isDirectory()) {
             this.archive.addAsResource(classes, "/");
         } else {
@@ -99,6 +97,20 @@ public class PackageHelper {
 
         addDependencies();
         generateManifest();
+    }
+
+    /**
+     * Import from file and make sure the file is closed.
+     * @param file the file, must not be {@code null}
+     */
+    private void importFromFile(File file) {
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            this.archive.as(ZipImporter.class).importFrom(fis);
+            IOUtils.closeQuietly(fis);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to read the file " + file.getAbsolutePath(), e);
+        }
     }
 
     /**
@@ -115,7 +127,7 @@ public class PackageHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Adding Dependency :" + f.toString());
                 }
-                this.archive.as(ZipImporter.class).importFrom(f);
+                importFromFile(f);
             });
     }
 
@@ -162,11 +174,7 @@ public class PackageHelper {
                 log.error("Failed to create parent directories for :" + jarFile.getAbsolutePath());
             }
 
-            ZipExporter zipExporter = this.archive.as(ZipExporter.class);
-
-            try (FileOutputStream jarOut = new FileOutputStream(theCreatedFile)) {
-                zipExporter.exportTo(jarOut);
-            }
+            this.archive.as(ZipExporter.class).exportTo(theCreatedFile);
 
             if (useTmpFile) {
                 jarFile.delete();
@@ -236,6 +244,7 @@ public class PackageHelper {
             try (FileOutputStream jarOut = new FileOutputStream(targetJarFile)) {
                 zipExporter.exportTo(jarOut);
             }
+
 
             org.apache.commons.io.FileUtils.deleteQuietly(vertxJarOriginalFile.toFile());
         } catch (Exception e) {
