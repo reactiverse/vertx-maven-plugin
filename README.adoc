@@ -4,8 +4,8 @@
 |===
 |Circle CI (Linux / OS X)| AppVeyor (Windows)
 |image:https://circleci.com/gh/fabric8io/vertx-maven-plugin.svg?style=shield["CircleCI", link="https://circleci.com/gh/fabric8io/vertx-maven-plugin"]
-|image:https://ci.appveyor.com/api/projects/status/yo15u8vxrk4deas0/branch/master?svg=true,["AppVeyor", link="https://ci.appveyor.com/project/fabric8io/vertx-maven-plugin"]
-|==
+|image:https://ci.appveyor.com/api/projects/status/w68t5uccpfuy4176?svg=true["AppVeyor", link="https://ci.appveyor.com/project/kameshsampath/vertx-maven-plugin"]
+|===
 
 This Maven plugin is a one-stop-shop for packaging, running, starting and stopping  http://vertx.io[vert.x] Java applications.  This plugin
 combines the goals of Maven Shade, Maven Exec into one, allowing the users to have a simplified pom.xml.
