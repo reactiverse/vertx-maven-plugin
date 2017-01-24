@@ -29,6 +29,8 @@ import org.apache.maven.scm.manager.ScmManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -43,6 +45,14 @@ import java.util.stream.Collectors;
  * @author kameshs
  */
 public class ManifestUtils {
+
+    public static String DEFAULT_DATE_PATTERN = "yyyyMMdd HH:mm:ss z";
+
+    private static final SimpleDateFormat simpleDateFormat;
+
+    static {
+        simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+    }
 
     /**
      * This method adds the extra MANIFEST.MF headers with header keys in {@link ExtraManifestKeys}
@@ -61,6 +71,7 @@ public class ManifestUtils {
             model.getName() == null ? model.getArtifactId() : model.getName());
         attributes.put(attributeName(ExtraManifestKeys.projectGroup.name()), model.getGroupId());
         attributes.put(attributeName(ExtraManifestKeys.projectVersion.name()), model.getVersion());
+        attributes.put(attributeName(ExtraManifestKeys.buildTimestamp.name()), manifestTimestampFormat(new Date()));
 
         //Add SCM Metadata only when <scm> is configured in the pom.xml
         if (project.getScm() != null) {
@@ -88,8 +99,8 @@ public class ManifestUtils {
                             scmChangeLogMap.get(ExtraManifestKeys.scmType.name()));
                         attributes.put(attributeName(ExtraManifestKeys.scmRevision.name()),
                             scmChangeLogMap.get(ExtraManifestKeys.scmRevision.name()));
-                        attributes.put(attributeName(ExtraManifestKeys.timestamp.name()),
-                            scmChangeLogMap.get(ExtraManifestKeys.timestamp.name()));
+                        attributes.put(attributeName(ExtraManifestKeys.lastCommitTimestamp.name()),
+                            scmChangeLogMap.get(ExtraManifestKeys.lastCommitTimestamp.name()));
                         attributes.put(attributeName(ExtraManifestKeys.author.name()),
                             scmChangeLogMap.get(ExtraManifestKeys.author.name()));
                     }
@@ -151,5 +162,9 @@ public class ManifestUtils {
     public static Attributes.Name attributeName(String camelCasedName) {
         return new Attributes.Name(WordUtils.capitalize(CaseFormat.LOWER_CAMEL
             .to(CaseFormat.LOWER_HYPHEN, camelCasedName), '-'));
+    }
+
+    public static String manifestTimestampFormat(Date date) {
+        return simpleDateFormat.format(date);
     }
 }

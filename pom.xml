@@ -222,72 +222,21 @@
             <version>${shrinkwrap.version}</version>
         </dependency>
 
-        <!-- SCM Providers: TODO to make the pom little verbose we can include the maven-scm-plugin as dependency -->
+        <!-- SCM Providers-->
         <dependency>
             <groupId>org.apache.maven.scm</groupId>
             <artifactId>maven-scm-manager-plexus</artifactId>
         </dependency>
 
-        <!--  providers declaration  -->
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-accurev</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-bazaar</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-clearcase</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-cvsexe</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-cvsjava</artifactId>
-        </dependency>
+        <!--  Only Git and SVN are by default added as plugin deps, others developers will declare it as neded  -->
+
         <dependency>
             <groupId>org.apache.maven.scm</groupId>
             <artifactId>maven-scm-provider-gitexe</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-hg</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-jazz</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-local</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-perforce</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-starteam</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
             <artifactId>maven-scm-provider-svnexe</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-synergy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-vss</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-tfs</artifactId>
         </dependency>
         <!--  end providers declaration  -->
 

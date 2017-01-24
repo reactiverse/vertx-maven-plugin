@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -54,7 +55,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
     }
 
     @Before
-    public void setup() throws Exception{
+    public void setup() throws Exception {
         super.setUp();
         scmManager = (ScmManager) lookup(ScmManager.ROLE);
         assertThat(scmManager);
@@ -73,7 +74,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes,scmManager);
+        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -84,6 +85,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         String expected = "Manifest-Version: 1.0\n" +
             "Project-Name: vertx-demo\n" +
+            "Build-Timestamp: " + ManifestUtils.manifestTimestampFormat(new Date()) + "\n" +
             "Project-Dependencies: io.vertx:vertx-core:3.3.3\n" +
             "Project-Group: org.vertx.demo\n" +
             "Project-Version: 1.0.0-SNAPSHOT";
@@ -105,7 +107,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes,scmManager);
+        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -116,6 +118,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         String expected = "Manifest-Version: 1.0\n" +
             "Project-Name: vertx-demo\n" +
+            "Build-Timestamp: " + ManifestUtils.manifestTimestampFormat(new Date()) + "\n" +
             "Project-Dependencies: com.example:example:3.3.3:vertx\n" +
             "Project-Group: org.vertx.demo\n" +
             "Project-Version: 1.0.0-SNAPSHOT";
@@ -137,7 +140,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes,scmManager);
+        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -148,6 +151,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         String expected = "Manifest-Version: 1.0\n" +
             "Project-Name: vertx-demo\n" +
+            "Build-Timestamp: "+ManifestUtils.manifestTimestampFormat(new Date())+"\n"+
             "Project-Dependencies: com.example:example:3.3.3:vertx\n" +
             "Scm-Tag: HEAD\n" +
             "Project-Group: org.vertx.demo\n" +

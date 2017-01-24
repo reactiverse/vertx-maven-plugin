@@ -21,6 +21,6 @@ package io.fabric8.vertx.maven.plugin.model;
  * @author kameshs
  */
 public enum ExtraManifestKeys {
-    timestamp, author, projectName, projectGroup, projectVersion, scmUrl, scmTag,
-    scmRevision, projectUrl, projectDependencies,scmType
+    lastCommitTimestamp, author, projectName, projectGroup, projectVersion, scmUrl, scmTag,
+    scmRevision, projectUrl, projectDependencies,scmType,buildTimestamp
 }

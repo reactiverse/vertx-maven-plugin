@@ -30,7 +30,6 @@ import org.apache.maven.scm.repository.ScmRepositoryException;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +41,11 @@ import java.util.Map;
  */
 public class ScmSpy {
 
-    private static String DEFAULT_DATE_PATTERN = "yyyyMMdd HH:mm:ss z";
-
     private final ScmManager scmManager;
-    private final SimpleDateFormat simpleDateFormat;
 
     public ScmSpy(ScmManager scmManager) {
         this.scmManager = scmManager;
-        simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+
     }
 
     /**
@@ -66,7 +62,7 @@ public class ScmSpy {
     }
 
     /**
-     * This method extracts the simple metadata such as revision, timestamp of the commit/hash, author of the commit
+     * This method extracts the simple metadata such as revision, lastCommitTimestamp of the commit/hash, author of the commit
      * from the Changelog available in the SCM repository
      * @param scmUrl - the SCM url to get the SCM connection
      * @param workingDir - the Working Copy or Directory of the SCM repo
@@ -86,7 +82,8 @@ public class ScmSpy {
                 ChangeSet changeSet = changeSetList.get(0);
                 changeLogMap.put(ExtraManifestKeys.scmType.name(), getScmType(scmUrl));
                 changeLogMap.put(ExtraManifestKeys.scmRevision.name(), changeSet.getRevision());
-                changeLogMap.put(ExtraManifestKeys.timestamp.name(), simpleDateFormat.format(changeSet.getDate()));
+                changeLogMap.put(ExtraManifestKeys.lastCommitTimestamp.name(),
+                    ManifestUtils.manifestTimestampFormat(changeSet.getDate()));
                 changeLogMap.put(ExtraManifestKeys.author.name(), changeSet.getAuthor());
             }
         }
