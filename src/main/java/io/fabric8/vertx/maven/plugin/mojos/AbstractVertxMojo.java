@@ -27,6 +27,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
@@ -177,6 +178,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Component
     protected LifecycleExecutor lifecycleExecutor;
+
+    @Component
+    protected ScmManager scmManager;
 
     /* ==== Config ====  */
     // TODO-ROL: It would be awesome if this would not be required but, if not given,

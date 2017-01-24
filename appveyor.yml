@@ -1,0 +1,35 @@
+---
+branches:
+  except:
+    - gh-pages
+  only:
+    - master
+build_script:
+  -
+    ps: "mvn -B clean install -DskipTests=true"
+cache:
+  - "C:\\maven\\"
+  - "C:\\Users\\appveyor\\.m2"
+environment:
+  JAVA_HOME: "C:\\Program Files\\Java\\jdk1.8.0"
+install:
+  -
+    ps: |
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        if(!(Test-Path -Path \"C:\\maven\\apache-maven-3.3.9\"))
+        {
+           echo 'Downloading Maven '
+           (new-object System.Net.WebClient).DownloadFile('http://redrockdigimark.com/apachemirror/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip',
+           'C:\\apache-maven-3.3.9-bin.zip')
+           [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\\apache-maven-3.3.9-bin.zip','C:\\maven')
+        }
+        Set PATH="C:\\maven\\apache-maven-3.3.9\\bin;%PATH\"
+  -
+    cmd: "mvn --version"
+  -
+    cmd: "java -version"
+test_script:
+  -
+    ps: "mvn clean install"
+version: 1.0-SNAPSHOT.{build}
+

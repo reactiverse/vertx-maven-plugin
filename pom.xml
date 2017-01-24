@@ -119,9 +119,23 @@
         <junit.version>4.8.2</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
+        <maven-scm-plugin.version>1.9.5</maven-scm-plugin.version>
+        <org.eclipse.jgit.version>4.4.1.201607150455-r</org.eclipse.jgit.version>
 
         <skipTests>false</skipTests>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven.scm</groupId>
+                <artifactId>maven-scm</artifactId>
+                <version>${maven-scm-plugin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -133,8 +147,8 @@
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${maven-plugin-plugin.version}</version>
-            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
@@ -208,6 +222,24 @@
             <version>${shrinkwrap.version}</version>
         </dependency>
 
+        <!-- SCM Providers-->
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-manager-plexus</artifactId>
+        </dependency>
+
+        <!--  Only Git and SVN are by default added as plugin deps, others developers will declare it as neded  -->
+
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-svnexe</artifactId>
+        </dependency>
+        <!--  end providers declaration  -->
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
@@ -245,6 +277,14 @@
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-invoker</artifactId>
             <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- SCM Metadata Integration Tests -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>${org.eclipse.jgit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
