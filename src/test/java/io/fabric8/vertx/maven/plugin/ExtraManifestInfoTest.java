@@ -156,7 +156,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
             "Scm-Tag: HEAD\n" +
             "Project-Group: org.vertx.demo\n" +
             "Project-Version: 1.0.0-SNAPSHOT\n" +
-            "Scm-Url: https://github.com/fabric8io/vertx-maven-plugin\n";
+            "Scm-Url: https://github.com/fabric8io/vertx-maven-plugin";
 
         assertThat(new String(bout.toByteArray())).isEqualToIgnoringWhitespace(expected);
 
