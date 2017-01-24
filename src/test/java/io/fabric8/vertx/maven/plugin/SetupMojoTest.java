@@ -22,6 +22,7 @@ import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -31,8 +32,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 public class SetupMojoTest {
 
@@ -57,6 +57,8 @@ public class SetupMojoTest {
         pluginExec.addGoal("package");
         pluginExec.setId("vmp-init-package");
         vertxMavenPlugin.addExecution(pluginExec);
+
+        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
@@ -83,6 +85,13 @@ public class SetupMojoTest {
         project = new MavenProject(model);
         vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
+        Plugin vmp = project.getPlugin("io.fabric8:vertx-maven-plugin");
+        assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        assertNotNull(pluginConfig);
+        String redeploy = pluginConfig.getChild("redeploy").getValue();
+        assertNotNull(redeploy);
+        assertTrue(Boolean.valueOf(redeploy));
     }
 
     @Test
@@ -105,6 +114,8 @@ public class SetupMojoTest {
         pluginExec.addGoal("package");
         pluginExec.setId("vmp-init-package");
         vertxMavenPlugin.addExecution(pluginExec);
+
+        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
         Build build = new Build();
         model.setBuild(build);
@@ -133,6 +144,13 @@ public class SetupMojoTest {
         project = new MavenProject(model);
         vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
+        Plugin vmp = project.getPlugin("io.fabric8:vertx-maven-plugin");
+        assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        assertNotNull(pluginConfig);
+        String redeploy = pluginConfig.getChild("redeploy").getValue();
+        assertNotNull(redeploy);
+        assertTrue(Boolean.valueOf(redeploy));
     }
 
     private void addDependencies(Model model, Dependency vertxBom) {

@@ -26,6 +26,8 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.Assert;
 
 import java.io.*;
 import java.util.Optional;
@@ -99,6 +101,15 @@ public class Verify {
             .findFirst();
         assertThat(vertxCoreDep.isPresent()).isTrue();
         assertThat(vertxCoreDep.get().getVersion()).isNull();
+
+        //Check Redeploy Configuration
+        Plugin vmp = project.getPlugin("io.fabric8:vertx-maven-plugin");
+        Assert.assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        Assert.assertNotNull(pluginConfig);
+        String redeploy = pluginConfig.getChild("redeploy").getValue();
+        Assert.assertNotNull(redeploy);
+        assertTrue(Boolean.valueOf(redeploy));
     }
 
 
