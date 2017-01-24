@@ -123,7 +123,7 @@ public class PackageMojo extends AbstractVertxMojo {
         Set<Optional<File>> compileAndRuntimeDeps = extractArtifactPaths(this.project.getDependencyArtifacts());
         Set<Optional<File>> transitiveDeps = extractArtifactPaths(this.project.getArtifacts());
 
-        PackageHelper packageHelper = new PackageHelper(this.launcher, this.verticle)
+        PackageHelper packageHelper = new PackageHelper(this.launcher, this.verticle,this.project,this.scmManager)
             .withOutputName(computeOutputName(project, classifier))
             .compileAndRuntimeDeps(compileAndRuntimeDeps)
             .transitiveDeps(transitiveDeps);

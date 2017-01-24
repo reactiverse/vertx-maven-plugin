@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.scm.manager.ScmManager;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
@@ -47,6 +48,8 @@ public class PackageHelper {
 
     private final JavaArchive archive;
     private final Attributes.Name MAIN_VERTICLE = new Attributes.Name("Main-Verticle");
+    private final MavenProject mavenProject;
+    private final ScmManager scmManager;
     private String mainVerticle;
     private String mainClass;
     private Set<Optional<File>> compileAndRuntimeDeps;
@@ -55,10 +58,12 @@ public class PackageHelper {
     private String outputFileName;
 
 
-    public PackageHelper(String mainClass, String mainVerticle) {
+    public PackageHelper(String mainClass, String mainVerticle,MavenProject mavenProject,ScmManager scmManager) {
         this.archive = ShrinkWrap.create(JavaArchive.class);
         this.mainClass = mainClass;
         this.mainVerticle = mainVerticle;
+        this.mavenProject = mavenProject;
+        this.scmManager   = scmManager;
     }
 
 
@@ -79,13 +84,13 @@ public class PackageHelper {
      * @param primaryArtifactFile the primary artifact if it exists
      * @return the created fat jar
      */
-    public File build(Path dir, File primaryArtifactFile) {
+    public File build(Path dir, File primaryArtifactFile) throws MojoExecutionException {
         File classes = new File(dir.toFile(), "classes");
         build(classes, primaryArtifactFile);
         return createFatJar(dir);
     }
 
-    private synchronized void build(File classes, File primaryArtifactFile) {
+    private synchronized void build(File classes, File primaryArtifactFile) throws MojoExecutionException {
         if (primaryArtifactFile != null && primaryArtifactFile.isFile()) {
             importFromFile(primaryArtifactFile);
         } else if (classes.isDirectory()) {
@@ -96,7 +101,11 @@ public class PackageHelper {
         }
 
         addDependencies();
-        generateManifest();
+        try {
+            generateManifest();
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error building package", e);
+        }
     }
 
     /**
@@ -134,7 +143,7 @@ public class PackageHelper {
     /**
      * Generate the manifest for the über jar.
      */
-    protected void generateManifest() {
+    protected void generateManifest() throws IOException,MojoExecutionException {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -143,6 +152,8 @@ public class PackageHelper {
         if (mainVerticle != null) {
             attributes.put(MAIN_VERTICLE, mainVerticle);
         }
+
+        ManifestUtils.addExtraManifestInfo(mavenProject, attributes,scmManager);
 
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();

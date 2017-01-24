@@ -4,6 +4,7 @@ package io.fabric8.vertx.maven.plugin.it;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.shared.utils.StringUtils;
 import org.junit.BeforeClass;
@@ -141,5 +142,13 @@ public class VertxMojoTestBase {
         }
         FileUtils.write(input, data, "UTF-8");
         return input;
+    }
+
+    protected void runPackage(Verifier verifier) throws VerificationException, IOException {
+        verifier.setLogFileName("build-package.log");
+        verifier.executeGoal("package");
+
+        verifier.assertFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
+        verifier.resetStreams();
     }
 }

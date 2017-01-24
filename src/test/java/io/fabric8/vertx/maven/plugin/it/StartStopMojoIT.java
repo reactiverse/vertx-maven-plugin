@@ -178,14 +178,14 @@ public class StartStopMojoIT extends VertxMojoTestBase {
         assertThat(response).isEqualTo("Hello !");
     }
 
-    private void runPackage(Verifier verifier) throws VerificationException, IOException {
-        verifier.setLogFileName("build-package.log");
-        verifier.executeGoal("package");
-
-        assertInLog(verifier, "BUILD SUCCESS");
-        verifier.assertFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
-        verifier.resetStreams();
-    }
+//    private void runPackage(Verifier verifier) throws VerificationException, IOException {
+//        verifier.setLogFileName("build-package.log");
+//        verifier.executeGoal("package");
+//
+//        assertInLog(verifier, "BUILD SUCCESS");
+//        verifier.assertFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
+//        verifier.resetStreams();
+//    }
 
     public void assertInLog(Verifier verifier, String... snippets) throws IOException {
         File log = new File(verifier.getBasedir(), verifier.getLogFileName());
