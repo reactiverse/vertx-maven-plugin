@@ -26,6 +26,9 @@ in the next sections.
 |**<<vertx:start>>**
 |Run a Vert.x application in daemon mode with specific id
 
+|**<<vertx:setup>>**
+|Sets up vert.x maven plugin and basic vert.x dependencies on an existing maven project
+
 |**<<vertx:stop>>**
 |Stops the vert.x application running in daemon mode
 |===

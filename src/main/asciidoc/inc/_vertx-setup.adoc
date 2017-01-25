@@ -1,3 +1,4 @@
+
 [[vertx:setup]]
 == *vertx:setup*
 
@@ -9,4 +10,17 @@ This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is con
 ----
 mvn io.fabric8:vertx-maven-plugin:{version}:setup
 ----
+
+The setup goal by default uses the plugin property _vertx-core-version_
+from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
+if you wish to override the vertx version, then you can run the same command as above with `-DvertxVersion=<your-vertx-version>`
+
+e.g.
+[source,subs="attributes-with-version"]
+----
+mvn io.fabric8:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0-SNAPSHOT
+----
+
+This will configure the vert.x and its dependencies to `3.4.0-SNAPSHOT` i.e. Maven project property `vertx.version`
+set to `3.4.0-SNAPSHOT`
 

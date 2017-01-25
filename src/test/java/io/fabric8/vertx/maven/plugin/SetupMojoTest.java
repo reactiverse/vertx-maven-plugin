@@ -30,6 +30,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
@@ -151,6 +152,73 @@ public class SetupMojoTest {
         String redeploy = pluginConfig.getChild("redeploy").getValue();
         assertNotNull(redeploy);
         assertTrue(Boolean.valueOf(redeploy));
+    }
+
+    @Test
+    public void testAddVertxMavenPluginWithVertxVersion() throws Exception {
+
+        System.setProperty("vertxVersion","3.4.0-SNAPSHOT");
+
+        InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
+        assertNotNull(pomFile);
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(pomFile);
+
+        MavenProject project = new MavenProject(model);
+
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertFalse(vmPlugin.isPresent());
+
+        Plugin vertxMavenPlugin = plugin("io.fabric8", "vertx-maven-plugin",
+            MojoUtils.getVersion("vertx-maven-plugin-version"));
+
+        PluginExecution pluginExec = new PluginExecution();
+        pluginExec.addGoal("initialize");
+        pluginExec.addGoal("package");
+        pluginExec.setId("vmp-init-package");
+        vertxMavenPlugin.addExecution(pluginExec);
+
+        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
+
+        model.getBuild().getPlugins().add(vertxMavenPlugin);
+
+        String vertxVersion = System.getProperty("vertxVersion") == null?MojoUtils.getVersion("vertx-core-version"):
+            System.getProperty("vertxVersion");
+
+        model.getProperties().putIfAbsent("vertx.version", vertxVersion);
+
+        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        vertxBom.setType("pom");
+        vertxBom.setScope("import");
+
+        addDependencies(model, vertxBom);
+
+        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+        StringWriter updatedPom = new StringWriter();
+
+        xpp3Writer.write(updatedPom, model);
+        updatedPom.flush();
+        updatedPom.close();
+
+        //System.out.println(updatedPom);
+
+        //Check if it has been added
+
+        model = xpp3Reader.read(new StringReader(updatedPom.toString()));
+        project = new MavenProject(model);
+        vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+        Plugin vmp = project.getPlugin("io.fabric8:vertx-maven-plugin");
+        assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        assertNotNull(pluginConfig);
+        String redeploy = pluginConfig.getChild("redeploy").getValue();
+        assertNotNull(redeploy);
+        assertTrue(Boolean.valueOf(redeploy));
+        Properties projectProps = project.getProperties();
+        assertNotNull(projectProps);
+        assertFalse(projectProps.isEmpty());
+        assertEquals(projectProps.getProperty("vertx.version"),vertxVersion);
     }
 
     private void addDependencies(Model model, Dependency vertxBom) {
