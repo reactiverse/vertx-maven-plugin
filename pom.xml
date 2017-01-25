@@ -280,6 +280,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jvnet.winp</groupId>
+            <artifactId>winp</artifactId>
+            <version>1.24</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- SCM Metadata Integration Tests -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
