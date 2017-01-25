@@ -98,11 +98,7 @@ public class VertxMojoTestBase {
         out.mkdirs();
         try {
             System.out.println("Copying " + in.getAbsolutePath() + " to " + out.getParentFile().getAbsolutePath());
-            FileUtils.copyDirectoryToDirectory(in, out.getParentFile());
-            File x = new File(out.getParentFile(), in.getName());
-            if (! x.getName().equals(out.getName())) {
-                x.renameTo(out);
-            }
+            org.codehaus.plexus.util.FileUtils.copyDirectoryStructure(in, out);
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy project resources", e);
         }

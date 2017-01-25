@@ -33,8 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
  * This Goal helps in setting up Vert.x maven project with vertx-maven-plugin, with sane defaults
@@ -95,6 +94,9 @@ public class SetupMojo extends AbstractMojo {
                 pluginExec.addGoal("package");
                 pluginExec.setId("vmp-init-package");
                 vertxMavenPlugin.addExecution(pluginExec);
+
+                //Plugin Configuration
+                vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
                 Build build = model.getBuild();
 
