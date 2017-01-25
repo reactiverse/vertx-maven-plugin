@@ -40,6 +40,8 @@ import java.util.zip.ZipEntry;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -112,6 +114,16 @@ public class Verify {
         assertTrue(Boolean.valueOf(redeploy));
     }
 
+    public static void verifySetupWithVersion(File pomFile) throws Exception {
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+
+        MavenProject project = new MavenProject(model);
+        Properties projectProps = project.getProperties();
+        Assert.assertNotNull(projectProps);
+        assertFalse(projectProps.isEmpty());
+        assertEquals(projectProps.getProperty("vertx.version"),"3.4.0-SNAPSHOT");
+    }
 
     public static String read(InputStream input) throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {

@@ -26,6 +26,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -46,13 +47,14 @@ public class SetupMojo extends AbstractMojo {
     final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
 
     /**
-     * The Maven project which will define and confiure the vertx-maven-plugin
+     * The Maven project which will define and configure the vertx-maven-plugin
      */
     @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+
 
         //We should get cloned of the OriginalModel, as project.getModel will return effective model
         Model model = project.getOriginalModel().clone();
@@ -66,7 +68,11 @@ public class SetupMojo extends AbstractMojo {
                 //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
                 model.getProperties().putIfAbsent("fabric8.vertx.plugin.version",
                     MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
-                model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
+                String vertxVersion = System.getProperty("vertxVersion");
+                if(vertxVersion == null){
+                    vertxVersion = MojoUtils.getVersion("vertx-core-version");
+                }
+                model.getProperties().putIfAbsent("vertx.version", vertxVersion);
 
                 //Add Vert.x BOM
                 addVertxBom(model);
