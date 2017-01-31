@@ -3,12 +3,58 @@
 This goal allows to run the Vert.x application as part of the maven build.
 The application is always run as a forked process.
 
-The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
-defines all the applicable configurations for the goal
+The goal has the following exclusive configuration apart from the applicable **<<common:run-configurations,Common Run Configuration>>**
 
 [cols="1,5,2,3"]
 |===
 | Element | Description | Property| Default
+
+|cluster
+|Whether the Vert.x instance will attempt to form cluster with other Vert.x instances on network
+|&nbsp;
+|false
+
+|clusterHost
+|Host to bind to for cluster communication. If this is not specified vert.x will attempt to choose one from the available interfaces.
+|&nbsp;
+|&nbsp;
+
+|clusterPort
+|Port to use for cluster communication
+|&nbsp;
+|&nbsp;
+
+|ha
+|If specified the verticle will be deployed as a high availability (HA) deployment. This means it can fail over to any other nodes in the cluster started with the same HA group.
+|&nbsp;
+|false
+
+|haGroup
+|This specifies the HA group this node  will join. There can be multiple HA groups in a cluster. Nodes will only failover to other nodes in the same group.  This property is available for Vert.x only when **ha** is `true`
+|&nbsp;
+|&nbsp;
+
+|instances
+|Specifies how many instances of the verticle will be deployed.
+|&nbsp;
+|&nbsp;
+
+|quorum
+|This specifies the minimum number of  nodes in the cluster for any HA deploymentIDs to be active.  This property is available for Vert.x only when **ha** is `true`
+|&nbsp;
+|&nbsp;
+
+| config
+| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
+run.
+| &nbsp;
+| src/main/config/application.json or src/main/config/application.yml
+
+| jvmArgs
+| The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts.
+| vertx.jvmArguments
+| _no arguments_
 
 | redeploy
 | Whether or not the redeployment is enabled
@@ -25,25 +71,17 @@ defines all the applicable configurations for the goal
 | vertx.redeploy.grace.period
 | 1000
 
-
 | redeployTerminationPeriod
 | the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
   This is useful on Windows, where the process is not killed immediately.
 | vertx.redeploy.termination.period
 | 1000 (1 second)
 
+|worker
+|If specified the verticle will be a worker verticle
+|&nbsp;
+|false
 
-| config
-| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
-run.
-| &nbsp;
-| src/main/config/application.json or src/main/config/application.yml
-
-| jvmArgs
-| The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.
-| vertx.jvmArguments
-| _no arguments_
 |===
 
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
