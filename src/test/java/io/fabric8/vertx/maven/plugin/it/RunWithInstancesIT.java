@@ -52,7 +52,7 @@ public class RunWithInstancesIT extends VertxMojoTestBase {
     }
 
     @Test
-    public void testRunWithoutInstances() throws Exception {
+    public void testRunWithInstances() throws Exception {
         File testDir = initProject("projects/run-with-two-instances-it");
         assertThat(testDir).isDirectory();
 

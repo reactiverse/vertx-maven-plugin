@@ -53,7 +53,7 @@ public class RunHaQuorumIT extends VertxMojoTestBase {
     }
 
     @Test
-    public void testRunWithoutInstances() throws Exception {
+    public void testRunWithQuorum() throws Exception {
         File testDir = initProject("projects/run-ha-quorum-it");
         assertThat(testDir).isDirectory();
 

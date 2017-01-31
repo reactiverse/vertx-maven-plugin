@@ -124,7 +124,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      * to hold extra options that can be passed to run command
      */
-    protected List<String> runExtraArgs;
+    protected List<String> optionalRunExtraArgs;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -166,7 +166,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         } else {
             argsList.add(launcher);
         }
-
+        addRunExtraArgs(argsList);
         run(argsList);
     }
 
@@ -278,12 +278,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 argsList.add(config.toString());
             }
         }
-
-        if ("run".equals(vertxCommand)) {
-            if(runExtraArgs!=null && !runExtraArgs.isEmpty()){
-                argsList.addAll(runExtraArgs);
-            }
-        }
     }
 
     /**
@@ -314,6 +308,20 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
         if (redeployTerminationPeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_TERMINATION_PERIOD + redeployTerminationPeriod);
+        }
+    }
+
+    /**
+     * This method will add the extra arguments required for the run either used by core Vert.x Launcher
+     * or by custom Launcher
+     * @param argsList
+     */
+    private void addRunExtraArgs(List<String> argsList) {
+
+        if ("run".equals(vertxCommand)) {
+            if(optionalRunExtraArgs !=null && !optionalRunExtraArgs.isEmpty()){
+                argsList.addAll(optionalRunExtraArgs);
+            }
         }
     }
 

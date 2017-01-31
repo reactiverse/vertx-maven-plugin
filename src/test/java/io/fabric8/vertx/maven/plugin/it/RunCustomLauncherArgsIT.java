@@ -17,7 +17,6 @@
 package io.fabric8.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableList;
-import io.fabric8.vertx.maven.plugin.it.VertxMojoTestBase;
 import io.fabric8.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test checking the execution of vertx:run --instances <n>
  */
-public class RunHaGroupIT extends VertxMojoTestBase {
+public class RunCustomLauncherArgsIT extends VertxMojoTestBase {
 
     private RunningVerifier verifier;
 
@@ -53,8 +52,8 @@ public class RunHaGroupIT extends VertxMojoTestBase {
     }
 
     @Test
-    public void testRunWithoutHaGroup() throws Exception {
-        File testDir = initProject("projects/run-ha-group-it");
+    public void testRunWithCustomLauncherArgs() throws Exception {
+        File testDir = initProject("projects/run-with-custom-launcher-it");
         assertThat(testDir).isDirectory();
 
         initVerifier(testDir);
@@ -63,8 +62,7 @@ public class RunHaGroupIT extends VertxMojoTestBase {
         run(verifier, "package");
 
         String response = getHttpResponse();
-        verifier.verifyTextInLog("io.vertx.core.impl.HAManager");
-        assertThat(response).isEqualTo("HA Group=\"demo\"");
+        assertThat(response).isEqualTo("File copy from /tmp/docs to /home/vertx/docs");
     }
 
     private void run(Verifier verifier, String... previous) throws VerificationException {

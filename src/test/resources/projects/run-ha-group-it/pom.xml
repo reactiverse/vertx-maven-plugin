@@ -45,14 +45,16 @@
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>package</goal>
                         </goals>
-                        <configuration>
-                            <ha>true</ha>
-                            <haGroup>demo</haGroup>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <runArgs>
+                        <runArg>--ha</runArg>
+                        <runArg>--hagroup="demo"</runArg>
+                    </runArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>

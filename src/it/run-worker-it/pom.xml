@@ -50,7 +50,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <worker>true</worker>
+                    <runArgs>
+                        <runArg>--worker</runArg>
+                    </runArgs>
                 </configuration>
             </plugin>
         </plugins>

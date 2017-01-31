@@ -47,12 +47,14 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <configuration>
-                            <ha>true</ha>
-                            <quorum>1</quorum>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <runArgs>
+                        <runArg>--ha</runArg>
+                        <runArg>quorum=1</runArg>
+                    </runArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>
