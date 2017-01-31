@@ -106,17 +106,17 @@ public class RunMojo extends AbstractRunMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (runExtraArgs == null || runExtraArgs.isEmpty()) {
+        if (runExtraArgs == null) {
             runExtraArgs = new ArrayList<>();
         }
 
         if (ha) {
             runExtraArgs.add("--ha");
             if (haGroup != null) {
-                runExtraArgs.add("--hagroup " + haGroup);
+                runExtraArgs.add("--hagroup=\"" + haGroup+"\"");
             }
             if (quorum != 0) {
-                runExtraArgs.add("--quorum " + quorum);
+                runExtraArgs.add("--quorum=" + quorum);
             }
         }
 
@@ -126,15 +126,15 @@ public class RunMojo extends AbstractRunMojo {
                 runExtraArgs.add("--cluster");
             }
             if (clusterHost != null) {
-                runExtraArgs.add("--cluster-host " + clusterHost);
+                runExtraArgs.add("--cluster-host=\"" + clusterHost+"\"");
             }
             if (clusterPort != 0) {
-                runExtraArgs.add("--cluster-port " + clusterPort);
+                runExtraArgs.add("--cluster-port=" + clusterPort);
             }
         }
 
         if (instances > 0) {
-            runExtraArgs.add("--instances " + instances);
+            runExtraArgs.add("--instances=" + instances);
         }
 
         if (worker) {
