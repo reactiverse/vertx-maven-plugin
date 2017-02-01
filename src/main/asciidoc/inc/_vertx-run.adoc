@@ -3,12 +3,30 @@
 This goal allows to run the Vert.x application as part of the maven build.
 The application is always run as a forked process.
 
-The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
-defines all the applicable configurations for the goal
+The goal has the following exclusive configuration apart from the applicable **<<common:run-configurations,Common Run Configuration>>**
 
 [cols="1,5,2,3"]
 |===
 | Element | Description | Property| Default
+
+|runArgs
+|The list of arguments that can be passed as part of `run` command.  You can also pass the required run arguments using the system
+property. e.g. `-Dvertx.runArgs="--worker --instances=2"`. The system property takes precedence over the plugin configurations
+|vertx.runArgs
+|&nbsp;
+
+
+| config
+| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
+run.
+| &nbsp;
+| src/main/config/application.json or src/main/config/application.yml
+
+| jvmArgs
+| The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts.
+| vertx.jvmArguments
+| _no arguments_
 
 | redeploy
 | Whether or not the redeployment is enabled
@@ -25,25 +43,17 @@ defines all the applicable configurations for the goal
 | vertx.redeploy.grace.period
 | 1000
 
-
 | redeployTerminationPeriod
 | the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
   This is useful on Windows, where the process is not killed immediately.
 | vertx.redeploy.termination.period
 | 1000 (1 second)
 
+|worker
+|If specified the verticle will be a worker verticle
+|&nbsp;
+|false
 
-| config
-| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
-run.
-| &nbsp;
-| src/main/config/application.json or src/main/config/application.yml
-
-| jvmArgs
-| The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.
-| vertx.jvmArguments
-| _no arguments_
 |===
 
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and

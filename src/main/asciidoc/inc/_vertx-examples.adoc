@@ -219,6 +219,32 @@ of application ids as shown below to trigger stop of the those applications
 ----
 <1> List of custom unique application ids
 
+[[run-with-extra-args]]
+=== Adding some extra options to run command
+
+[source,xml]
+----
+
+ <plugin>
+    <groupId>io.fabric8</groupId>
+    <artifactId>vertx-maven-plugin</artifactId>
+    <version>${version}</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+                <runArgs>
+                    <runArg>--cluster</runArg>
+                </runArgs>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
 = How does the redeploy work
 
 During the _initialize_ phase, the plugin start observing the mojos (Maven plugins) that are executed. When the Vert.x application is launched, it watches for changed in `src/main`. When a file is changed (created, updated or deleted), it replays the executed mojos. It executes all the mojos from the _generate-sources_ to the _process-classes_ phases, using the same configuration are the initial (observed) one.

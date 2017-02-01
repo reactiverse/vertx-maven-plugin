@@ -115,11 +115,16 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * The additional arguments that will be passed as program arguments to the JVM, all standard vertx arguments are
      * automatically applied.
      * <p>
+     *
      * @since 1.0.2
      */
     @Parameter(alias = "jvmArgs", property = "vertx.jvmArguments")
     protected List<String> jvmArgs;
 
+    /**
+     * to hold extra options that can be passed to run command
+     */
+    protected List<String> optionalRunExtraArgs;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -142,8 +147,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             addVertxArgs(argsList);
         } else if (redeploy) {
             getLog().info("Vert.x application redeploy enabled");
-            argsList.add(IO_VERTX_CORE_LAUNCHER);
-            argsList.add("run");
+            argsList.add(0, IO_VERTX_CORE_LAUNCHER);
+            argsList.add(1, "run");
             StringBuilder redeployArg = new StringBuilder();
             redeployArg.append(VERTX_ARG_REDEPLOY); //fix for redeploy to work
             computeOutputDirsWildcard(redeployArg);
@@ -161,13 +166,13 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         } else {
             argsList.add(launcher);
         }
-
+        addRunExtraArgs(argsList);
         run(argsList);
     }
 
     private void compileIfNeeded() {
         File classes = new File(project.getBuild().getOutputDirectory());
-        if (! classes.isDirectory()) {
+        if (!classes.isDirectory()) {
             MavenExecutionUtils.execute("compile", project, mavenSession, lifecycleExecutor, container);
         }
     }
@@ -279,6 +284,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * The method that will compute the Output directory wildcard that will be added to the
      * --redeploy argument to Vert.x to trigger redeployment for scanning for changes to trigger
      * redeployment
+     *
      * @param redeployArg - the redeploy {@link StringBuilder} to which the values will be appended
      */
     private void computeOutputDirsWildcard(StringBuilder redeployArg) {
@@ -289,18 +295,33 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
     /**
      * This method will add the extra redeployment arguments as mentioned in
-     * @see <a href="http://vertx.io/docs/vertx-core/java/#_live_redeploy">Live Redeploy</a>
+     *
      * @param argsList - the argument list to be appended
+     * @see <a href="http://vertx.io/docs/vertx-core/java/#_live_redeploy">Live Redeploy</a>
      */
     private void addRedeployExtraArgs(List<String> argsList) {
-        if(redeployScanPeriod > 0 ) {
+        if (redeployScanPeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_SCAN_PERIOD + redeployScanPeriod);
         }
-        if(redeployGracePeriod > 0 ) {
+        if (redeployGracePeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_GRACE_PERIOD + redeployGracePeriod);
         }
-        if(redeployTerminationPeriod > 0) {
+        if (redeployTerminationPeriod > 0) {
             argsList.add(VERTX_ARG_REDEPLOY_TERMINATION_PERIOD + redeployTerminationPeriod);
+        }
+    }
+
+    /**
+     * This method will add the extra arguments required for the run either used by core Vert.x Launcher
+     * or by custom Launcher
+     * @param argsList
+     */
+    private void addRunExtraArgs(List<String> argsList) {
+
+        if ("run".equals(vertxCommand)) {
+            if(optionalRunExtraArgs !=null && !optionalRunExtraArgs.isEmpty()){
+                argsList.addAll(optionalRunExtraArgs);
+            }
         }
     }
 
@@ -408,7 +429,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 //--- vertx-maven-plugin:1.0-SNAPSHOT:run (default-cli) @ vertx-demo
                 getLog().info(">>> "
                     + execution.getArtifactId() + ":" + execution.getVersion() + ":" + execution.getGoal()
-                    + " (" +execution.getExecutionId() + ") @" + project.getArtifactId());
+                    + " (" + execution.getExecutionId() + ") @" + project.getArtifactId());
                 executor.execute();
             } catch (Exception e) {
                 getLog().error("Error while doing incremental build", e);

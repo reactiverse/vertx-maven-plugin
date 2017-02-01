@@ -17,10 +17,17 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This goal helps in running Vert.x applications as part of maven build.
@@ -33,8 +40,38 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RunMojo extends AbstractRunMojo {
 
+    /**
+     * The custom or additional run arguments that can be passed to the Launcher
+     * e.g. --cluster --ha etc., which is typically passed via vert.x CLI
+     * if the value is provided via system property e.g. -Dvertx.runArgs="--worker --instances=2"
+     *
+     * @since 1.0.3
+     */
+    @Parameter(name = "runArgs", property = "vertx.runArgs")
+    protected List<String> runArgs;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (optionalRunExtraArgs == null) {
+            optionalRunExtraArgs = new ArrayList<>();
+        }
+
+        String runArgsProp = System.getProperty("vertx.runArgs");
+
+        if (StringUtils.isNotEmpty(runArgsProp)) {
+            getLog().debug("Got command line arguments from property :" + runArgsProp);
+            try {
+                String[] argValues = CommandLineUtils.translateCommandline(runArgsProp);
+                if (argValues != null) {
+                    optionalRunExtraArgs.addAll(Arrays.asList(argValues));
+                }
+            } catch (Exception e) {
+                throw new MojoFailureException("Unable to parse system property vertx.runArgs", e);
+            }
+        } else if (runArgs != null && !runArgs.isEmpty()) {
+            optionalRunExtraArgs.addAll(runArgs);
+        }
+
         super.execute();
     }
 }
