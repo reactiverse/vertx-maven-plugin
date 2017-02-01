@@ -10,7 +10,8 @@ The goal has the following exclusive configuration apart from the applicable **<
 | Element | Description | Property| Default
 
 |runArgs
-|The list of arguments that can be passed as part of `run` command.
+|The list of arguments that can be passed as part of `run` command.  You can also pass the required run arguments using the system
+property. e.g. `-Dvertx.runArgs="--worker --instances=2"`. The system property takes precedence over the plugin configurations
 |vertx.runArgs
 |&nbsp;
 
