@@ -72,10 +72,11 @@ If the sources are not compiled, the plugin executes `mvn compile` for you.
 
 [[vertx:debug]]
 == *vertx:debug*
-This goal allows to debug the Vert.x application.
+This goal allows to debug the Vert.x application. The application is started in a JVM with the debugging enabled. In
+your IDE, you need to create a **remote** debug configuration to plug the debugger.
 
 The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
-defines all the applicable configurations for the goal
+defines all the applicable configurations for the goal.
 
 [cols="1,5,2,3"]
 |===
