@@ -17,14 +17,20 @@
 
 package io.fabric8.vertx.maven.plugin;
 
+import io.fabric8.vertx.maven.plugin.mojos.SetupMojo;
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -32,11 +38,20 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 public class SetupMojoTest {
 
+
+    @Before
+    public void setUp() {
+        File junk = new File("target/junk");
+        FileUtils.deleteQuietly(junk);
+    }
 
     @Test
     public void testAddVertxMavenPlugin() throws Exception {
@@ -157,7 +172,7 @@ public class SetupMojoTest {
     @Test
     public void testAddVertxMavenPluginWithVertxVersion() throws Exception {
 
-        System.setProperty("vertxVersion","3.4.0-SNAPSHOT");
+        System.setProperty("vertxVersion", "3.4.0-SNAPSHOT");
 
         InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
         assertNotNull(pomFile);
@@ -182,7 +197,7 @@ public class SetupMojoTest {
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
-        String vertxVersion = System.getProperty("vertxVersion") == null?MojoUtils.getVersion("vertx-core-version"):
+        String vertxVersion = System.getProperty("vertxVersion") == null ? MojoUtils.getVersion("vertx-core-version") :
             System.getProperty("vertxVersion");
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
@@ -218,8 +233,9 @@ public class SetupMojoTest {
         Properties projectProps = project.getProperties();
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"),vertxVersion);
+        assertEquals(projectProps.getProperty("vertx.version"), vertxVersion);
     }
+
 
     private void addDependencies(Model model, Dependency vertxBom) {
         if (model.getDependencyManagement() != null) {
@@ -244,5 +260,22 @@ public class SetupMojoTest {
             model.setDependencies(new ArrayList<>());
             model.getDependencies().add(dependency("io.vertx", "vertx-core", null));
         }
+    }
+
+    @Test
+    public void testVerticleCreation() throws MojoExecutionException {
+        MavenProject mock = mock(MavenProject.class);
+        Log log = mock(Log.class);
+        when(mock.getBasedir()).thenReturn(new File("target/junk"));
+
+        SetupMojo.createVerticle(mock, "me.demo.Foo.java", log);
+        SetupMojo.createVerticle(mock, "me.demo.Bar", log);
+        SetupMojo.createVerticle(mock, "Baz.java", log);
+        SetupMojo.createVerticle(mock, "Bob", log);
+
+        assertThat(new File("target/junk/src/main/java/me/demo/Foo.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/me/demo/Bar.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/Baz.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/Bob.java")).isFile();
     }
 }
