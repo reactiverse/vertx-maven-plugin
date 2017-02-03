@@ -11,7 +11,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- vert.x properties -->
         <vertx.version>${vertxVersion}</vertx.version>
-        <vertx.verticle>${vertxVerticle}</vertx.verticle>
+        <#if vertxVerticle??><vertx.verticle>${vertxVerticle}</vertx.verticle></#if>
         <!-- Maven plugins -->
         <fabric8-vertx-maven-plugin.version>${fabric8VMPVersion}</fabric8-vertx-maven-plugin.version>
     </properties>
