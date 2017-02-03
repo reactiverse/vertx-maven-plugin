@@ -18,24 +18,23 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
 import com.google.common.base.Strings;
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import io.fabric8.vertx.maven.plugin.utils.Prompter;
+import io.fabric8.vertx.maven.plugin.utils.SetupTemplateUtils;
 import org.apache.maven.model.*;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 /**
  * This Goal helps in setting up Vert.x maven project with vertx-maven-plugin, with sane defaults
  */
-@Mojo(name = "setup")
+@Mojo(name = "setup", requiresProject = false)
 public class SetupMojo extends AbstractMojo {
 
     final String PLUGIN_GROUPID = "io.fabric8";
@@ -56,24 +55,93 @@ public class SetupMojo extends AbstractMojo {
     /**
      * The Maven project which will define and configure the vertx-maven-plugin
      */
-    @Parameter(defaultValue = "${project}", readonly = true)
+    @Parameter(defaultValue = "${project}")
     protected MavenProject project;
 
+    @Parameter(property = "projectGroupId")
+    protected String projectGroupId;
+
+    @Parameter(property = "projectArtifactId")
+    protected String projectArtifactId;
+
+    @Parameter(property = "projectVersion", defaultValue = "1.0-SNAPSHOT")
+    protected String projectVersion;
+
     @Parameter(property = "vertxVersion")
-    protected String version;
+    protected String vertxVersion;
 
     @Parameter(property = "verticle")
     protected String verticle;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        //We should get cloned of the OriginalModel, as project.getModel will return effective model
-        Model model = project.getOriginalModel().clone();
+
         File pomFile = project.getFile();
 
-        createDirectories();
-        createVerticle(project, verticle, getLog());
+        Model model;
 
+        //Create pom.xml if not
+        if (pomFile == null) {
+            String workingdDir = System.getProperty("user.dir");
+            getLog().info("Project does not have pom.xml, creating it in " + workingdDir);
+            pomFile = new File(workingdDir, "pom.xml");
+            Prompter prompter = new Prompter();
+            prompter.startInteraction();
+            try {
+
+                if (projectGroupId == null) {
+                    projectGroupId = prompter.prompt("Define value for property 'projectGroupId'",
+                        "com.example.vertx");
+                }
+
+                if (projectArtifactId == null) {
+                    projectArtifactId = prompter.prompt("Define value for property 'projectArtifactId'",
+                        "vertx-example");
+                }
+
+                projectVersion = prompter.prompt("Define value for property 'projectVersion'", projectVersion);
+
+                if (vertxVersion == null) {
+                    vertxVersion = prompter.prompt("Define value for property 'vertx.projectVersion'",
+                        MojoUtils.getVersion("vertx-core-version"));
+                }
+
+                if (verticle == null) {
+                    verticle = prompter.prompt("Define value for property 'vertx.verticle'",
+                        projectGroupId + ".MainVerticle");
+                }
+
+                Map<String, String> context = new HashMap<>();
+                context.put("mProjectGroupId", projectGroupId);
+                context.put("mProjectArtifactId", projectArtifactId);
+                context.put("mVersion", projectVersion);
+                context.put("vertxVersion", vertxVersion);
+                context.put("vertxVerticle", verticle);
+                context.put("fabric8VMPVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
+
+                SetupTemplateUtils.createPom(context, pomFile);
+
+                //The project should be recreated and set with right model
+                MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+
+                model = xpp3Reader.read(new FileInputStream(pomFile));
+            } catch (Exception e) {
+                throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
+            }finally {
+                prompter.endInteraction();
+            }
+
+
+            project = new MavenProject(model);
+            project.setPomFile(pomFile);
+            project.setOriginalModel(model); // the current model is the original model as well
+        }
+
+        //We should get cloned of the OriginalModel, as project.getModel will return effective model
+        model = project.getOriginalModel().clone();
+
+        createDirectories();
+        SetupTemplateUtils.createVerticle(project, verticle, getLog());
 
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
 
@@ -81,13 +149,12 @@ public class SetupMojo extends AbstractMojo {
             try {
 
                 //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
-                model.getProperties().putIfAbsent("fabric8.vertx.plugin.version",
+                model.getProperties().putIfAbsent("fabric8-vertx-maven-plugin.projectVersion",
                     MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
-                String vertxVersion = version;
-                if (vertxVersion == null) {
-                    vertxVersion = MojoUtils.getVersion("vertx-core-version");
-                }
-                model.getProperties().putIfAbsent("vertx.version", vertxVersion);
+
+                vertxVersion = vertxVersion==null? MojoUtils.getVersion("vertx-core-version"):vertxVersion;
+
+                model.getProperties().putIfAbsent("vertx.projectVersion", vertxVersion);
                 if (!Strings.isNullOrEmpty(verticle)) {
                     model.getProperties().putIfAbsent("vertx.verticle", verticle);
                 }
@@ -98,7 +165,7 @@ public class SetupMojo extends AbstractMojo {
                 //Add Vert.x Core Dependency
                 addVertxDependencies(model);
 
-                Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8.vertx.plugin.version}");
+                Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
 
                 if (isParentPom(model)) {
                     if (model.getBuild().getPluginManagement() != null) {
@@ -107,10 +174,10 @@ public class SetupMojo extends AbstractMojo {
                         }
                         model.getBuild().getPluginManagement().getPlugins().add(vertxMavenPlugin);
                     }
-                    //strip the version off
+                    //strip the vertxVersion off
                     vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID);
                 } else {
-                    vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8.vertx.plugin.version}");
+                    vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
                 }
 
                 PluginExecution pluginExec = new PluginExecution();
@@ -147,55 +214,6 @@ public class SetupMojo extends AbstractMojo {
         }
     }
 
-    public static void createVerticle(MavenProject project, String verticle, Log log) throws MojoExecutionException {
-        if (Strings.isNullOrEmpty(verticle)) {
-            return;
-        }
-        log.info("Creating verticle " + verticle);
-
-        File root = new File(project.getBasedir(), "src/main/java");
-
-        String packageName = null;
-        String className;
-        if (verticle.endsWith(".java")) {
-            verticle = verticle.substring(0, verticle.length() - ".java".length());
-        }
-
-        if (verticle.contains(".")) {
-            int idx = verticle.lastIndexOf('.');
-            packageName = verticle.substring(0, idx);
-            className = verticle.substring(idx + 1);
-        } else {
-            className = verticle;
-        }
-
-        if (packageName != null) {
-            File packageDir = new File(root, packageName.replace('.', '/'));
-            if (!packageDir.exists()) {
-                packageDir.mkdirs();
-                log.info("Creating directory " + packageDir.getAbsolutePath());
-            }
-            root = packageDir;
-        }
-
-        File classFile = new File(root, className + ".java");
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
-        cfg.setTemplateLoader(new ClassTemplateLoader(SetupMojo.class, "/"));
-        Map<String, String> context = new HashMap<>();
-        context.put("className", className);
-        if (packageName != null) {
-            context.put("packageName", packageName);
-        }
-        try {
-            Template temp = cfg.getTemplate("templates/verticle-template.ftl");
-            Writer out = new FileWriter(classFile);
-            temp.process(context, out);
-        } catch (Exception e) {
-            throw new MojoExecutionException("Unable to generate verticle", e);
-        }
-
-
-    }
 
     private void createDirectories() {
         File root = project.getBasedir();
@@ -216,6 +234,7 @@ public class SetupMojo extends AbstractMojo {
             getLog().debug("Creation of " + test.getAbsolutePath() + " : " + res);
         }
     }
+
 
     private boolean isParentPom(Model model) {
         return "pom".equals(model.getPackaging());
@@ -246,7 +265,7 @@ public class SetupMojo extends AbstractMojo {
      * @param model - the {@code {@link Model}}
      */
     private void addVertxBom(Model model) {
-        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.projectVersion}");
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 

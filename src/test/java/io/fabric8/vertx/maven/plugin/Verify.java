@@ -74,13 +74,13 @@ public class Verify {
 
         //Check if the properties have been set correctly
         Properties properties = model.getProperties();
-        assertThat(properties.containsKey("vertx.version")).isTrue();
-        assertThat(properties.getProperty("vertx.version"))
+        assertThat(properties.containsKey("vertx.projectVersion")).isTrue();
+        assertThat(properties.getProperty("vertx.projectVersion"))
             .isEqualTo(MojoUtils.getVersion("vertx-core-version"));
 
 
-        assertThat(properties.containsKey("fabric8.vertx.plugin.version")).isTrue();
-        assertThat(properties.getProperty("fabric8.vertx.plugin.version"))
+        assertThat(properties.containsKey("fabric8-vertx-maven-plugin.projectVersion")).isTrue();
+        assertThat(properties.getProperty("fabric8-vertx-maven-plugin.projectVersion"))
             .isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         //Check if the dependencies has been set correctly
@@ -95,7 +95,7 @@ public class Verify {
             .findFirst();
 
         assertThat(vertxDeps.isPresent()).isTrue();
-        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.version}");
+        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.projectVersion}");
 
         //Check Vert.x core dependency
         Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
@@ -122,7 +122,7 @@ public class Verify {
         Properties projectProps = project.getProperties();
         Assert.assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"),"3.4.0-SNAPSHOT");
+        assertEquals(projectProps.getProperty("vertx.projectVersion"),"3.4.0-SNAPSHOT");
     }
 
     public static String read(InputStream input) throws IOException {
