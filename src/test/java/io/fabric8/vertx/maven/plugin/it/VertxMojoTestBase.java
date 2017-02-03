@@ -80,6 +80,15 @@ public class VertxMojoTestBase {
         return initProject(name, name);
     }
 
+    public static File initEmptyProject(String name) {
+        File tc = new File("target/test-classes/" + name);
+        if (tc.isDirectory()) {
+            tc.delete();
+        }
+        tc.mkdirs();
+        return tc;
+    }
+
     public static File initProject(String name, String output) {
         File tc = new File("target/test-classes");
         if (!tc.isDirectory()) {

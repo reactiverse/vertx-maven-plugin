@@ -18,25 +18,35 @@
 package io.fabric8.vertx.maven.plugin;
 
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
+import io.fabric8.vertx.maven.plugin.utils.SetupTemplateUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 public class SetupMojoTest {
 
+
+    @Before
+    public void setUp() {
+        File junk = new File("target/junk");
+        FileUtils.deleteQuietly(junk);
+    }
 
     @Test
     public void testAddVertxMavenPlugin() throws Exception {
@@ -157,7 +167,7 @@ public class SetupMojoTest {
     @Test
     public void testAddVertxMavenPluginWithVertxVersion() throws Exception {
 
-        System.setProperty("vertxVersion","3.4.0-SNAPSHOT");
+        System.setProperty("vertxVersion", "3.4.0-SNAPSHOT");
 
         InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
         assertNotNull(pomFile);
@@ -182,7 +192,7 @@ public class SetupMojoTest {
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
-        String vertxVersion = System.getProperty("vertxVersion") == null?MojoUtils.getVersion("vertx-core-version"):
+        String vertxVersion = System.getProperty("vertxVersion") == null ? MojoUtils.getVersion("vertx-core-version") :
             System.getProperty("vertxVersion");
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
@@ -218,8 +228,9 @@ public class SetupMojoTest {
         Properties projectProps = project.getProperties();
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"),vertxVersion);
+        assertEquals(projectProps.getProperty("vertx.version"), vertxVersion);
     }
+
 
     private void addDependencies(Model model, Dependency vertxBom) {
         if (model.getDependencyManagement() != null) {
@@ -244,5 +255,80 @@ public class SetupMojoTest {
             model.setDependencies(new ArrayList<>());
             model.getDependencies().add(dependency("io.vertx", "vertx-core", null));
         }
+    }
+
+    @Test
+    public void testVerticleCreation() throws MojoExecutionException {
+        MavenProject mock = mock(MavenProject.class);
+        Log log = mock(Log.class);
+        when(mock.getBasedir()).thenReturn(new File("target/junk"));
+
+        SetupTemplateUtils.createVerticle(mock, "me.demo.Foo.java", log);
+        SetupTemplateUtils.createVerticle(mock, "me.demo.Bar", log);
+        SetupTemplateUtils.createVerticle(mock, "Baz.java", log);
+        SetupTemplateUtils.createVerticle(mock, "Bob", log);
+
+        assertThat(new File("target/junk/src/main/java/me/demo/Foo.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/me/demo/Bar.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/Baz.java")).isFile();
+        assertThat(new File("target/junk/src/main/java/Bob.java")).isFile();
+    }
+
+    @Test
+    public void testVerticleCreatPom() throws Exception {
+
+        new File("target/unit/nopom").mkdirs();
+
+        File pomFile = new File("target/unit/nopom/pom.xml");
+
+        String vertxVersion = MojoUtils.getVersion("vertx-core-version");
+
+        Map<String, String> tplContext = new HashMap<>();
+        tplContext.put("mProjectGroupId", "com.example.vertx");
+        tplContext.put("mProjectArtifactId", "vertx-example");
+        tplContext.put("mProjectVersion", "1.0-SNAPSHOT");
+        tplContext.put("vertxVersion", vertxVersion);
+        tplContext.put("vertxVerticle", "com.example.vertx.MainVerticle");
+        tplContext.put("fabric8VMPVersion", MojoUtils.getVersion("vertx-maven-plugin-version"));
+        SetupTemplateUtils.createPom(tplContext, pomFile);
+
+        assertThat(pomFile).isFile();
+
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+        MavenProject project = new MavenProject(model);
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+        Plugin vmp = project.getPlugin("io.fabric8:vertx-maven-plugin");
+        assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        assertNotNull(pluginConfig);
+        String redeploy = pluginConfig.getChild("redeploy").getValue();
+        assertNotNull(redeploy);
+        assertTrue(Boolean.valueOf(redeploy));
+        Properties projectProps = project.getProperties();
+        assertNotNull(projectProps);
+        assertFalse(projectProps.isEmpty());
+        assertEquals(project.getGroupId(), "com.example.vertx");
+        assertEquals(project.getArtifactId(), "vertx-example");
+        assertEquals(project.getVersion(), "1.0-SNAPSHOT");
+        assertEquals(projectProps.getProperty("vertx.version"), vertxVersion);
+        assertEquals(projectProps.getProperty("fabric8-vertx-maven-plugin.version"), "1.0-SNAPSHOT");
+        assertEquals(projectProps.getProperty("vertx.verticle"), "com.example.vertx.MainVerticle");
+        DependencyManagement dependencyManagement = project.getDependencyManagement();
+        assertThat(dependencyManagement).isNotNull();
+        assertThat(dependencyManagement.getDependencies()).isNotEmpty();
+        Dependency vertxBom = project.getDependencyManagement().getDependencies().get(0);
+        assertThat(vertxBom.getGroupId()).isEqualTo("io.vertx");
+        assertThat(vertxBom.getArtifactId()).isEqualTo("vertx-dependencies");
+        assertThat(vertxBom.getVersion()).isEqualTo("${vertx.version}");
+        assertThat(vertxBom.getType()).isEqualTo("pom");
+        assertThat(vertxBom.getScope()).isEqualTo("import");
+
+        assertThat(project.getDependencies()).isNotEmpty();
+        Dependency vertxCore =project.getDependencies().get(0);
+        assertThat(vertxCore).isNotNull();
+        assertThat(vertxCore.getGroupId()).isEqualTo("io.vertx");
+        assertThat(vertxCore.getArtifactId()).isEqualTo("vertx-core");
     }
 }

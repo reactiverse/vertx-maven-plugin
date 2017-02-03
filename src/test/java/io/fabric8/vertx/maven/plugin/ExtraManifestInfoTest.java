@@ -61,8 +61,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(scmManager);
     }
 
-    @Test
-    public void testExtraManifestsNoClassifer() throws Exception {
+    public void testExtraManifestsNoClassifier() throws Exception {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-jar.xml").toFile();
         assertNotNull(testJarPom);
         assertTrue(testJarPom.exists());
@@ -78,23 +77,15 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         assertThat(attributes.isEmpty()).isFalse();
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        manifest.write(bout);
-        bout.flush();
-        bout.close();
-
-        String expected = "Manifest-Version: 1.0\n" +
-            "Project-Name: vertx-demo\n" +
-            "Build-Timestamp: " + ManifestUtils.manifestTimestampFormat(new Date()) + "\n" +
-            "Project-Dependencies: io.vertx:vertx-core:3.3.3\n" +
-            "Project-Group: org.vertx.demo\n" +
-            "Project-Version: 1.0.0-SNAPSHOT";
-
-        assertThat(new String(bout.toByteArray())).isEqualToIgnoringWhitespace(expected);
+        assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
+        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("io.vertx:vertx-core:3.3.3");
+        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
 
     }
 
-    @Test
     public void testExtraManifestsWithClassifier() throws Exception {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-classifier-jar.xml").toFile();
         assertNotNull(testJarPom);
@@ -111,23 +102,15 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         assertThat(attributes.isEmpty()).isFalse();
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        manifest.write(bout);
-        bout.flush();
-        bout.close();
-
-        String expected = "Manifest-Version: 1.0\n" +
-            "Project-Name: vertx-demo\n" +
-            "Build-Timestamp: " + ManifestUtils.manifestTimestampFormat(new Date()) + "\n" +
-            "Project-Dependencies: com.example:example:3.3.3:vertx\n" +
-            "Project-Group: org.vertx.demo\n" +
-            "Project-Version: 1.0.0-SNAPSHOT";
-
-        assertThat(new String(bout.toByteArray())).isEqualToIgnoringWhitespace(expected);
+        assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
+        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.3.3:vertx");
+        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
 
     }
 
-    @Test
     public void testExtraManifestsWithSCMUrlAndTag() throws Exception {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-scm-jar.xml").toFile();
         assertNotNull(testJarPom);
@@ -144,21 +127,14 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         assertThat(attributes.isEmpty()).isFalse();
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        manifest.write(bout);
-        bout.flush();
-        bout.close();
-
-        String expected = "Manifest-Version: 1.0\n" +
-            "Project-Name: vertx-demo\n" +
-            "Build-Timestamp: "+ManifestUtils.manifestTimestampFormat(new Date())+"\n"+
-            "Project-Dependencies: com.example:example:3.3.3:vertx\n" +
-            "Scm-Tag: HEAD\n" +
-            "Project-Group: org.vertx.demo\n" +
-            "Project-Version: 1.0.0-SNAPSHOT\n" +
-            "Scm-Url: https://github.com/fabric8io/vertx-maven-plugin";
-
-        assertThat(new String(bout.toByteArray())).isEqualToIgnoringWhitespace(expected);
+        assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
+        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.3.3:vertx");
+        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
+        assertThat(attributes.getValue("Scm-Url")).isEqualTo("https://github.com/fabric8io/vertx-maven-plugin");
+        assertThat(attributes.getValue("Scm-Tag")).isEqualTo("HEAD");
 
     }
 }
