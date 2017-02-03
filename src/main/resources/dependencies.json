@@ -1,0 +1,354 @@
+[
+    {
+        "name": "Vert.x Web",
+        "labels": [
+            "web"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web"
+    },
+    {
+        "name": "Vert.x Mongo Client",
+        "labels": [
+            "mongo"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-mongo-client"
+    },
+    {
+        "name": "Vert.x (async) JDBC Client",
+        "labels": [
+            "jdbc"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-jdbc-client"
+    },
+    {
+        "name": "Vert.x Redis Client",
+        "labels": [
+            "redis"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-redis-client"
+    },
+    {
+        "name": "Vert.x Mail Client",
+        "labels": [
+            "mail",
+            "smtp"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-mail-client"
+    },
+    {
+        "name": "Vert.x STOMP",
+        "labels": [
+            "stomp"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-stomp"
+    },
+    {
+        "name": "Vert.x EventBus Bridge using TCP",
+        "labels": [
+            "tcp-bridge"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-tcp-eventbus-bridge"
+    },
+    {
+        "name": "Vert.x - Apache Camel bridge",
+        "labels": [
+            "camel"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-camel-bridge"
+    },
+    {
+        "name": "Vert.x Bridge with AMQP",
+        "labels": [
+            "amqp"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-amqp-bridge"
+    },
+    {
+        "name": "Vert.x Client for RabbitMQ",
+        "labels": [
+            "rabbitmq"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-rabbitmq-client"
+    },
+    {
+        "name": "Vert.x Authentication Support using JDBC",
+        "labels": [
+            "jdbc-auth"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-auth-jdbc"
+    },
+    {
+        "name": "Vert.x Authentication Support using JWT",
+        "labels": [
+            "jwt-auth"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-auth-jwt"
+    },
+    {
+        "name": "Vert.x Authentication Support using Mongo",
+        "labels": [
+            "mongo-auth"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-auth-mongo"
+    },
+    {
+        "name": "Vert.x Authentication Support using Shiro",
+        "labels": [
+            "shiro-auth"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-auth-shiro"
+    },
+    {
+        "name": "Vert.x Authentication Support using OAuth 2",
+        "labels": [
+            "oauth2",
+            "oauth2-auth",
+            "oauth"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-auth-oauth2"
+    },
+    {
+        "name": "Vert.x support for RX Java",
+        "labels": [
+            "rx",
+            "rxjava"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-rx-java"
+    },
+    {
+        "name": "Vert.x support for JavaScript (Nashorn)",
+        "labels": [
+            "js",
+            "javascript"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-lang-js"
+    },
+    {
+        "name": "Vert.x support for Ruby (JRuby)",
+        "labels": [
+            "rb",
+            "ruby",
+            "jruby"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-lang-ruby"
+    },
+    {
+        "name": "Vert.x support for Apache Groovy",
+        "labels": [
+            "groovy"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-lang-groovy"
+    },
+    {
+        "name": "Vert.x Service Discovery",
+        "labels": [
+            "discovery",
+            "service-discovery"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-service-discovery"
+    },
+    {
+        "name": "Vert.x Circuit Breaker",
+        "labels": [
+            "circuit-breaker",
+            "circuit"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-circuit-breaker"
+    },
+    {
+        "name": "Vert.x Service Discovery for Kubernetes",
+        "labels": [
+            "discovery-kubernetes",
+            "service-discovery-kubernetes"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-service-discovery-bridge-kubernetes"
+    },
+    {
+        "name": "Vert.x Service Discovery for Consul",
+        "labels": [
+            "discovery-consul",
+            "service-discovery-consul"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-service-discovery-bridge-consul"
+    },
+    {
+        "name": "Vert.x Metrics using Dropwizard",
+        "labels": [
+            "jmx",
+            "dropwizard"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-dropwizard-metrics"
+    },
+    {
+        "name": "Vert.x Metrics using Hawkular",
+        "labels": [
+            "hawkular"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-hawkular-metrics"
+    },
+    {
+        "name": "Vert.x Shell",
+        "labels": [
+            "shell"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-shell"
+    },
+    {
+        "name": "Vert.x Unit",
+        "labels": [
+            "test"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-unit",
+        "scope": "test"
+    },
+    {
+        "name": "Vert.x Cluster Manager based on Hazelcast",
+        "labels": [
+            "hazelcast"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-hazelcast"
+    },
+    {
+        "name": "Vert.x Cluster Manager based on Apache Ignite",
+        "labels": [
+            "ignite"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-ignite"
+    },
+    {
+        "name": "Vert.x Cluster Manager based on Apache Zookeeper",
+        "labels": [
+            "zookeeper"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-zookeeper"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on Pebble",
+        "labels": [
+            "pebble",
+            "pebble-template",
+            "pebble-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-pebble",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on Apache Freemarker",
+        "labels": [
+            "freemarker",
+            "freemarker-template",
+            "freemarker-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-freemarker",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on Thymeleaf",
+        "labels": [
+            "thymeleaf",
+            "thymeleaf-template",
+            "thymeleaf-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-thymeleaf",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on Handlebars",
+        "labels": [
+            "handlebars",
+            "handlebars-template",
+            "handlebars-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-handlebars",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on Jade",
+        "labels": [
+            "jade",
+            "jade-template",
+            "jade-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-jade",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x Web Template Engine based on MVEL",
+        "labels": [
+            "mvel",
+            "mvel-template",
+            "mvel-template-engine"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-web-templ-mvel",
+        "classifier": "shaded"
+    },
+    {
+        "name": "Vert.x (async) RPC service proxies",
+        "labels": [
+            "service-proxies",
+            "rpc-services"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-service-proxy"
+    },
+    {
+        "name": "Vert.x Service Factory using Apache Maven",
+        "labels": [
+            "maven-service-factory"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-maven-service-factory"
+    },
+    {
+        "name": "Vert.x Service Factory",
+        "labels": [
+            "service-factory"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-service-factory"
+    },
+    {
+        "name": "Vert.x Service Factory using HTTP",
+        "labels": [
+            "http-service-factory"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-http-service-factory"
+    }
+]
