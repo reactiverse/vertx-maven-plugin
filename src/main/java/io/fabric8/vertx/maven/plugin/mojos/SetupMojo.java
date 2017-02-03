@@ -18,9 +18,12 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
 import com.google.common.base.Strings;
+import io.fabric8.vertx.maven.plugin.dependencies.VertxDependencies;
+import io.fabric8.vertx.maven.plugin.dependencies.VertxDependency;
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
 import io.fabric8.vertx.maven.plugin.utils.Prompter;
 import io.fabric8.vertx.maven.plugin.utils.SetupTemplateUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -35,10 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -73,6 +73,9 @@ public class SetupMojo extends AbstractMojo {
     @Parameter(property = "verticle")
     protected String verticle;
 
+    @Parameter(property = "dependencies")
+    protected List<String> dependencies;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -81,9 +84,9 @@ public class SetupMojo extends AbstractMojo {
         Model model;
 
         //Create pom.xml if not
-        if (pomFile == null) {
+        if (pomFile == null || !pomFile.isFile()) {
             String workingdDir = System.getProperty("user.dir");
-            getLog().info("Project does not have pom.xml, creating it in " + workingdDir);
+            getLog().info("No pom.xml found, creating it in " + workingdDir);
             pomFile = new File(workingdDir, "pom.xml");
             Prompter prompter = new Prompter();
             prompter.startInteraction();
@@ -94,28 +97,36 @@ public class SetupMojo extends AbstractMojo {
                         "com.example.vertx");
                 }
 
+                // If the user does not specify the artifactId, we switch to the interactive mode.
                 if (projectArtifactId == null) {
                     projectArtifactId = prompter.prompt("Define value for property 'projectArtifactId'",
                         "vertx-example");
+
+                    // Ask for version only if we asked for the artifactId
+                    projectVersion = prompter.prompt("Define value for property 'projectVersion'", projectVersion);
+
+                    // Ask for maven version if not set
+                    if (vertxVersion == null) {
+                        vertxVersion = prompter.prompt("Define value for property 'vertx.projectVersion'",
+                            MojoUtils.getVersion("vertx-core-version"));
+                    }
+
+                    if (verticle == null) {
+                        verticle = prompter.prompt("Define value for property 'vertx.verticle'",
+                            projectGroupId + ".MainVerticle");
+                    }
                 }
 
-                projectVersion = prompter.prompt("Define value for property 'projectVersion'", projectVersion);
-
-                if (vertxVersion == null) {
-                    vertxVersion = prompter.prompt("Define value for property 'vertx.projectVersion'",
-                        MojoUtils.getVersion("vertx-core-version"));
-                }
-
-                if (verticle == null) {
-                    verticle = prompter.prompt("Define value for property 'vertx.verticle'",
-                        projectGroupId + ".MainVerticle");
+                if (verticle != null  && verticle.endsWith(".java")) {
+                    verticle = verticle.substring(0, verticle.length() -".java".length());
                 }
 
                 Map<String, String> context = new HashMap<>();
                 context.put("mProjectGroupId", projectGroupId);
                 context.put("mProjectArtifactId", projectArtifactId);
-                context.put("mVersion", projectVersion);
-                context.put("vertxVersion", vertxVersion);
+                context.put("mProjectVersion", projectVersion);
+                context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion("vertx-core-version"));
+
                 context.put("vertxVerticle", verticle);
                 context.put("fabric8VMPVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
 
@@ -127,14 +138,18 @@ public class SetupMojo extends AbstractMojo {
                 model = xpp3Reader.read(new FileInputStream(pomFile));
             } catch (Exception e) {
                 throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
-            }finally {
+            } finally {
                 prompter.endInteraction();
             }
-
 
             project = new MavenProject(model);
             project.setPomFile(pomFile);
             project.setOriginalModel(model); // the current model is the original model as well
+
+            // Add dependencies
+            if (addDependencies(model)) {
+                save(pomFile, model);
+            }
         }
 
         //We should get cloned of the OriginalModel, as project.getModel will return effective model
@@ -143,75 +158,111 @@ public class SetupMojo extends AbstractMojo {
         createDirectories();
         SetupTemplateUtils.createVerticle(project, verticle, getLog());
 
+
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.fabric8:vertx-maven-plugin");
 
         if (!vmPlugin.isPresent()) {
-            try {
 
-                //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
-                model.getProperties().putIfAbsent("fabric8-vertx-maven-plugin.projectVersion",
-                    MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
+            //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
+            model.getProperties().putIfAbsent("fabric8-vertx-maven-plugin.projectVersion",
+                MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
 
-                vertxVersion = vertxVersion==null? MojoUtils.getVersion("vertx-core-version"):vertxVersion;
+            vertxVersion = vertxVersion == null ? MojoUtils.getVersion("vertx-core-version") : vertxVersion;
 
-                model.getProperties().putIfAbsent("vertx.projectVersion", vertxVersion);
-                if (!Strings.isNullOrEmpty(verticle)) {
-                    model.getProperties().putIfAbsent("vertx.verticle", verticle);
+            model.getProperties().putIfAbsent("vertx.projectVersion", vertxVersion);
+            if (!Strings.isNullOrEmpty(verticle)) {
+                if (verticle.endsWith(".java")) {
+                    verticle = verticle.substring(0, verticle.length() -".java".length());
                 }
+                model.getProperties().putIfAbsent("vertx.verticle", verticle);
+            }
 
-                //Add Vert.x BOM
-                addVertxBom(model);
+            //Add Vert.x BOM
+            addVertxBom(model);
 
-                //Add Vert.x Core Dependency
-                addVertxDependencies(model);
+            //Add Vert.x Core Dependency
+            addVertxDependencies(model);
+            // Add other dependencies
+            addDependencies(model);
 
-                Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
+            Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
 
-                if (isParentPom(model)) {
-                    if (model.getBuild().getPluginManagement() != null) {
-                        if (model.getBuild().getPluginManagement().getPlugins() == null) {
-                            model.getBuild().getPluginManagement().setPlugins(new ArrayList<>());
-                        }
-                        model.getBuild().getPluginManagement().getPlugins().add(vertxMavenPlugin);
+            if (isParentPom(model)) {
+                if (model.getBuild().getPluginManagement() != null) {
+                    if (model.getBuild().getPluginManagement().getPlugins() == null) {
+                        model.getBuild().getPluginManagement().setPlugins(new ArrayList<>());
                     }
-                    //strip the vertxVersion off
-                    vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID);
-                } else {
-                    vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
+                    model.getBuild().getPluginManagement().getPlugins().add(vertxMavenPlugin);
                 }
+                //strip the vertxVersion off
+                vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID);
+            } else {
+                vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${fabric8-vertx-maven-plugin.projectVersion}");
+            }
 
-                PluginExecution pluginExec = new PluginExecution();
-                pluginExec.addGoal("initialize");
-                pluginExec.addGoal("package");
-                pluginExec.setId("vmp-init-package");
-                vertxMavenPlugin.addExecution(pluginExec);
+            PluginExecution pluginExec = new PluginExecution();
+            pluginExec.addGoal("initialize");
+            pluginExec.addGoal("package");
+            pluginExec.setId("vmp-init-package");
+            vertxMavenPlugin.addExecution(pluginExec);
 
-                //Plugin Configuration
-                vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
+            //Plugin Configuration
+            vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
-                Build build = model.getBuild();
+            Build build = model.getBuild();
 
-                if (build == null) {
-                    build = new Build();
-                    model.setBuild(build);
-                }
+            if (build == null) {
+                build = new Build();
+                model.setBuild(build);
+            }
 
-                if (build.getPlugins() == null) {
-                    build.setPlugins(new ArrayList<>());
-                }
+            if (build.getPlugins() == null) {
+                build.setPlugins(new ArrayList<>());
+            }
 
-                build.getPlugins().add(vertxMavenPlugin);
+            build.getPlugins().add(vertxMavenPlugin);
 
-                MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
-                final FileWriter pomFileWriter = new FileWriter(pomFile);
-                xpp3Writer.write(pomFileWriter, model);
+            save(pomFile, model);
+        }
+    }
 
-                pomFileWriter.flush();
-                pomFileWriter.close();
-            } catch (IOException e) {
-                throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
+    private void save(File pomFile, Model model) throws MojoExecutionException {
+        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+        FileWriter pomFileWriter = null;
+        try {
+            pomFileWriter = new FileWriter(pomFile);
+            xpp3Writer.write(pomFileWriter, model);
+
+            pomFileWriter.flush();
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to write the pom.xml file", e);
+        } finally {
+            IOUtils.closeQuietly(pomFileWriter);
+        }
+    }
+
+    private boolean addDependencies(Model model) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return false;
+        }
+
+        boolean result = false;
+        List<VertxDependency> deps = VertxDependencies.get();
+        for (String dependency : this.dependencies) {
+            Optional<VertxDependency> optional = deps.stream()
+                .filter(d -> d.labels().contains(dependency.toLowerCase()))
+                .findAny();
+
+            if (optional.isPresent()) {
+                getLog().info("Addind dependency " + optional.get().toCoordinates());
+                model.addDependency(optional.get().toDependency());
+                result = true;
+            } else {
+                getLog().warn("Cannot find a dependency matching '" + dependency + "'");
             }
         }
+
+        return result;
     }
 
 
