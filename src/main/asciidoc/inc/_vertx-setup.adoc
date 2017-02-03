@@ -24,3 +24,18 @@ mvn io.fabric8:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0-SNAPSHOT
 This will configure the vert.x and its dependencies to `3.4.0-SNAPSHOT` i.e. Maven project property `vertx.version`
 set to `3.4.0-SNAPSHOT`
 
+You can also generate a project if you don't have a `pom.xml` file:
+
+[source,subs="attributes"]
+----
+mvn io.fabric8:vertx-maven-plugin:{version}:setup \
+    -DprojectGroupId=org.acme \
+    -DprojectArtifactId=acme-project \
+    -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
+    -Dverticle=org.acme.Foo \
+    -Ddependencies=web,jmx,mongo
+----
+
+
+The `verticle` parameter creates a new verticle class file.
+The `dependencies` parameters specifies the Vert.x dependencies you need.
