@@ -39,3 +39,13 @@ mvn io.fabric8:vertx-maven-plugin:{version}:setup \
 
 The `verticle` parameter creates a new verticle class file.
 The `dependencies` parameters specifies the Vert.x dependencies you need.
+
+Dependencies are selected from a list of know dependencies matching the one listed on http://vertx.io/docs. In
+addition, you can configure dependencies using the following syntax: `groupId:artifactId:version:classifier` such as in:
+
+----
+io.vertx:vertxcodetrans => Inherit version from BOM
+commons-io:commons-io:2.5 => Regular dependency
+io.vertx:vertx-template-engines:3.4.0-SNAPSHOT:shaded => Dependency with classifier
+----
+
