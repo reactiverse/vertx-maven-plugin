@@ -92,6 +92,24 @@ public class SetupIT extends VertxMojoTestBase {
     }
 
     @Test
+    public void testProjectGenerationFromScratchWithCustomDependencies() throws VerificationException, IOException {
+        testDir = initEmptyProject("projects/project-generation-with-verticle-and-custom-deps");
+        assertThat(testDir).isDirectory();
+        initVerifier(testDir);
+        setup(verifier, "-DprojectGroupId=org.acme", "-DprojectArtifactId=acme",
+            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=io.vertx:codetrans,commons-io:commons-io:2.5,io" +
+                ".vertx:vertx-template-engines:3.4.0-SNAPSHOT:shaded");
+        assertThat(new File(testDir, "pom.xml")).isFile();
+        assertThat(new File(testDir, "src/main/java")).isDirectory();
+        assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
+        assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
+            .contains("<artifactId>codetrans</artifactId>")
+            .contains("<artifactId>commons-io</artifactId>", "<version>2.5</version>", "<groupId>commons-io</groupId>")
+            .contains("<artifactId>vertx-template-engines</artifactId>", "<version>3.4.0-SNAPSHOT</version>",
+                "<classifier>shaded</classifier>");;
+    }
+
+    @Test
     public void testProjectGenerationFromEmptyPomWithDependencies() throws VerificationException, IOException {
         testDir = initProject("projects/simple-pom-it",
             "projects/project-generation-from-empty-pom-with-dependencies");
