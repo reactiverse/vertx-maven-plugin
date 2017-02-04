@@ -313,7 +313,8 @@ public class SetupMojoTest {
         assertEquals(project.getArtifactId(), "vertx-example");
         assertEquals(project.getVersion(), "1.0-SNAPSHOT");
         assertEquals(projectProps.getProperty("vertx.version"), vertxVersion);
-        assertEquals(projectProps.getProperty("fabric8-vertx-maven-plugin.version"), "1.0-SNAPSHOT");
+        assertThat(projectProps.getProperty("fabric8-vertx-maven-plugin.version"))
+            .containsPattern("^(\\d?\\.?\\d?)(\\-?SNAPSHOT?|\\.?\\d?)$");
         assertEquals(projectProps.getProperty("vertx.verticle"), "com.example.vertx.MainVerticle");
         DependencyManagement dependencyManagement = project.getDependencyManagement();
         assertThat(dependencyManagement).isNotNull();
