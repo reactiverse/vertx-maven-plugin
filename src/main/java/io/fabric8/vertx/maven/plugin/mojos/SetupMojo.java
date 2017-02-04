@@ -117,8 +117,8 @@ public class SetupMojo extends AbstractMojo {
                     }
                 }
 
-                if (verticle != null  && verticle.endsWith(".java")) {
-                    verticle = verticle.substring(0, verticle.length() -".java".length());
+                if (verticle != null && verticle.endsWith(".java")) {
+                    verticle = verticle.substring(0, verticle.length() - ".java".length());
                 }
 
                 Map<String, String> context = new HashMap<>();
@@ -172,7 +172,7 @@ public class SetupMojo extends AbstractMojo {
             model.getProperties().putIfAbsent("vertx.projectVersion", vertxVersion);
             if (!Strings.isNullOrEmpty(verticle)) {
                 if (verticle.endsWith(".java")) {
-                    verticle = verticle.substring(0, verticle.length() -".java".length());
+                    verticle = verticle.substring(0, verticle.length() - ".java".length());
                 }
                 model.getProperties().putIfAbsent("vertx.verticle", verticle);
             }
@@ -246,7 +246,7 @@ public class SetupMojo extends AbstractMojo {
             return false;
         }
 
-        boolean result = false;
+        boolean updated = false;
         List<VertxDependency> deps = VertxDependencies.get();
         for (String dependency : this.dependencies) {
             Optional<VertxDependency> optional = deps.stream()
@@ -254,15 +254,35 @@ public class SetupMojo extends AbstractMojo {
                 .findAny();
 
             if (optional.isPresent()) {
-                getLog().info("Addind dependency " + optional.get().toCoordinates());
+                getLog().info("Adding dependency " + optional.get().toCoordinates());
                 model.addDependency(optional.get().toDependency());
-                result = true;
+                updated = true;
+            } else if (dependency.contains(":")) {
+                // Add it as a dependency
+                // groupId:artifactId:version:classifier
+                String[] segments = dependency.split(":");
+                if (segments.length >= 2) {
+                    Dependency d = new Dependency();
+                    d.setGroupId(segments[0]);
+                    d.setArtifactId(segments[1]);
+                    if (segments.length >= 3  && ! segments[2].isEmpty()) {
+                        d.setVersion(segments[2]);
+                    }
+                    if (segments.length >= 4) {
+                        d.setClassifier(segments[3]);
+                    }
+                    getLog().info("Adding dependency " + d.getManagementKey());
+                    model.addDependency(d);
+                    updated = true;
+                } else {
+                    getLog().warn("Invalid dependency description '" + dependency + "'");
+                }
             } else {
                 getLog().warn("Cannot find a dependency matching '" + dependency + "'");
             }
         }
 
-        return result;
+        return updated;
     }
 
 
