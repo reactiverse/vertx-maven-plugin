@@ -18,4 +18,4 @@ String base = basedir
 def file = new File(base, "build.log")
 assert file.exists()
 assert file.text.contains("Starting clustering...")
-assert file.text.contains("io.vertx.spi.cluster.jgroups.JGroupsClusterManager")
+assert file.text.contains("Clustered: true")

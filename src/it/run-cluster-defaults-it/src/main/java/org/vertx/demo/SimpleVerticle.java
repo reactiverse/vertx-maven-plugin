@@ -25,9 +25,8 @@ import io.vertx.core.Future;
  */
 public class SimpleVerticle extends AbstractVerticle {
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
-       startFuture.complete();
+    public void start() throws Exception {
+       System.out.println("Clustered: " + vertx.isClustered());
        vertx.close();
-       System.exit(0);
     }
 }
