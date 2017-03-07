@@ -127,8 +127,6 @@ public class StartMojo extends AbstractRunMojo {
 
 
         if (! jarMode) {
-            // The run command should not be required when using Vert.x 3.4.x+
-            argsList.add("run");
             argsList.add(verticle);
         }
 
@@ -138,11 +136,10 @@ public class StartMojo extends AbstractRunMojo {
             argsList.add(config.toString());
         }
 
-        argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
-        if (launcher != null) {
+
+        if (launcher != null  && ! IO_VERTX_CORE_LAUNCHER.equals(launcher)) {
+            argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
-        } else {
-            argsList.add(IO_VERTX_CORE_LAUNCHER);
         }
 
         argsList.add("-id");

@@ -154,7 +154,8 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
             Matcher matcher = pattern.matcher(scmRevision);
             assertThat(matcher.matches()).isTrue();
             assertThat(projectDeps)
-                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:3.3.3 io.vertx:vertx-web:3.3.3 io.vertx:vertx-jdbc-client:3.3.3");
+                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:3.4.0 io.vertx:vertx-web:3.4.0 io" +
+                    ".vertx:vertx-jdbc-client:3.4.0");
 
         } else if ("svn".equalsIgnoreCase(scm)) {
             String scmType = manifest.getMainAttributes().getValue(
@@ -166,7 +167,7 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
             assertThat(revision).isNotNull();
             assertThat(revision).isEqualTo("1381106");
             assertThat(projectDeps)
-                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:3.3.3 io.vertx:vertx-web:3.3.3");
+                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:3.4.0 io.vertx:vertx-web:3.4.0");
         }
 
     }

@@ -1,13 +1,13 @@
 /*
  *
  *   Copyright (c) 2016 Red Hat, Inc.
- *  
+ *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
  *   with the License.  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
@@ -27,5 +27,5 @@ Verify.verifyVertxJar(primaryArtifactFile)
 
 JarFile jar = new JarFile(primaryArtifactFile)
 assert jar.getEntry("assets") != null
-assert jar.getEntry("assets/vertx-web-3.3.3-client.js") != null
+assert jar.getEntry("assets/vertx-web-3.4.0-client.js") != null
 assert jar.getEntry("assets/jquery/3.1.1/jquery.js") != null
