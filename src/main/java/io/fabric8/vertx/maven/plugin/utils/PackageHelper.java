@@ -58,12 +58,12 @@ public class PackageHelper {
     private String outputFileName;
 
 
-    public PackageHelper(String mainClass, String mainVerticle,MavenProject mavenProject,ScmManager scmManager) {
+    public PackageHelper(String mainClass, String mainVerticle, MavenProject mavenProject, ScmManager scmManager) {
         this.archive = ShrinkWrap.create(JavaArchive.class);
         this.mainClass = mainClass;
         this.mainVerticle = mainVerticle;
         this.mavenProject = mavenProject;
-        this.scmManager   = scmManager;
+        this.scmManager = scmManager;
     }
 
 
@@ -110,12 +110,22 @@ public class PackageHelper {
 
     /**
      * Import from file and make sure the file is closed.
+     *
      * @param file the file, must not be {@code null}
      */
     private void importFromFile(File file) {
         try {
             FileInputStream fis = new FileInputStream(file);
-            this.archive.as(ZipImporter.class).importFrom(fis);
+            this.archive.as(ZipImporter.class).importFrom(fis, path -> {
+                boolean include = !path.getParent().get().equalsIgnoreCase("/META-INF")
+                    || !path.get().endsWith(".SF")
+                    && !path.get().endsWith(".DSA")
+                    && !path.get().endsWith(".RSA");
+                if (! include) {
+                    log.info("Excluding " + path.get() + " from " + file.getName());
+                }
+                return include;
+            });
             IOUtils.closeQuietly(fis);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to read the file " + file.getAbsolutePath(), e);
@@ -143,17 +153,19 @@ public class PackageHelper {
     /**
      * Generate the manifest for the über jar.
      */
-    protected void generateManifest() throws IOException,MojoExecutionException {
+    protected void generateManifest() throws IOException, MojoExecutionException {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        attributes.put(Attributes.Name.MAIN_CLASS, mainClass);
+        if (mainClass != null && !mainClass.trim().isEmpty()) {
+            attributes.put(Attributes.Name.MAIN_CLASS, mainClass);
+        }
         //This is a typical situation when application is launched with custom launcher
-        if (mainVerticle != null) {
+        if (mainVerticle != null && !mainVerticle.trim().isEmpty()) {
             attributes.put(MAIN_VERTICLE, mainVerticle);
         }
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes,scmManager);
+        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
 
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
