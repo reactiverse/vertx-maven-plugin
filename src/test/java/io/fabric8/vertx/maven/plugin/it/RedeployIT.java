@@ -141,6 +141,36 @@ public class RedeployIT extends VertxMojoTestBase {
     }
 
     @Test
+    public void testRedeployOnJavaChangeWithExtendedLauncher() throws Exception {
+        File testDir = initProject("projects/redeploy-with-extended-launcher-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("Buongiorno vert.x");
+
+        // Touch the java source code (verticle)
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("vert.x", uuid));
+
+        // Wait until we get "uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Buongiorno " + uuid));
+
+        // Touch the launcher class
+        source = new File(testDir, "src/main/java/demo/Main.java");
+        String uuid2 = UUID.randomUUID().toString();
+        filter(source, ImmutableMap.of("Buongiorno", uuid2));
+
+        // Wait until we get "uuid uuid"
+        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
+    }
+
+    @Test
     public void testRedeployOnResourceChange() throws Exception {
         File testDir = initProject("projects/redeploy-on-resource-change-it");
         assertThat(testDir).isDirectory();
@@ -235,7 +265,7 @@ public class RedeployIT extends VertxMojoTestBase {
         verifier.executeGoals(ImmutableList.of("compile", "vertx:run"));
     }
 
-    private void run(Verifier verifier, String ... previous) throws VerificationException {
+    private void run(Verifier verifier, String... previous) throws VerificationException {
         verifier.setLogFileName("build-run.log");
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         builder.add(previous);

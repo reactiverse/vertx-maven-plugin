@@ -52,6 +52,7 @@
                 </executions>
 
                 <configuration>
+                    <verticle>demo.SimpleVerticle</verticle>
                     <redeploy>true</redeploy>
                     <launcher>demo.Main</launcher>
                 </configuration>

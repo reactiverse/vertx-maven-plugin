@@ -62,9 +62,7 @@ public class RunMojo extends AbstractRunMojo {
             getLog().debug("Got command line arguments from property :" + runArgsProp);
             try {
                 String[] argValues = CommandLineUtils.translateCommandline(runArgsProp);
-                if (argValues != null) {
-                    optionalRunExtraArgs.addAll(Arrays.asList(argValues));
-                }
+                optionalRunExtraArgs.addAll(Arrays.asList(argValues));
             } catch (Exception e) {
                 throw new MojoFailureException("Unable to parse system property vertx.runArgs", e);
             }

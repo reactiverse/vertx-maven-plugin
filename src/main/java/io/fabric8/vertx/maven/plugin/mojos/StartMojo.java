@@ -107,10 +107,10 @@ public class StartMojo extends AbstractRunMojo {
                 MavenExecutionUtils.execute("package", project, mavenSession, lifecycleExecutor, container);
             }
 
-            if (fatjar.isFile()  && launcher.equals(IO_VERTX_CORE_LAUNCHER)) {
+            if (fatjar.isFile()  &&  isVertxLauncher(launcher)) {
                 argsList.add("-jar");
                 argsList.add(fatjar.getAbsolutePath());
-            } else if (fatjar.isFile()  && ! launcher.equals(IO_VERTX_CORE_LAUNCHER)) {
+            } else if (fatjar.isFile()  && ! isVertxLauncher(launcher)) {
                 argsList.add("-cp");
                 argsList.add(fatjar.getAbsolutePath());
                 argsList.add(IO_VERTX_CORE_LAUNCHER);
@@ -120,7 +120,11 @@ public class StartMojo extends AbstractRunMojo {
             }
         } else {
             addClasspath(argsList);
-            argsList.add(IO_VERTX_CORE_LAUNCHER);
+            if (isVertxLauncher(launcher)) {
+                argsList.add(launcher);
+            } else {
+                argsList.add(IO_VERTX_CORE_LAUNCHER);
+            }
         }
 
         argsList.add(vertxCommand);
@@ -137,7 +141,7 @@ public class StartMojo extends AbstractRunMojo {
         }
 
 
-        if (launcher != null  && ! IO_VERTX_CORE_LAUNCHER.equals(launcher)) {
+        if (launcher != null  && ! isVertxLauncher(launcher)) {
             argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
         }
