@@ -15,18 +15,18 @@
  *   permissions and limitations under the License.
  */
 
-package org.vertx.demo;
+package demo;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
-/**
- * @author kameshs
- */
 public class SimpleVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
-       System.out.println("Clustered: " + vertx.isClustered());
-       vertx.close();
+        String name = "vert.x";
+        String message = config().getString("prefix") + " " + name;
+        vertx.createHttpServer()
+            .requestHandler(req -> req.response().end(message))
+                .listen(8080);
     }
 }

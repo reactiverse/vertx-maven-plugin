@@ -15,18 +15,22 @@
  *   permissions and limitations under the License.
  */
 
-package org.vertx.demo;
+package demo;
 
-import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Launcher;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 
-/**
- * @author kameshs
- */
-public class SimpleVerticle extends AbstractVerticle {
+public class Main extends Launcher {
+
+    public static void main(String[] args) {
+        new Main().dispatch(args);
+    }
+
     @Override
-    public void start() throws Exception {
-       System.out.println("Clustered: " + vertx.isClustered());
-       vertx.close();
+    public void beforeDeployingVerticle(DeploymentOptions deploymentOptions) {
+        deploymentOptions.setConfig(new JsonObject().put("message", "hello"));
     }
 }

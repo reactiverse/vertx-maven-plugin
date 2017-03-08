@@ -50,6 +50,7 @@
                         <configuration>
                             <runArgs>
                                 <runArg>--cluster</runArg>
+                                <run>-Djava.net.preferIPv4Stack=true</run>
                             </runArgs>
                         </configuration>
                     </execution>
@@ -64,7 +65,7 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-jgroups</artifactId>
+            <artifactId>vertx-infinispan</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>

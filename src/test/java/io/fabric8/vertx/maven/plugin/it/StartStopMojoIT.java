@@ -19,6 +19,8 @@ public class StartStopMojoIT extends VertxMojoTestBase {
     String ROOT_START = "projects/start-it";
     String ROOT_OPTS = "projects/start-java-opts-it";
     String ROOT_MAIN = "projects/start-with-main-class-it";
+    String ROOT_CUSTOM = "projects/start-with-custom-launcher-it";
+    String ROOT_CUSTOM_EXPLODED = "projects/start-with-custom-launcher-exploded-it";
     String ROOT_MAIN_EXPLODED = "projects/start-with-main-class-exploded-it";
     String ROOT_EXPLODED = "projects/start-exploded-it";
     String ROOT_WITH_CONF = "projects/start-with-conf-it";
@@ -79,8 +81,41 @@ public class StartStopMojoIT extends VertxMojoTestBase {
     }
 
     @Test
+    public void testWithCustomLauncher() throws IOException, VerificationException {
+        File testDir = initProject(ROOT_CUSTOM);
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        verifier.displayStreamBuffers();
+
+        prepareProject(testDir, verifier);
+
+        runPackage(verifier);
+        runStart(verifier);
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("Buongiorno");
+    }
+
+    @Test
     public void testWithMainClassInExplodedMode() throws IOException, VerificationException {
         File testDir = initProject(ROOT_MAIN_EXPLODED);
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+
+        prepareProject(testDir, verifier);
+
+        runPackage(verifier);
+
+        runStart(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("hello");
+    }
+
+    @Test
+    public void testWithCustomLauncherInExplodedMode() throws IOException, VerificationException {
+        File testDir = initProject(ROOT_CUSTOM_EXPLODED);
         assertThat(testDir).isDirectory();
 
         initVerifier(testDir);

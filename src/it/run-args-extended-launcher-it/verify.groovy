@@ -17,5 +17,4 @@
 String base = basedir
 def file = new File(base, "build.log")
 assert file.exists()
-assert file.text.contains("Starting clustering...")
-assert file.text.contains("Clustered: true")
+assert file.text.contains("Boo boo vert.x")
