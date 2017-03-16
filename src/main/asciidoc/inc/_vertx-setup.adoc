@@ -18,11 +18,11 @@ if you wish to override the vertx version, then you can run the same command as 
 e.g.
 [source,subs="attributes-with-version"]
 ----
-mvn io.fabric8:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0-SNAPSHOT
+mvn io.fabric8:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0
 ----
 
-This will configure the vert.x and its dependencies to `3.4.0-SNAPSHOT` i.e. Maven project property `vertx.version`
-set to `3.4.0-SNAPSHOT`
+This will configure the vert.x and its dependencies to `3.4.0` i.e. Maven project property `vertx.version`
+set to `3.4.0`
 
 You can also generate a project if you don't have a `pom.xml` file:
 
@@ -46,6 +46,6 @@ addition, you can configure dependencies using the following syntax: `groupId:ar
 ----
 io.vertx:vertxcodetrans => Inherit version from BOM
 commons-io:commons-io:2.5 => Regular dependency
-io.vertx:vertx-template-engines:3.4.0-SNAPSHOT:shaded => Dependency with classifier
+io.vertx:vertx-template-engines:3.4.1:shaded => Dependency with classifier
 ----
 

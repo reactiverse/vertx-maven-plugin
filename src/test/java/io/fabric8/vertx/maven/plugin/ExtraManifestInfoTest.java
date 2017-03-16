@@ -80,7 +80,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
         assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("io.vertx:vertx-core:3.4.0");
+        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("io.vertx:vertx-core:3.4.1");
         assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
 
@@ -105,7 +105,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
         assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.4.0:vertx");
+        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.4.1:vertx");
         assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
 

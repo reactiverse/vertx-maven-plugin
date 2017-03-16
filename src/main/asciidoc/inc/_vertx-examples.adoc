@@ -42,7 +42,7 @@ with the following dependencies:
 <dependency>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-web</artifactId>
-    <version>3.4.0</version>
+    <version>3.4.1</version>
     <classifier>client</classifier>
     <type>js</type>
 </dependency>
@@ -88,7 +88,7 @@ By default the plugin stripped the version. However this behavior can be disable
 </plugin>
 ----
 
-In this case, the `vertx-web-client.js` output file is: `vertx-web-3.4.0-client.js`, while for jquery, resources are
+In this case, the `vertx-web-client.js` output file is: `vertx-web-3.4.1-client.js`, while for jquery, resources are
 unpacked in `${project.baseDir}/target/classes/webroot/jquery/3.1.1`. You can always look into the
 `target/classes/webroot` directory to check the output files.
 

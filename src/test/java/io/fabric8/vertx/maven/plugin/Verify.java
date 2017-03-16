@@ -122,7 +122,7 @@ public class Verify {
         Properties projectProps = project.getProperties();
         Assert.assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.projectVersion"),"3.4.0-SNAPSHOT");
+        assertEquals(projectProps.getProperty("vertx.projectVersion"),"3.4.0");
     }
 
     public static String read(InputStream input) throws IOException {

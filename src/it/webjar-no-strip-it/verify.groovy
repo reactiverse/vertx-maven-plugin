@@ -27,5 +27,5 @@ Verify.verifyVertxJar(primaryArtifactFile)
 
 JarFile jar = new JarFile(primaryArtifactFile)
 assert jar.getEntry("assets") != null
-assert jar.getEntry("assets/vertx-web-3.4.0-client.js") != null
+assert jar.getEntry("assets/vertx-web-3.4.1-client.js") != null
 assert jar.getEntry("assets/jquery/3.1.1/jquery.js") != null

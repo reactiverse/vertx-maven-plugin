@@ -29,12 +29,12 @@
             <groupId>com.example</groupId>
             <artifactId>example</artifactId>
             <classifier>vertx</classifier>
-            <version>3.4.0</version>
+            <version>3.4.1</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
