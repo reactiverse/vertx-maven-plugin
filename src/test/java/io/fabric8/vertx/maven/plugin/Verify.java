@@ -62,6 +62,12 @@ public class Verify {
         vertxJarVerifier.verifyServicesContent();
     }
 
+    public static void verifyOrderServiceContent(File jarFile,String orderdedContent) throws Exception {
+        VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
+        vertxJarVerifier.verifyJarCreated();
+        vertxJarVerifier.verifyOrderedServicesContent(orderdedContent);
+    }
+
     public static void verifySetup(File pomFile) throws Exception {
         assertNotNull("Unable to find pom.xml", pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
@@ -209,6 +215,17 @@ public class Verify {
 //                .contains("io.vertx.groovy.ext.jdbc.GroovyStaticExtension")
 //                .contains("io.vertx.groovy.ext.jdbc.GroovyExtension");
 
+        }
+
+        protected void verifyOrderedServicesContent(String orderedContent) throws Exception {
+
+            ZipEntry spiEntry = jarFile.getEntry("META-INF/services/io.fabric8.vmp.foo");
+
+            assertThat(spiEntry).isNotNull();
+
+            InputStream in = jarFile.getInputStream(spiEntry);
+            String actual = read(in);
+            assertThat(actual).isEqualTo(orderedContent);
         }
     }
 
