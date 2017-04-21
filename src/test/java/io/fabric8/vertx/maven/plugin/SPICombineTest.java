@@ -94,8 +94,8 @@ public class SPICombineTest {
 
         assertNotNull(combinedSpiArchive);
 
-        String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl\n";
+        String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl\n" +
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n";
 
         assertTrue(Files.exists(Paths.get(outputJar.toString())));
 

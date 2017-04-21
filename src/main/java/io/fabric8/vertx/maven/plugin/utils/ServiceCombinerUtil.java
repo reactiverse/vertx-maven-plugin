@@ -139,7 +139,7 @@ public class ServiceCombinerUtil {
 
         Set<JavaArchive> serviceProviderArchives = jars.stream()
             .filter(a -> a.contains(spiPath))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 
         for (JavaArchive archive : serviceProviderArchives) {
             Node node = archive.get(spiPath);
