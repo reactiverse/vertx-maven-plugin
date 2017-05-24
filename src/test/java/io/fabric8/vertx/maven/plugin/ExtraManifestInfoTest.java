@@ -16,22 +16,24 @@
 
 package io.fabric8.vertx.maven.plugin;
 
-import io.fabric8.vertx.maven.plugin.utils.ManifestUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import io.fabric8.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
+import io.fabric8.vertx.maven.plugin.components.impl.SCMManifestCustomizer;
+import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -73,7 +75,19 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
+        ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
+        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
+
+            }
+
+            @Override
+            public ScmManager getScmManager() {
+                return scmManager;
+            }
+        }, mavenProject);
+        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -98,7 +112,19 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
+        ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
+        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
+
+            }
+
+            @Override
+            public ScmManager getScmManager() {
+                return scmManager;
+            }
+        }, mavenProject);
+        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -123,7 +149,33 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
-        ManifestUtils.addExtraManifestInfo(mavenProject, attributes, scmManager);
+        ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
+        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
+
+            }
+
+            @Override
+            public ScmManager getScmManager() {
+                return scmManager;
+            }
+        }, mavenProject);
+
+        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
+
+        atts = new SCMManifestCustomizer().getEntries(new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
+
+            }
+
+            @Override
+            public ScmManager getScmManager() {
+                return scmManager;
+            }
+        }, mavenProject);
+        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
 
         assertThat(attributes.isEmpty()).isFalse();
 

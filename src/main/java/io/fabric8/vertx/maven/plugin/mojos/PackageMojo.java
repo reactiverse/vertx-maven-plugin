@@ -17,25 +17,20 @@
 
 package io.fabric8.vertx.maven.plugin.mojos;
 
+import io.fabric8.vertx.maven.plugin.components.*;
 import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
-import io.fabric8.vertx.maven.plugin.utils.PackageHelper;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -75,6 +70,12 @@ public class PackageMojo extends AbstractVertxMojo {
     @Parameter(name = "attach", defaultValue = "true")
     protected boolean attach;
 
+    @Component
+    protected PackageService packageService;
+
+    @Component
+    protected ServiceFileCombiner combiner;
+
     public static String computeOutputName(MavenProject project, String classifier) {
         String finalName = project.getBuild().getFinalName();
         if (finalName != null) {
@@ -104,7 +105,7 @@ public class PackageMojo extends AbstractVertxMojo {
         }
 
         // Fix empty classifier.
-        if (classifier != null  && classifier.trim().isEmpty()) {
+        if (classifier != null && classifier.trim().isEmpty()) {
             getLog().debug("The classifier is empty, it won't be used");
             classifier = null;
         }
@@ -114,56 +115,62 @@ public class PackageMojo extends AbstractVertxMojo {
                 "artifact");
         }
 
-        final Artifact artifact = this.project.getArtifact();
-
-        Optional<File> primaryArtifactFile = getArtifactFile(artifact);
-
-        //Step 0: Resolve and Collect Dependencies as g:a:v:t:c coordinates
-
-        Set<Optional<File>> compileAndRuntimeDeps = extractArtifactPaths(this.project.getDependencyArtifacts());
-        Set<Optional<File>> transitiveDeps = extractArtifactPaths(this.project.getArtifacts());
-
-        PackageHelper packageHelper = new PackageHelper(this.launcher, this.verticle,this.project,this.scmManager)
-            .withOutputName(computeOutputName(project, classifier))
-            .compileAndRuntimeDeps(compileAndRuntimeDeps)
-            .transitiveDeps(transitiveDeps);
-
-        //Step 1: build the jar add classifier and add it to project
-
-        try {
-
-            Path pathProjectBuildDir = Paths.get(this.projectBuildDir);
-
-            File primaryFile = null;
-            if (primaryArtifactFile.isPresent()) {
-                primaryFile = primaryArtifactFile.get();
-            }
-
-            File fatJarFile = packageHelper
-                .log(getLog())
-                .build(pathProjectBuildDir, primaryFile);
+        // Manage SPI combination
+        combiner.doCombine(new ServiceFileCombinationConfig()
+            .setStrategy(serviceProviderCombination)
+            .setProject(project)
+            .setMojo(this)
+            .setArtifacts(project.getArtifacts()));
 
 
-            //  Perform the relocation of the service providers when serviceProviderCombination is defined
-            if (serviceProviderCombination == null || serviceProviderCombination != CombinationStrategy.none) {
-                packageHelper.combineServiceProviders(project,
-                    pathProjectBuildDir, fatJarFile);
-            }
+        //TODO Archive should be a parameter.
+        Archive archive = ServiceUtils.getDefaultFatJar(project);
 
-            ArtifactHandler handler = new DefaultArtifactHandler("jar");
-            if (classifier != null) {
-                Artifact vertxJarArtifact = new DefaultArtifact(artifact.getGroupId(),
-                    artifact.getArtifactId(), artifact.getBaseVersion(), artifact.getScope()
-                    , VERTX_PACKAGING, classifier, handler);
-                vertxJarArtifact.setFile(fatJarFile);
-                if (attach) {
-                    this.project.addAttachedArtifact(vertxJarArtifact);
-                }
-            }
-        } catch (Exception e) {
-            throw new MojoFailureException("Unable to build fat jar", e);
+        if (launcher != null && !launcher.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Class", launcher);
         }
 
+        if (verticle != null && !verticle.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
+        }
+
+        List<ManifestCustomizerService> customizers = getManifestCustomizers();
+        customizers.forEach(customizer ->
+            archive.getManifest().putAll(customizer.getEntries(this, project)));
+
+        File jar;
+        try {
+            jar = packageService.doPackage(
+                new PackageConfig()
+                    .setArtifacts(project.getArtifacts())
+                    .setMojo(this)
+                    .setOutput(new File(projectBuildDir, computeOutputName(project, classifier)))
+                    .setProject(project)
+                    .setArchive(archive));
+        } catch (PackagingException e) {
+            throw new MojoExecutionException("Unable to build the fat jar", e);
+        }
+
+        if (jar.isFile() && classifier != null && attach) {
+            ArtifactHandler handler = new DefaultArtifactHandler("jar");
+            Artifact vertxJarArtifact = new DefaultArtifact(project.getGroupId(),
+                project.getArtifactId(), project.getVersion(), "compile",
+                "jar", classifier, handler);
+            vertxJarArtifact.setFile(jar);
+            this.project.addAttachedArtifact(vertxJarArtifact);
+        }
+
+    }
+
+    private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
+        List<ManifestCustomizerService> customizers;
+        try {
+            customizers = container.lookupList(ManifestCustomizerService.class);
+        } catch (ComponentLookupException e) {
+            throw new MojoExecutionException("Unable to retrieve the " +
+                ManifestCustomizerService.class.getName() + " components");
+        }
+        return customizers;
     }
 
 }
