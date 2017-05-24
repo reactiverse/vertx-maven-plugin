@@ -26,10 +26,11 @@ import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -38,8 +39,6 @@ import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 
-import org.codehaus.plexus.context.Context;
-import org.codehaus.plexus.context.ContextException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -307,6 +306,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
 
     /**
      * Retrieves the Plexus container.
+     *
      * @param context the context
      * @throws ContextException if the container cannot be retrieved.
      */
@@ -315,4 +315,10 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         container = (PlexusContainer) context.get(PlexusConstants.PLEXUS_KEY);
     }
 
+    /**
+     * @return the SCM manager.
+     */
+    public ScmManager getScmManager() {
+        return scmManager;
+    }
 }
