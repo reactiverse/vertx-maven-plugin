@@ -43,6 +43,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -254,7 +255,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
             .map(this::asMavenCoordinates)
             .distinct()
             .map(this::resolveArtifact)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
