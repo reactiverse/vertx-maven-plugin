@@ -114,11 +114,10 @@ public class SPICombineTest {
 
         File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
         assertThat(merged).isFile();
-
-        String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n";
-        String strContent = FileUtils.readFileToString(merged, "UTF-8");
-        assertEquals(expected, strContent);
+        
+        List<String> lines = FileUtils.readLines(merged, "UTF-8");
+        assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
         Stream.of(jar1, jar2, jar3, new File("target/junk")).forEach(FileUtils::deleteQuietly);
     }
 
