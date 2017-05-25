@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.fabric8.vertx.maven.plugin.components.impl.ProjectManifestCustomizer.manifestTimestampFormat;
+
 /**
  * A simple SCM utility wrapper, that extracts some SCM related metadata using Apache SCM providers
  * @see <a href="https://maven.apache.org/components/scm/index.html">Apache Maven SCM</a>
@@ -83,7 +85,7 @@ public class ScmSpy {
                 changeLogMap.put(ExtraManifestKeys.scmType.name(), getScmType(scmUrl));
                 changeLogMap.put(ExtraManifestKeys.scmRevision.name(), changeSet.getRevision());
                 changeLogMap.put(ExtraManifestKeys.lastCommitTimestamp.name(),
-                    ManifestUtils.manifestTimestampFormat(changeSet.getDate()));
+                    manifestTimestampFormat(changeSet.getDate()));
                 changeLogMap.put(ExtraManifestKeys.author.name(), changeSet.getAuthor());
             }
         }

@@ -17,27 +17,30 @@
 
 package io.fabric8.vertx.maven.plugin;
 
-import io.fabric8.vertx.maven.plugin.utils.ServiceCombinerUtil;
-import org.apache.commons.io.IOUtils;
+import io.fabric8.vertx.maven.plugin.components.ServiceFileCombinationConfig;
+import io.fabric8.vertx.maven.plugin.components.impl.ServiceFileCombinationImpl;
+import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.model.Build;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
-import org.jboss.shrinkwrap.api.Node;
+import org.apache.maven.project.MavenProject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -45,14 +48,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class SPICombineTest {
 
+    private ServiceFileCombinationImpl combiner = new ServiceFileCombinationImpl();
+
     @Test
     public void testCombine() throws Exception {
-
-        File outputJar = new File("target/testCombine-spi.jar");
         File jar1 = new File("target/testCombine1.jar");
         File jar2 = new File("target/testCombine2.jar");
         File jar3 = new File("target/testCombine3.jar");
-        File jar4 = new File("target/testCombine4.jar");
 
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.addAsServiceProvider("com.test.demo.DemoSPI",
@@ -72,52 +74,56 @@ public class SPICombineTest {
         jarArchive3.addClass(SPICombineTest.class);
         jarArchive3.as(ZipExporter.class).exportTo(jar3, true);
 
-        JavaArchive jarArchive4 = ShrinkWrap.create(JavaArchive.class);
-        jarArchive4.addAsServiceProvider("com.test.demo.DemoSPI",
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl");
+        Set<Artifact> artifacts = new LinkedHashSet<>();
+        Artifact a1 = new DefaultArtifact("org.acme", "a1", "1.0",
+            "compile", "jar", "", null);
+        a1.setFile(jar1);
+        Artifact a2 = new DefaultArtifact("org.acme", "a2", "1.0",
+            "compile", "jar", "", null);
+        a2.setFile(jar2);
+        Artifact a3 = new DefaultArtifact("org.acme", "a3", "1.0",
+            "compile", "jar", "", null);
+        a3.setFile(jar3);
 
-        jarArchive4.as(ZipExporter.class).exportTo(jar4, true);
+        artifacts.add(a1);
+        artifacts.add(a2);
+        artifacts.add(a3);
 
-        JavaArchive archive1 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar1);
-        JavaArchive archive2 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar2);
-        JavaArchive archive3 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar3);
-        JavaArchive archive4 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar4);
+        MavenProject project = new MavenProject();
+        project.setVersion("1.0");
+        project.setArtifactId("foo");
 
-        List<JavaArchive> jars = Stream.of(archive1, archive2,
-            archive3, archive4).collect(Collectors.toList());
+        AbstractVertxMojo mojo = new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
 
-        JavaArchive combinedSpiArchive = new ServiceCombinerUtil()
-            .withLog(new SystemStreamLog())
-            .withProject("foo", "1.0")
-            .combine(jars);
-        combinedSpiArchive.as(ZipExporter.class).exportTo(outputJar, true);
+            }
+        };
 
-        assertNotNull(combinedSpiArchive);
+        mojo.setLog(new SystemStreamLog());
+        Build build = new Build();
+        build.setOutputDirectory("target/junk");
+        project.setBuild(build);
 
-        String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n";
+        ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
+            .setProject(project)
+            .setArtifacts(artifacts)
+            .setMojo(mojo);
 
-        assertTrue(Files.exists(Paths.get(outputJar.toString())));
+        combiner.doCombine(config);
 
-        JavaArchive acutalOutput = ShrinkWrap.create(JavaArchive.class);
-        acutalOutput.as(ZipImporter.class).importFrom(outputJar);
+        File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
+        assertThat(merged).isFile();
 
-        Node outputNode = acutalOutput.get("/META-INF/services/com.test.demo.DemoSPI");
-
-        InputStream in = outputNode.getAsset().openStream();
-        String strContent = IOUtils.toString(in, "UTF-8");
-        IOUtils.closeQuietly(in);
-
-        assertEquals(expected, strContent);
-
-
-        Stream.of(jar1, jar2, jar3, jar4, outputJar).forEach(File::delete);
+        List<String> lines = FileUtils.readLines(merged, "UTF-8");
+        assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
+        Stream.of(jar1, jar2, jar3, new File("target/junk")).forEach(FileUtils::deleteQuietly);
     }
 
     @Test
     public void testCombineDiffSPI() throws Exception {
 
-        File outputJar = new File("target/testCombineDiff-spi.jar");
         File jar1 = new File("target/testCombineDiffSPI.jar");
         File jar2 = new File("target/testCombineDiffSPI2.jar");
         File jar3 = new File("target/testCombineDiffSPI3.jar");
@@ -126,7 +132,6 @@ public class SPICombineTest {
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.addAsServiceProvider("com.test.demo.DemoSPI",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl");
-
         jarArchive1.as(ZipExporter.class).exportTo(jar1, true);
 
 
@@ -144,37 +149,56 @@ public class SPICombineTest {
             "com.test.demo.DemoSPI.impl.DemoSPIImpl4");
         jarArchive4.as(ZipExporter.class).exportTo(jar4, true);
 
+        Set<Artifact> artifacts = new LinkedHashSet<>();
+        Artifact a1 = new DefaultArtifact("org.acme", "a1", "1.0",
+            "compile", "jar", "", null);
+        a1.setFile(jar1);
+        Artifact a2 = new DefaultArtifact("org.acme", "a2", "1.0",
+            "compile", "jar", "", null);
+        a2.setFile(jar2);
+        Artifact a3 = new DefaultArtifact("org.acme", "a3", "1.0",
+            "compile", "jar", "", null);
+        a3.setFile(jar3);
+        Artifact a4 = new DefaultArtifact("org.acme", "a4", "1.0",
+            "compile", "jar", "", null);
+        a4.setFile(jar4);
 
-        JavaArchive archive1 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar1);
-        JavaArchive archive2 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar2);
-        JavaArchive archive3 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar3);
-        JavaArchive archive4 = ShrinkWrap.createFromZipFile(JavaArchive.class, jar4);
+        artifacts.add(a1);
+        artifacts.add(a2);
+        artifacts.add(a3);
+        artifacts.add(a4);
 
-        List<JavaArchive> jars = Stream.of(archive1, archive2,
-            archive3, archive4).collect(Collectors.toList());
+        MavenProject project = new MavenProject();
+        project.setVersion("1.0");
+        project.setArtifactId("foo");
 
-        JavaArchive combinedSpiArchive = new ServiceCombinerUtil()
-            .withLog(new SystemStreamLog())
-            .combine(jars);
-        combinedSpiArchive.as(ZipExporter.class).exportTo(outputJar, true);
+        AbstractVertxMojo mojo = new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
 
-        assertNotNull(combinedSpiArchive);
-        assertTrue(Files.exists(Paths.get(outputJar.toString())));
+            }
+        };
 
-        String expected = "com.test.demo.DemoSPI.impl.DemoSPIImpl2\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl\n" +
-            "com.test.demo.DemoSPI.impl.DemoSPIImpl4";
+        mojo.setLog(new SystemStreamLog());
+        Build build = new Build();
+        build.setOutputDirectory("target/junk");
+        project.setBuild(build);
 
-        JavaArchive acutalOutput = ShrinkWrap.create(JavaArchive.class);
-        acutalOutput.as(ZipImporter.class).importFrom(outputJar);
+        ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
+            .setProject(project)
+            .setArtifacts(artifacts)
+            .setMojo(mojo);
 
-        Node outputNode = acutalOutput.get("/META-INF/services/com.test.demo.DemoSPI");
+        combiner.doCombine(config);
+        File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
+        assertThat(merged).isFile();
 
-        List<String> lines = IOUtils.readLines(outputNode.getAsset().openStream(), "UTF-8");
+        List<String> lines = FileUtils.readLines(merged, "UTF-8");
+        assertThat(lines).hasSize(3).containsExactly(
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl",
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl2",
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl4");
+        Stream.of(jar1, jar2, jar3, jar4, new File("target/junk")).forEach(FileUtils::deleteQuietly);
 
-        assertThat(lines).hasSize(3).contains("com.test.demo.DemoSPI.impl.DemoSPIImpl2", "com.test.demo.DemoSPI.impl" +
-            ".DemoSPIImpl", "com.test.demo.DemoSPI.impl.DemoSPIImpl4");
-
-        Stream.of(jar1, jar2, jar3, jar4, outputJar).forEach(File::delete);
     }
 }

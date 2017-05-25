@@ -15,7 +15,7 @@
  *   permissions and limitations under the License.
  */
 
-package io.fabric8.vertx.maven.plugin.utils;
+package io.fabric8.vertx.maven.plugin.components.impl;
 
 import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;

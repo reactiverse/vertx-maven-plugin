@@ -16,9 +16,7 @@
 
 package io.fabric8.vertx.maven.plugin.it;
 
-import io.fabric8.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.fabric8.vertx.maven.plugin.util.GitUtil;
-import io.fabric8.vertx.maven.plugin.utils.ManifestUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.eclipse.jgit.api.Git;
@@ -124,30 +122,30 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
 
         //Check some manifest attributes
         String projectName = manifest.getMainAttributes().getValue(
-            ManifestUtils.attributeName(ExtraManifestKeys.projectName.name()));
+            "Project-Name");
         assertThat(projectName).isEqualTo("vertx-demo-start");
 
         String projectGroupId = manifest.getMainAttributes().getValue(
-            ManifestUtils.attributeName(ExtraManifestKeys.projectGroup.name()));
+            "Project-Group");
         assertThat(projectGroupId).isEqualTo("org.workspace7.maven.plugins.vertx.it");
 
         String projectVersion = manifest.getMainAttributes().getValue(
-            ManifestUtils.attributeName(ExtraManifestKeys.projectVersion.name()));
+            "Project-Version");
         assertThat(projectVersion).isEqualTo("0.0.1.BUILD-SNAPSHOT");
 
         String projectDeps = manifest.getMainAttributes().getValue(
-            ManifestUtils.attributeName(ExtraManifestKeys.projectDependencies.name()));
+            "Project-Dependencies");
         assertThat(projectDeps).isNotNull();
 
         if ("git".equalsIgnoreCase(scm)) {
 
             String scmType = manifest.getMainAttributes().getValue(
-                ManifestUtils.attributeName(ExtraManifestKeys.scmType.name()));
+                "Scm-Type");
             assertThat(scmType).isNotNull();
             assertThat(scmType).isEqualToIgnoringCase("Git");
 
             String scmRevision = manifest.getMainAttributes().getValue(
-                ManifestUtils.attributeName(ExtraManifestKeys.scmRevision.name()));
+                "Scm-Revision");
             assertThat(scmRevision).isNotNull();
 
             Pattern pattern = Pattern.compile("^\\w*$");
@@ -159,11 +157,11 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
 
         } else if ("svn".equalsIgnoreCase(scm)) {
             String scmType = manifest.getMainAttributes().getValue(
-                ManifestUtils.attributeName(ExtraManifestKeys.scmType.name()));
+                "Scm-Type");
             assertThat(scmType).isNotNull();
             assertThat(scmType).isEqualToIgnoringCase("SVN");
             String revision = manifest.getMainAttributes().getValue(
-                ManifestUtils.attributeName(ExtraManifestKeys.scmRevision.name()));
+                "Scm-Revision");
             assertThat(revision).isNotNull();
             assertThat(revision).isEqualTo("1381106");
             assertThat(projectDeps)
