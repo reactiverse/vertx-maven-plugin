@@ -33,6 +33,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -467,6 +468,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                     jsonConfDir.toFile().mkdirs();
                     Path jsonConfPath = Paths.get(jsonConfDir.toString(), VERTX_CONFIG_FILE_JSON);
                     try {
+                        Files.deleteIfExists(jsonConfPath);
                         if (Files.createFile(jsonConfPath).toFile().exists()) {
                             ConfigConverterUtil.convertYamlToJson(confPath, jsonConfPath);
                             config = jsonConfPath.toFile();
@@ -576,7 +578,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             try {
                 MojoUtils.copyResources(project, mavenSession, buildPluginManager);
             } catch (Exception e) {
-                getLog().error("Error while doing incremental resource processing: " + e.getMessage(), e);
+                getLog().error("Error while doing incremental resource processing: "
+                    + e.getMessage(), e);
             }
 
             return null;
