@@ -24,7 +24,6 @@ public class ServiceUtils {
     public static Archive getDefaultFatJar(MavenProject project) {
         Archive archive = new Archive();
         DependencySet all = new DependencySet();
-        all.setScope("compile");
         archive.addDependencySet(all);
 
         FileSet classes = new FileSet();
@@ -39,6 +38,7 @@ public class ServiceUtils {
                                                 boolean actTransitively, Log logger,
                                                 ArtifactFilter... additionalFilters)
         throws InvalidAssemblerConfigurationException {
+
         final AndArtifactFilter filter = new AndArtifactFilter();
 
         if (additionalFilters != null && additionalFilters.length > 0) {
@@ -61,11 +61,11 @@ public class ServiceUtils {
 
         Set<Artifact> copy = new LinkedHashSet<>(artifacts);
         for (final Iterator<Artifact> it = copy.iterator(); it.hasNext(); ) {
+
             final Artifact artifact = it.next();
 
             if (!filter.include(artifact)) {
                 it.remove();
-
                 if (logger.isDebugEnabled()) {
                     logger.debug(artifact.getId() + " was removed by one or more filters.");
                 }
