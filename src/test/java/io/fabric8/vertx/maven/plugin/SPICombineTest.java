@@ -114,7 +114,7 @@ public class SPICombineTest {
 
         File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
         assertThat(merged).isFile();
-        
+
         List<String> lines = FileUtils.readLines(merged, "UTF-8");
         assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
