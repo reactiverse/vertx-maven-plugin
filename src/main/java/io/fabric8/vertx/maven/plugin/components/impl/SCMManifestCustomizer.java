@@ -3,6 +3,7 @@ package io.fabric8.vertx.maven.plugin.components.impl;
 import io.fabric8.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.fabric8.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.PackageMojo;
 import io.fabric8.vertx.maven.plugin.utils.ScmSpy;
 import org.apache.maven.model.Scm;
 import org.apache.maven.project.MavenProject;
@@ -22,8 +23,12 @@ import java.util.Map;
 public class SCMManifestCustomizer implements ManifestCustomizerService {
 
     @Override
-    public Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project) {
+    public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
         Map<String, String> attributes = new HashMap<>();
+
+        if (mojo.isSkipScmMetadata()) {
+            return attributes;
+        }
 
         //Add SCM Metadata only when <scm> is configured in the pom.xml
         if (project.getScm() != null) {
@@ -57,7 +62,8 @@ public class SCMManifestCustomizer implements ManifestCustomizerService {
                     }
 
                 } catch (Exception e) {
-                    mojo.getLog().warn("Error while getting SCM Metadata:");
+                    mojo.getLog().warn("Error while getting SCM Metadata `" + e.getMessage() + "`");
+                    mojo.getLog().warn("SCM metadata ignored");
                     mojo.getLog().debug(e);
                 }
             }

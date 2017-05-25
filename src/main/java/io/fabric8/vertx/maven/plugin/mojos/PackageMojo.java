@@ -76,6 +76,9 @@ public class PackageMojo extends AbstractVertxMojo {
     @Component
     protected ServiceFileCombiner combiner;
 
+    @Parameter(alias = "skipScmMetadata", property = "vertx.skipScmMetadata", defaultValue = "false")
+    protected boolean skipScmMetadata;
+
     public static String computeOutputName(MavenProject project, String classifier) {
         String finalName = project.getBuild().getFinalName();
         if (finalName != null) {
@@ -173,4 +176,7 @@ public class PackageMojo extends AbstractVertxMojo {
         return customizers;
     }
 
+    public boolean isSkipScmMetadata() {
+        return skipScmMetadata;
+    }
 }

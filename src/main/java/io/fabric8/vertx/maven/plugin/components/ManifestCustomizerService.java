@@ -1,6 +1,6 @@
 package io.fabric8.vertx.maven.plugin.components;
 
-import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.project.MavenProject;
 
 import java.util.Map;
@@ -19,5 +19,5 @@ public interface ManifestCustomizerService {
      * @param project the project
      * @return a non-null map with the entries
      */
-    Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project);
+    Map<String, String> getEntries(PackageMojo mojo, MavenProject project);
 }

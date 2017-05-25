@@ -36,4 +36,9 @@ The package goal has the following parameters apart from the ones mentioned in
   the classifier is not set (it would mean detaching the main artifact).
 | &nbsp;
 | true
+
+| skipScmMetadata
+| Whether or not the SCM metadata should be retrieved from the SVN or Git repository
+| &nbsp;
+| true
 |===

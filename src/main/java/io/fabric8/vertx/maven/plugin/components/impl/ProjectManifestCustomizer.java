@@ -3,6 +3,7 @@ package io.fabric8.vertx.maven.plugin.components.impl;
 import io.fabric8.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombiner;
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 )
 public class ProjectManifestCustomizer implements ManifestCustomizerService {
 
-    public static String DEFAULT_DATE_PATTERN = "yyyyMMdd HH:mm:ss z";
+    private static String DEFAULT_DATE_PATTERN = "yyyyMMdd HH:mm:ss z";
 
     private static final SimpleDateFormat simpleDateFormat;
 
@@ -33,7 +34,7 @@ public class ProjectManifestCustomizer implements ManifestCustomizerService {
     }
 
     @Override
-    public Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project) {
+    public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
         Map<String, String> attributes = new HashMap<>();
         Model model = project.getModel();
 

@@ -19,6 +19,7 @@ package io.fabric8.vertx.maven.plugin;
 import io.fabric8.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
 import io.fabric8.vertx.maven.plugin.components.impl.SCMManifestCustomizer;
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -76,7 +77,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
-        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+        Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
             public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -113,7 +114,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
-        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+        Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
             public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -150,7 +151,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
-        Map<String, String> atts = customizer.getEntries(new AbstractVertxMojo() {
+        Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
             public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -164,7 +165,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
         atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
 
-        atts = new SCMManifestCustomizer().getEntries(new AbstractVertxMojo() {
+        atts = new SCMManifestCustomizer().getEntries(new PackageMojo() {
             @Override
             public void execute() throws MojoExecutionException, MojoFailureException {
 
