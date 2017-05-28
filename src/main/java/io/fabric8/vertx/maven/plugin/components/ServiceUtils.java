@@ -1,13 +1,11 @@
 package io.fabric8.vertx.maven.plugin.components;
 
 import io.fabric8.vertx.maven.plugin.mojos.Archive;
-import io.fabric8.vertx.maven.plugin.components.PackageConfig;
+import io.fabric8.vertx.maven.plugin.mojos.DependencySet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.assembly.InvalidAssemblerConfigurationException;
-import org.apache.maven.plugins.assembly.model.DependencySet;
 import org.apache.maven.plugins.assembly.model.FileSet;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
@@ -36,8 +34,7 @@ public class ServiceUtils {
     public static Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> includes,
                                                 List<String> excludes,
                                                 boolean actTransitively, Log logger,
-                                                ArtifactFilter... additionalFilters)
-        throws InvalidAssemblerConfigurationException {
+                                                ArtifactFilter... additionalFilters) {
 
         final AndArtifactFilter filter = new AndArtifactFilter();
 

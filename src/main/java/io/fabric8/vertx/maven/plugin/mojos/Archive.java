@@ -1,6 +1,5 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import org.apache.maven.plugins.assembly.model.DependencySet;
 import org.apache.maven.plugins.assembly.model.FileItem;
 import org.apache.maven.plugins.assembly.model.FileSet;
 
