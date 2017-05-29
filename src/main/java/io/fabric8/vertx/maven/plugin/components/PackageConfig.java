@@ -17,8 +17,6 @@ public class PackageConfig extends ServiceConfig {
 
     private Archive archive;
 
-    private boolean includeClasses = true;
-
     private String classifier;
 
     public Archive getArchive() {
@@ -27,15 +25,6 @@ public class PackageConfig extends ServiceConfig {
 
     public PackageConfig setArchive(Archive archive) {
         this.archive = archive;
-        return this;
-    }
-
-    public boolean isIncludeClasses() {
-        return includeClasses;
-    }
-
-    public PackageConfig setIncludeClasses(boolean includeClasses) {
-        this.includeClasses = includeClasses;
         return this;
     }
 

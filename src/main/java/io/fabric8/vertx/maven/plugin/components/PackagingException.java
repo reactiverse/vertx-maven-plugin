@@ -19,6 +19,15 @@ public class PackagingException extends Exception {
     /**
      * Creates a new {@link PackagingException}.
      *
+     * @param msg the message
+     */
+    public PackagingException(String msg) {
+        super(msg);
+    }
+
+    /**
+     * Creates a new {@link PackagingException}.
+     *
      * @param msg   the message
      * @param cause the cause
      */

@@ -1,7 +1,5 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
-import org.apache.maven.plugins.assembly.model.FileItem;
-import org.apache.maven.plugins.assembly.model.FileSet;
 
 import java.util.*;
 
@@ -20,6 +18,8 @@ public class Archive {
     private List<FileItem> files = new ArrayList<>();
 
     private List<DependencySet> dependencySets = new ArrayList<>();
+
+    private boolean includeClasses = true;
 
     /**
      * Adds a dependency set
@@ -57,7 +57,7 @@ public class Archive {
      * @return the list
      */
     public List<DependencySet> getDependencySets() {
-        return this.dependencySets;
+        return dependencySets;
     }
 
     /**
@@ -66,7 +66,7 @@ public class Archive {
      * @return the list
      */
     public List<FileSet> getFileSets() {
-        return this.fileSets;
+        return fileSets;
     }
 
     /**
@@ -75,7 +75,7 @@ public class Archive {
      * @return the list
      */
     public List<FileItem> getFiles() {
-        return this.files;
+        return files;
     }
 
     /**
@@ -155,4 +155,14 @@ public class Archive {
         this.manifest = manifest;
         return this;
     }
+
+    public boolean isIncludeClasses() {
+        return includeClasses;
+    }
+
+    public Archive setIncludeClasses(boolean includeClasses) {
+        this.includeClasses = includeClasses;
+        return this;
+    }
+
 }

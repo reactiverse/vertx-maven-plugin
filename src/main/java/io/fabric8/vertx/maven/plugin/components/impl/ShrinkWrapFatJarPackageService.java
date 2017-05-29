@@ -3,17 +3,22 @@ package io.fabric8.vertx.maven.plugin.components.impl;
 import io.fabric8.vertx.maven.plugin.components.*;
 import io.fabric8.vertx.maven.plugin.mojos.Archive;
 import io.fabric8.vertx.maven.plugin.mojos.DependencySet;
+import io.fabric8.vertx.maven.plugin.mojos.FileItem;
+import io.fabric8.vertx.maven.plugin.mojos.FileSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.transform.ArtifactIncludeFilterTransformer;
+import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.apache.maven.shared.utils.io.SelectorUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.FileUtils;
 import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -71,7 +76,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Adding Dependency :" + artifact);
                     }
-                    importFromFile(logger, ds, jar, file);
+                    embedDependency(logger, ds, jar, file);
                 } else {
                     logger.info("Cannot embed artifact " + artifact
                         + " - the file does not exist");
@@ -79,15 +84,21 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             }
         }
 
-        // TODO file
-
+        for (FileSet fs : archive.getFileSets()) {
+            embedFileSet(logger, config.getProject(), fs, jar);
+        }
 
         // Add classes
-        if (config.isIncludeClasses()) {
+        if (archive.isIncludeClasses()) {
             File classes = new File(config.getProject().getBuild().getOutputDirectory());
             if (classes.isDirectory()) {
                 jar.addAsResource(classes, "/");
             }
+        }
+
+        // File Items
+        for (FileItem item: archive.getFiles()) {
+            embedFile(config, jar, item);
         }
 
         // Generate manifest
@@ -124,9 +135,106 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         return jarFile;
     }
 
+    private void embedFile(PackageConfig config, JavaArchive jar, FileItem item) throws PackagingException {
+        String path;
+        if (item.getOutputDirectory() == null) {
+            path = "/";
+        } else {
+            path = item.getOutputDirectory();
+            if (! path.startsWith("/")) {
+                path = "/" + path;
+            }
+            if (! path.endsWith("/")) {
+                path = path + "/";
+            }
+        }
+
+        File source = new File(config.getProject().getBasedir(), item.getSource());
+        if (! source.isFile()) {
+            Node node = jar.get(item.getSource());
+            if (node == null) {
+                throw new PackagingException("Unable to handle the file item " + item.getSource() + ", " +
+                    "file not found in the project or in the archive.");
+            }
+
+            String name = item.getDestName();
+            if (name == null) {
+                name = node.getPath().get().substring(node.getPath().getParent().get().length() + 1);
+            }
+
+            String out = path + name;
+            jar.add(node.getAsset(), out);
+            jar.delete(node.getPath());
+        } else {
+            String name = item.getDestName();
+            if (name == null) {
+                name = source.getName();
+            }
+            String out = path + name;
+            jar.addAsResource(source, out);
+        }
+    }
+
+    private void embedFileSet(Log log, MavenProject project, FileSet fs, JavaArchive jar) {
+        File directory = new File(fs.getDirectory());
+        if (! directory.isAbsolute()) {
+            directory = new File(project.getBasedir(), fs.getDirectory());
+        }
+
+        if (! directory.isDirectory()) {
+           log.warn("File set root directory (" + directory.getAbsolutePath() + ") does not exist " +
+               "- skipping");
+           return;
+        }
+
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setBasedir(directory);
+        if (fs.getOutputDirectory() == null) {
+            fs.setOutputDirectory("/");
+        } else if (! fs.getOutputDirectory().startsWith("/")) {
+            fs.setOutputDirectory("/" + fs.getOutputDirectory());
+        }
+        List<String> excludes = fs.getExcludes();
+        if (fs.isUseDefaultExcludes()) {
+            excludes.addAll(FileUtils.getDefaultExcludesAsList());
+        }
+        if (! excludes.isEmpty()) {
+            scanner.setExcludes(excludes.toArray(new String[0]));
+        }
+        if (! fs.getIncludes().isEmpty()) {
+            scanner.setIncludes(fs.getIncludes().toArray(new String[0]));
+        }
+        scanner.scan();
+        String[] files = scanner.getIncludedFiles();
+        for (String path : files) {
+            File file = new File(directory, path);
+            log.debug("Adding " + fs.getOutputDirectory() + path + " to the archive");
+            jar.addAsResource(file, fs.getOutputDirectory()  + path);
+        }
+    }
+
 
     private boolean toExclude(DependencySet set, ArchivePath path) {
         String name = path.get();
+
+        // Check whether the file is explicitly includes
+        List<String> includes = set.getOptions().getIncludes();
+        if (includes != null  && ! includes.isEmpty()) {
+            boolean included = false;
+
+            // Check for each include pattern whether or not the path is explicitly included
+            for (String pattern : includes) {
+                if (SelectorUtils.match(pattern, name)) {
+                    included = true;
+                }
+            }
+
+            // If the path is not included, exclude the file
+            // otherwise apply the excludes pattern on it.
+            if (! included) {
+                return true;
+            }
+        }
 
         if (set.getOptions().isUseDefaultExcludes()) {
             for (String pattern : DEFAULT_EXCLUDES) {
@@ -159,7 +267,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
      * @param jar  the archive
      * @param file the file, must not be {@code null}
      */
-    private void importFromFile(Log log, DependencySet set, JavaArchive jar, File file) {
+    private void embedDependency(Log log, DependencySet set, JavaArchive jar, File file) {
         try {
             FileInputStream fis = new FileInputStream(file);
             jar.as(ZipImporter.class).importFrom(fis, path -> {

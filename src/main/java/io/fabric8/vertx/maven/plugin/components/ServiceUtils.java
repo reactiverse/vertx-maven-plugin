@@ -2,11 +2,11 @@ package io.fabric8.vertx.maven.plugin.components;
 
 import io.fabric8.vertx.maven.plugin.mojos.Archive;
 import io.fabric8.vertx.maven.plugin.mojos.DependencySet;
+import io.fabric8.vertx.maven.plugin.mojos.FileSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.assembly.model.FileSet;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
@@ -19,15 +19,11 @@ import java.util.*;
  */
 public class ServiceUtils {
 
-    public static Archive getDefaultFatJar(MavenProject project) {
+    public static Archive getDefaultFatJar() {
         Archive archive = new Archive();
         DependencySet all = new DependencySet();
         archive.addDependencySet(all);
-
-        FileSet classes = new FileSet();
-        classes.setDirectory(project.getBuild().getOutputDirectory());
-        archive.addFileSet(classes);
-
+        archive.setIncludeClasses(true);
         return archive;
     }
 

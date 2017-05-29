@@ -4,11 +4,11 @@ import io.fabric8.vertx.maven.plugin.components.ServiceUtils;
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombinationConfig;
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombiner;
 import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
+import io.fabric8.vertx.maven.plugin.mojos.DependencySet;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.assembly.model.DependencySet;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.transform.ArtifactIncludeFilterTransformer;
@@ -49,9 +49,8 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
 
         // TODO this should reuse the packaging configuration
         DependencySet set = new DependencySet();
-        set.setScope("compile");
         set.addInclude("*");
-        ScopeFilter scopeFilter = ServiceUtils.newScopeFilter("compile");
+        ScopeFilter scopeFilter = ServiceUtils.newScopeFilter("runtime");
         ArtifactFilter filter = new ArtifactIncludeFilterTransformer().transform(scopeFilter);
 
         try {

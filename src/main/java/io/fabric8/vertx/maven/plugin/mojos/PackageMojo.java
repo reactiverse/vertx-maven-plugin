@@ -127,7 +127,7 @@ public class PackageMojo extends AbstractVertxMojo {
 
 
         //TODO Archive should be a parameter.
-        Archive archive = ServiceUtils.getDefaultFatJar(project);
+        Archive archive = ServiceUtils.getDefaultFatJar();
 
         if (launcher != null && !launcher.trim().isEmpty()) {
             archive.getManifest().putIfAbsent("Main-Class", launcher);
