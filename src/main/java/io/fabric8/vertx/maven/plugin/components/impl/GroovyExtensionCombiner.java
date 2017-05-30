@@ -30,7 +30,7 @@ import java.util.*;
 public class GroovyExtensionCombiner {
 
     public static List<String> merge(String projectName, String projectVersion,
-                                     Set<String> local, List<Set<String>>
+                                     List<String> local, List<List<String>>
                                          deps) {
         List<String> extensionClassesList = new ArrayList<>();
         List<String> staticExtensionClassesList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class GroovyExtensionCombiner {
         return Joiner.on(",").join(strings);
     }
 
-    private static Properties asProperties(Set<String> lines) {
+    private static Properties asProperties(List<String> lines) {
         byte[] content = read(lines);
         Properties properties = new Properties();
 
@@ -92,7 +92,7 @@ public class GroovyExtensionCombiner {
         return properties;
     }
 
-    private static byte[] read(Set<String> lines) {
+    private static byte[] read(List<String> lines) {
         if (lines == null || lines.isEmpty()) {
             return new byte[0];
         }

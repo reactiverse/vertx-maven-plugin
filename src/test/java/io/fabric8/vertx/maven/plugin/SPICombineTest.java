@@ -18,6 +18,7 @@
 package io.fabric8.vertx.maven.plugin;
 
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombinationConfig;
+import io.fabric8.vertx.maven.plugin.components.ServiceUtils;
 import io.fabric8.vertx.maven.plugin.components.impl.ServiceFileCombinationImpl;
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import org.apache.commons.io.FileUtils;
@@ -29,6 +30,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.project.MavenProject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
@@ -40,7 +42,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -108,6 +109,7 @@ public class SPICombineTest {
         ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
             .setProject(project)
             .setArtifacts(artifacts)
+            .setArchive(ServiceUtils.getDefaultFatJar())
             .setMojo(mojo);
 
         combiner.doCombine(config);
@@ -187,6 +189,7 @@ public class SPICombineTest {
         ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
             .setProject(project)
             .setArtifacts(artifacts)
+            .setArchive(ServiceUtils.getDefaultFatJar())
             .setMojo(mojo);
 
         combiner.doCombine(config);
@@ -200,5 +203,77 @@ public class SPICombineTest {
             "com.test.demo.DemoSPI.impl.DemoSPIImpl4");
         Stream.of(jar1, jar2, jar3, jar4, new File("target/junk")).forEach(FileUtils::deleteQuietly);
 
+    }
+
+    @Test
+    public void testCombineWithSpringDescriptors() throws Exception {
+        File jar1 = new File("target/testCombine1Spring.jar");
+        File jar2 = new File("target/testCombine2Spring.jar");
+        File jar3 = new File("target/testCombine3Spring.jar");
+
+        JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
+        jarArchive1.add(new StringAsset("com.test.demo.DemoSPI.impl.DemoSPIImpl"),
+            "/META-INF/spring.foo");
+
+        jarArchive1.as(ZipExporter.class).exportTo(jar1, true);
+
+
+        JavaArchive jarArchive2 = ShrinkWrap.create(JavaArchive.class);
+        jarArchive2.add(new StringAsset("com.test.demo.DemoSPI.impl.DemoSPIImpl2"),
+            "/META-INF/spring.foo");
+        jarArchive2.add(new StringAsset("com.test.demo.DemoSPI2.impl.DemoSPI2Impl2"),
+            "/META-INF/spring.bar");
+        jarArchive2.as(ZipExporter.class).exportTo(jar2, true);
+
+        JavaArchive jarArchive3 = ShrinkWrap.create(JavaArchive.class);
+        jarArchive3.addClass(SPICombineTest.class);
+        jarArchive3.as(ZipExporter.class).exportTo(jar3, true);
+
+        Set<Artifact> artifacts = new LinkedHashSet<>();
+        Artifact a1 = new DefaultArtifact("org.acme", "a1", "1.0",
+            "compile", "jar", "", null);
+        a1.setFile(jar1);
+        Artifact a2 = new DefaultArtifact("org.acme", "a2", "1.0",
+            "compile", "jar", "", null);
+        a2.setFile(jar2);
+        Artifact a3 = new DefaultArtifact("org.acme", "a3", "1.0",
+            "compile", "jar", "", null);
+        a3.setFile(jar3);
+
+        artifacts.add(a1);
+        artifacts.add(a2);
+        artifacts.add(a3);
+
+        MavenProject project = new MavenProject();
+        project.setVersion("1.0");
+        project.setArtifactId("foo");
+
+        AbstractVertxMojo mojo = new AbstractVertxMojo() {
+            @Override
+            public void execute() throws MojoExecutionException, MojoFailureException {
+
+            }
+        };
+
+        mojo.setLog(new SystemStreamLog());
+        Build build = new Build();
+        build.setOutputDirectory("target/junk");
+        project.setBuild(build);
+
+        ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
+            .setProject(project)
+            .setArtifacts(artifacts)
+            .setArchive(ServiceUtils.getDefaultFatJar())
+            .setMojo(mojo);
+
+        combiner.doCombine(config);
+
+        File merged = new File("target/junk/META-INF/spring.foo");
+        assertThat(merged).isFile();
+
+        List<String> lines = FileUtils.readLines(merged, "UTF-8");
+        assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
+            "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
+        Stream.of(jar1, jar2, jar3, new File("target/junk")).forEach(FileUtils::deleteQuietly);
     }
 }
