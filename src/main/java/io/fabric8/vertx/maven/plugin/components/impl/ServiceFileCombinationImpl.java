@@ -170,10 +170,11 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
             File file = new File(classes, p);
             if (file.isFile()) {
                 try {
-                    String relative = classes.toURI().relativize(file.toURI()).getPath();
+                    // Compute the descriptor path in the archive - linux style.
+                    String relative = classes.toURI().relativize(file.toURI()).getPath().replace("\\", "/");
                     map.put("/" + relative, org.apache.commons.io.FileUtils.readLines(file, "UTF-8"));
                 } catch (IOException e) {
-                    throw new RuntimeException("Cannot read  " + file.getAbsolutePath(), e);
+                    throw new RuntimeException("Cannot read " + file.getAbsolutePath(), e);
                 }
 
             }
@@ -205,7 +206,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
                         input = asset.openStream();
                         lines = IOUtils.readLines(input, "UTF-8");
                     } catch (IOException e) {
-                        throw new RuntimeException("Cannot read  " + path, e);
+                        throw new RuntimeException("Cannot read " + path, e);
                     } finally {
                         closeQuietly(input);
                     }
