@@ -2,6 +2,7 @@ package io.fabric8.vertx.maven.plugin.components;
 
 import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.Archive;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
 
@@ -15,6 +16,7 @@ public class ServiceFileCombinationConfig extends ServiceConfig {
 
 
     private CombinationStrategy strategy;
+
 
     @Override
     public ServiceFileCombinationConfig setMojo(AbstractVertxMojo mojo) {
@@ -47,5 +49,11 @@ public class ServiceFileCombinationConfig extends ServiceConfig {
 
     public CombinationStrategy getStrategy() {
         return strategy;
+    }
+
+    @Override
+    public ServiceFileCombinationConfig setArchive(Archive archive) {
+        super.setArchive(archive);
+        return this;
     }
 }

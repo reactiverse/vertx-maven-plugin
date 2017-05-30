@@ -1,8 +1,8 @@
 package io.fabric8.vertx.maven.plugin.components.impl;
 
-import io.fabric8.vertx.maven.plugin.components.ServiceUtils;
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombinationConfig;
 import io.fabric8.vertx.maven.plugin.components.ServiceFileCombiner;
+import io.fabric8.vertx.maven.plugin.components.ServiceUtils;
 import io.fabric8.vertx.maven.plugin.model.CombinationStrategy;
 import io.fabric8.vertx.maven.plugin.mojos.DependencySet;
 import org.apache.commons.io.IOUtils;
@@ -12,9 +12,10 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
 import org.apache.maven.shared.artifact.filter.resolve.transform.ArtifactIncludeFilterTransformer;
+import org.apache.maven.shared.utils.io.DirectoryScanner;
+import org.apache.maven.shared.utils.io.SelectorUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.jboss.shrinkwrap.api.ArchivePath;
-import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
@@ -22,8 +23,11 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.google.common.io.Closeables.closeQuietly;
 
 /**
  * This component is used to perform Services relocation - typically moving came Service Providers found in
@@ -45,6 +49,11 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
             return;
         }
 
+        List<String> patterns = config.getArchive().getDescriptorCombinationPatterns();
+        if (patterns.isEmpty()) {
+            return;
+        }
+
         Log logger = Objects.requireNonNull(config.getMojo().getLog());
 
         // TODO this should reuse the packaging configuration
@@ -62,55 +71,54 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
                 .filter(f -> f.getName().endsWith(".jar"))
                 .collect(Collectors.toList());
 
-            combine(config.getProject(), logger, files);
+            combine(config.getProject(), patterns, logger, files);
         } catch (Exception e) {
             throw new RuntimeException("Unable to combine SPI files for " + config.getProject().getArtifactId(), e);
         }
 
     }
 
-
     /**
      * The method to perform the service provider combining
      *
-     * @param dependencies - the list of jars which needs to scanned for service provider entries
+     * @param project      the Maven project
+     * @param patterns     the set of patterns
+     * @param logger       the logger
+     * @param dependencies the dependencies
      */
-    private void combine(MavenProject project, Log logger, List<File> dependencies) {
-        Map<String, Set<String>> locals = findLocalSPI(project);
-        Map<String, List<Set<String>>> deps = findSPIsFromDependencies(dependencies);
+    private void combine(MavenProject project, List<String> patterns, Log logger, List<File> dependencies) {
+        Map<String, List<String>> locals = findLocalDescriptors(project, patterns);
+        Map<String, List<List<String>>> deps = findDescriptorsFromDependencies(dependencies, patterns);
 
+        // Keys are path relative to the archive root.
         if (logger.isDebugEnabled()) {
-            logger.debug("SPI declared in the project: " + locals.keySet());
-            logger.debug("SPI declared in dependencies: " + deps.keySet());
+            logger.debug("Descriptors declared in the project: " + locals.keySet());
+            logger.debug("Descriptors declared in dependencies: " + deps.keySet());
         }
 
-        Set<String> spisToMerge = new LinkedHashSet<>(locals.keySet());
-        spisToMerge.addAll(deps.keySet());
+        Set<String> descriptorsToMerge = new LinkedHashSet<>(locals.keySet());
+        descriptorsToMerge.addAll(deps.keySet());
 
-        Map<String, List<String>> spis = new HashMap<>();
-        for (String spi : spisToMerge) {
-            spis.put(spi, merge(project, spi, locals.get(spi), deps.get(spi)));
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("SPI:" + spis.keySet());
+        Map<String, List<String>> descriptors = new HashMap<>();
+        for (String spi : descriptorsToMerge) {
+            descriptors.put(spi, merge(project, spi, locals.get(spi), deps.get(spi)));
         }
 
         // Write the new files in target/classes
-        File out = new File(project.getBuild().getOutputDirectory(), "META-INF/services");
+        File out = new File(project.getBuild().getOutputDirectory());
 
-        spis.forEach((name, content) -> {
+        descriptors.forEach((name, content) -> {
             File merged = new File(out, name);
             try {
                 org.apache.commons.io.FileUtils.writeLines(merged, content);
-                logger.debug("SPI file combined into " + merged.getAbsolutePath());
+                logger.debug("Descriptor combined into " + merged.getAbsolutePath());
             } catch (IOException e) {
-                throw new RuntimeException("Cannot write combined SPI files", e);
+                throw new RuntimeException("Cannot write combined Descriptor files", e);
             }
         });
     }
 
-    private List<String> merge(MavenProject project, String name, Set<String> local, List<Set<String>> deps) {
+    private List<String> merge(MavenProject project, String name, List<String> local, List<List<String>> deps) {
         if (name.equals("org.codehaus.groovy.runtime.ExtensionModule")) {
             return GroovyExtensionCombiner.merge(project.getArtifactId(), project.getVersion(), local, deps);
         } else {
@@ -143,61 +151,71 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         }
     }
 
-
-    private Map<String, List<Set<String>>> findSPIsFromDependencies(List<File> deps) {
-        Map<String, List<Set<String>>> map = new LinkedHashMap<>();
-
-        ArchivePath spiPath = ArchivePaths.create("META-INF/services");
-
-        Set<JavaArchive> jars = deps.stream()
-            .map(f -> ShrinkWrap.createFromZipFile(JavaArchive.class, f))
-            .filter(a -> a.contains(spiPath))
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        for (JavaArchive jar : jars) {
-            Node node = jar.get(spiPath);
-            Set<Node> children = node.getChildren();
-            for (Node child : children) {
-                String name = child.getPath().get().substring(spiPath.get().length() + 1);
-                try {
-                    Asset asset = child.getAsset();
-                    if (asset != null) {
-                        List<String> lines = IOUtils.readLines(asset.openStream(), "UTF-8");
-                        List<Set<String>> items = map.get(name);
-                        if (items == null) {
-                            items = new ArrayList<>();
-                        }
-                        items.add(new LinkedHashSet<>(lines));
-                        map.put(name, items);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("Cannot read  " + node.getPath().get(), e);
-                }
-            }
-        }
-
-        return map;
-    }
-
-    private Map<String, Set<String>> findLocalSPI(MavenProject project) {
-        Map<String, Set<String>> map = new LinkedHashMap<>();
+    private Map<String, List<String>> findLocalDescriptors(MavenProject project, List<String> patterns) {
+        Map<String, List<String>> map = new LinkedHashMap<>();
 
         File classes = new File(project.getBuild().getOutputDirectory());
         if (!classes.isDirectory()) {
             return map;
         }
 
-        File spiRoot = new File(classes, "META-INF/services");
-        if (!spiRoot.isDirectory()) {
-            return map;
-        }
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setBasedir(classes);
+        scanner.setIncludes(patterns.toArray(new String[0]));
+        scanner.scan();
 
-        Collection<File> files = org.apache.commons.io.FileUtils.listFiles(spiRoot, null, false);
-        for (File file : files) {
-            try {
-                map.put(file.getName(), new LinkedHashSet<>(org.apache.commons.io.FileUtils.readLines(file, "UTF-8")));
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot read  " + file.getAbsolutePath(), e);
+        String[] paths = scanner.getIncludedFiles();
+        for (String p : paths) {
+            File file = new File(classes, p);
+            if (file.isFile()) {
+                try {
+                    // Compute the descriptor path in the archive - linux style.
+                    String relative = classes.toURI().relativize(file.toURI()).getPath().replace("\\", "/");
+                    map.put("/" + relative, org.apache.commons.io.FileUtils.readLines(file, "UTF-8"));
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot read " + file.getAbsolutePath(), e);
+                }
+            }
+        }
+        return map;
+    }
+
+    private Map<String, List<List<String>>> findDescriptorsFromDependencies(List<File> deps, List<String> patterns) {
+        Map<String, List<List<String>>> map = new LinkedHashMap<>();
+
+        for (File file : deps) {
+            JavaArchive archive = ShrinkWrap.createFromZipFile(JavaArchive.class, file);
+            Map<ArchivePath, Node> content = archive.getContent(path -> {
+                for (String pattern : patterns) {
+                    if (SelectorUtils.match(pattern, path.get())) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            for (Map.Entry<ArchivePath, Node> entry : content.entrySet()) {
+                Asset asset = entry.getValue().getAsset();
+                if (asset != null) {
+                    List<String> lines;
+                    InputStream input = null;
+                    String path = entry.getKey().get();
+                    try {
+                        input = asset.openStream();
+                        lines = IOUtils.readLines(input, "UTF-8");
+                    } catch (IOException e) {
+                        throw new RuntimeException("Cannot read " + path, e);
+                    } finally {
+                        closeQuietly(input);
+                    }
+
+                    List<List<String>> items = map.get(path);
+                    if (items == null) {
+                        items = new ArrayList<>();
+                    }
+                    items.add(lines);
+                    map.put(path, items);
+                }
             }
         }
         return map;

@@ -1,6 +1,7 @@
 package io.fabric8.vertx.maven.plugin.components;
 
 import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
+import io.fabric8.vertx.maven.plugin.mojos.Archive;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
 
@@ -19,6 +20,7 @@ public class ServiceConfig {
     private MavenProject project;
     private Set<Artifact> artifacts;
     private File output;
+    private Archive archive;
 
     public AbstractVertxMojo getMojo() {
         return mojo;
@@ -56,4 +58,12 @@ public class ServiceConfig {
         return this;
     }
 
+    public Archive getArchive() {
+        return archive;
+    }
+
+    public ServiceConfig setArchive(Archive archive) {
+        this.archive = archive;
+        return this;
+    }
 }

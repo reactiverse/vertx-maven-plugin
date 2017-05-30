@@ -118,14 +118,6 @@ public class PackageMojo extends AbstractVertxMojo {
                 "artifact");
         }
 
-        // Manage SPI combination
-        combiner.doCombine(new ServiceFileCombinationConfig()
-            .setStrategy(serviceProviderCombination)
-            .setProject(project)
-            .setMojo(this)
-            .setArtifacts(project.getArtifacts()));
-
-
         //TODO Archive should be a parameter.
         Archive archive = ServiceUtils.getDefaultFatJar();
 
@@ -140,6 +132,14 @@ public class PackageMojo extends AbstractVertxMojo {
         List<ManifestCustomizerService> customizers = getManifestCustomizers();
         customizers.forEach(customizer ->
             archive.getManifest().putAll(customizer.getEntries(this, project)));
+
+        // Manage SPI combination
+        combiner.doCombine(new ServiceFileCombinationConfig()
+            .setStrategy(serviceProviderCombination)
+            .setProject(project)
+            .setArchive(archive)
+            .setMojo(this)
+            .setArtifacts(project.getArtifacts()));
 
         File jar;
         try {
