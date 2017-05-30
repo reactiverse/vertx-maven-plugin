@@ -24,6 +24,8 @@ public class ServiceUtils {
         DependencySet all = new DependencySet();
         archive.addDependencySet(all);
         archive.setIncludeClasses(true);
+        archive.addDescriptorCombinationPattern("/META-INF/services/*");
+        archive.addDescriptorCombinationPattern("/META-INF/spring.*");
         return archive;
     }
 

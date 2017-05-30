@@ -21,6 +21,8 @@ public class Archive {
 
     private boolean includeClasses = true;
 
+    private List<String> descriptorCombinationPatterns = new ArrayList<>();
+
     /**
      * Adds a dependency set
      *
@@ -165,4 +167,22 @@ public class Archive {
         return this;
     }
 
+    public Archive addDescriptorCombinationPattern(String pattern) {
+        this.descriptorCombinationPatterns.add(Objects.requireNonNull(pattern));
+        return this;
+    }
+
+    public Archive removeDescriptorCombinationPattern(String pattern) {
+        this.descriptorCombinationPatterns.remove(Objects.requireNonNull(pattern));
+        return this;
+    }
+
+    public Archive setDescriptorCombinationPatterns(List<String> patterns) {
+        this.descriptorCombinationPatterns = Objects.requireNonNull(patterns);
+        return this;
+    }
+
+    public List<String> getDescriptorCombinationPatterns() {
+        return descriptorCombinationPatterns;
+    }
 }
