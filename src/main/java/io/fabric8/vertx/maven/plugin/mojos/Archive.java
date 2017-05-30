@@ -169,6 +169,9 @@ public class Archive {
 
     public Archive addDescriptorCombinationPattern(String pattern) {
         this.descriptorCombinationPatterns.add(Objects.requireNonNull(pattern));
+        if (! pattern.startsWith("/")) {
+            this.descriptorCombinationPatterns.add("/" + pattern);
+        }
         return this;
     }
 

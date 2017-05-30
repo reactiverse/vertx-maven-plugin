@@ -16,7 +16,6 @@ import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.apache.maven.shared.utils.io.SelectorUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.jboss.shrinkwrap.api.ArchivePath;
-import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
@@ -176,7 +175,6 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
                 } catch (IOException e) {
                     throw new RuntimeException("Cannot read " + file.getAbsolutePath(), e);
                 }
-
             }
         }
         return map;
