@@ -100,7 +100,6 @@ public class PackagingIT extends VertxMojoTestBase {
         entry = jar.getJarEntry("junit/runner/Version.class");
         assertThat(entry).isNull();
         // commons-lang3 - provided
-        // TODO Fix this one
         entry = jar.getJarEntry("org/apache/commons/lang3/RandomUtils.class");
         assertThat(entry).isNull();
 
