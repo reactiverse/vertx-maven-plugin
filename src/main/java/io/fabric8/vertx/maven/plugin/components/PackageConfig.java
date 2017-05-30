@@ -15,16 +15,10 @@ import java.util.Set;
  */
 public class PackageConfig extends ServiceConfig {
 
-    private Archive archive;
-
     private String classifier;
 
-    public Archive getArchive() {
-        return archive;
-    }
-
     public PackageConfig setArchive(Archive archive) {
-        this.archive = archive;
+        super.setArchive(archive);
         return this;
     }
 
