@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,6 +48,23 @@ public class RunIT extends VertxMojoTestBase {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
+    }
+
+    /**
+     * Check the fix for https://github.com/fabric8io/vertx-maven-plugin/issues/129.
+     */
+    @Test
+    public void testResourceOrdering() throws Exception {
+        File testDir = initProject("projects/run-filtering-it", "projects/run-resource-ordering-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier, "clean");
+
+        String response = getHttpResponse();
+        assertThat(response).contains("aloha").contains("This file");
     }
 
     private void run(Verifier verifier, String ... previous) throws VerificationException {

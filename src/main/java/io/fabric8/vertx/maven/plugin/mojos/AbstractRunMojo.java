@@ -207,23 +207,9 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @throws IOException - any exception that might occur while get the classes directory as URL
      */
     protected void addClassesDirectory(List<URL> classpathUrls) throws IOException {
-
         classpathUrls.add(this.classesDirectory.toURI().toURL());
     }
 
-    /**
-     * This will add the project resources typically ${basedir}/main/resources to the classpath url collection
-     *
-     * @param classpathUrls - the existing classpath url collection to which the ${project.build.outputDirectory} be added
-     * @throws IOException - any exception that might occur while get the classes directory as URL
-     */
-    protected void addProjectResources(List<URL> classpathUrls) throws IOException {
-
-        for (Resource resource : this.project.getResources()) {
-            File f = new File(resource.getDirectory());
-            classpathUrls.add(f.toURI().toURL());
-        }
-    }
 
     /**
      * This will build the Vertx specific arguments that needs to be passed to the runnable process
@@ -495,8 +481,9 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     }
 
     /**
-     * This will resolve the project's test and runtime dependencies along with classes directory, resources directory
-     * to the collection of classpath urls
+     * This will resolve the project's test and runtime dependencies along with classes directory to the collection
+     * of classpath urls. Notice that resources directory are NOT appended, as they should be copied to tha
+     * `target/classes` directory.
      *
      * @return @{link {@link List<URL>}} which will have all the dependencies, classes directory, resources directory etc.,
      * @throws MojoExecutionException any error that might occur while building collection like resolution errors
@@ -505,7 +492,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         List<URL> classPathUrls = new ArrayList<>();
 
         try {
-            addProjectResources(classPathUrls);
             addClassesDirectory(classPathUrls);
 
             Set<Optional<File>> compileAndRuntimeDeps = extractArtifactPaths(this.project.getDependencyArtifacts());
@@ -524,7 +510,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()));
-
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to run:", e);
         }
