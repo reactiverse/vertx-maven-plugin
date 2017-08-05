@@ -257,6 +257,13 @@
             <version>3.0.1</version>
         </dependency>
 
+        <!-- user prompt -->
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>2.9</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

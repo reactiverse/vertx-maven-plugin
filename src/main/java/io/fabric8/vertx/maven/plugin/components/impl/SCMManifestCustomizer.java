@@ -2,7 +2,6 @@ package io.fabric8.vertx.maven.plugin.components.impl;
 
 import io.fabric8.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.fabric8.vertx.maven.plugin.model.ExtraManifestKeys;
-import io.fabric8.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.fabric8.vertx.maven.plugin.mojos.PackageMojo;
 import io.fabric8.vertx.maven.plugin.utils.ScmSpy;
 import org.apache.maven.model.Scm;

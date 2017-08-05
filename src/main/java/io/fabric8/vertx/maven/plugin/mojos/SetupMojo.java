@@ -18,10 +18,10 @@
 package io.fabric8.vertx.maven.plugin.mojos;
 
 import com.google.common.base.Strings;
+import io.fabric8.vertx.maven.plugin.components.Prompter;
 import io.fabric8.vertx.maven.plugin.dependencies.VertxDependencies;
 import io.fabric8.vertx.maven.plugin.dependencies.VertxDependency;
 import io.fabric8.vertx.maven.plugin.utils.MojoUtils;
-import io.fabric8.vertx.maven.plugin.utils.Prompter;
 import io.fabric8.vertx.maven.plugin.utils.SetupTemplateUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.*;
@@ -30,6 +30,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -76,6 +77,9 @@ public class SetupMojo extends AbstractMojo {
     @Parameter(property = "dependencies")
     protected List<String> dependencies;
 
+    @Component
+    protected Prompter prompter;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -88,32 +92,28 @@ public class SetupMojo extends AbstractMojo {
             String workingdDir = System.getProperty("user.dir");
             getLog().info("No pom.xml found, creating it in " + workingdDir);
             pomFile = new File(workingdDir, "pom.xml");
-            Prompter prompter = new Prompter();
-            prompter.startInteraction();
             try {
 
                 if (projectGroupId == null) {
-                    projectGroupId = prompter.prompt("Define value for property 'projectGroupId'",
-                        "com.example.vertx");
+                    projectGroupId = prompter.promptWithDefaultValue("Set the project groupId", "io.vertx.example");
                 }
 
                 // If the user does not specify the artifactId, we switch to the interactive mode.
                 if (projectArtifactId == null) {
-                    projectArtifactId = prompter.prompt("Define value for property 'projectArtifactId'",
-                        "vertx-example");
-
+                    projectArtifactId = prompter.promptWithDefaultValue("Set the project artifactId",
+                        "my-vertx-project");
                     // Ask for version only if we asked for the artifactId
-                    projectVersion = prompter.prompt("Define value for property 'projectVersion'", projectVersion);
+                    projectVersion = prompter.promptWithDefaultValue("Set the project version", "1.0-SNAPSHOT");
 
                     // Ask for maven version if not set
                     if (vertxVersion == null) {
-                        vertxVersion = prompter.prompt("Define value for property 'vertx.projectVersion'",
+                        vertxVersion = prompter.promptWithDefaultValue("Set the Vert.x version",
                             MojoUtils.getVersion("vertx-core-version"));
                     }
 
                     if (verticle == null) {
-                        verticle = prompter.prompt("Define value for property 'vertx.verticle'",
-                            projectGroupId + ".MainVerticle");
+                        verticle = prompter.promptWithDefaultValue("Set the vertcile class name", projectGroupId +
+                            ".MainVerticle");
                     }
                 }
 
@@ -138,8 +138,6 @@ public class SetupMojo extends AbstractMojo {
                 model = xpp3Reader.read(new FileInputStream(pomFile));
             } catch (Exception e) {
                 throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
-            } finally {
-                prompter.endInteraction();
             }
 
             project = new MavenProject(model);
