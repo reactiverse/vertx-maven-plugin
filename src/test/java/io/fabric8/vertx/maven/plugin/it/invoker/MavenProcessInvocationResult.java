@@ -23,7 +23,6 @@ public class MavenProcessInvocationResult implements InvocationResult {
                     try {
                         String cli = wp.getCommandLine();
                         if (cli.contains("java")) {
-                            //System.out.println("CLI :"+cli);
                             if (cli.contains("-Dvertx.debug")) {
                                 System.out.println("Killing Background Vertx Debug Process ..." + wp.getPid());
                                 wp.killRecursively();
@@ -58,6 +57,10 @@ public class MavenProcessInvocationResult implements InvocationResult {
     }
 
     public MavenProcessInvocationResult setException(CommandLineException exception) {
+        // Print the stack trace immediately to give some feedback early
+        // In intellij, the used `mvn` executable is not "executable" by default on Mac and probably linux.
+        // You need to chmod +x the file.
+        exception.printStackTrace();
         this.exception = exception;
         return this;
     }
