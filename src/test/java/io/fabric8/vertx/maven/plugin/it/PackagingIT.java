@@ -16,16 +16,27 @@
 
 package io.fabric8.vertx.maven.plugin.it;
 
+import io.fabric8.vertx.maven.plugin.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.asset.FileAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author kameshs
@@ -33,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PackagingIT extends VertxMojoTestBase {
 
     String PACKAGING_META_INF = "projects/packaging-meta-inf-it";
+    String PACKAGING_DUPLICATE = "projects/packaging-duplicate-it";
 
     private Verifier verifier;
 
@@ -103,6 +115,49 @@ public class PackagingIT extends VertxMojoTestBase {
         entry = jar.getJarEntry("org/apache/commons/lang3/RandomUtils.class");
         assertThat(entry).isNull();
 
+    }
+
+    @Test
+    public void testDuplicateManagement() throws VerificationException, IOException {
+        File testDir = initProject(PACKAGING_DUPLICATE);
+        assertThat(testDir).isDirectory();
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        File A = new File("target/a-1.0.jar");
+        File B = new File("target/b-1.0.jar");
+        JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
+        jarArchive1.add(new StringAsset("A1"), "/res/A");
+        jarArchive1.add(new StringAsset("B1"), "/res/B");
+        jarArchive1.as(ZipExporter.class).exportTo(A, true);
+
+        JavaArchive jarArchive2 = ShrinkWrap.create(JavaArchive.class);
+        jarArchive2.add(new StringAsset("A2"), "/res/A");
+        jarArchive2.add(new StringAsset("B2"), "/res/B");
+        jarArchive2.add(new StringAsset("C2"), "/res/C");
+        jarArchive2.as(ZipExporter.class).exportTo(B, true);
+
+        installJarToLocalRepository(verifier.getLocalRepository(), "A", A);
+        installJarToLocalRepository(verifier.getLocalRepository(), "B", B);
+
+        runPackage(verifier);
+
+        File out = new File(testDir, "target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
+        assertThat(out).isFile();
+        JavaArchive archive = ShrinkWrap.createFromZipFile(JavaArchive.class, out);
+        assertNotNull(archive);
+
+        Asset a = archive.get( "/res/A").getAsset();
+        Asset b = archive.get( "/res/B").getAsset();
+        Asset c = archive.get( "/res/C").getAsset();
+
+        String content_a = IOUtils.toString(a.openStream(), "UTF-8");
+        String content_b = IOUtils.toString(b.openStream(), "UTF-8");
+        String content_c = IOUtils.toString(c.openStream(), "UTF-8");
+
+        assertThat(content_a).isEqualToIgnoringCase("A3\n");
+        assertThat(content_b).isEqualToIgnoringCase("B1");
+        assertThat(content_c).isEqualToIgnoringCase("C2");
     }
 
 

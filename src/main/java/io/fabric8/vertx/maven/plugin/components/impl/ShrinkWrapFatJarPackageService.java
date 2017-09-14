@@ -97,7 +97,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
 
         // File Items
-        for (FileItem item: archive.getFiles()) {
+        for (FileItem item : archive.getFiles()) {
             embedFile(config, jar, item);
         }
 
@@ -141,16 +141,16 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             path = "/";
         } else {
             path = item.getOutputDirectory();
-            if (! path.startsWith("/")) {
+            if (!path.startsWith("/")) {
                 path = "/" + path;
             }
-            if (! path.endsWith("/")) {
+            if (!path.endsWith("/")) {
                 path = path + "/";
             }
         }
 
         File source = new File(config.getProject().getBasedir(), item.getSource());
-        if (! source.isFile()) {
+        if (!source.isFile()) {
             Node node = jar.get(item.getSource());
             if (node == null) {
                 throw new PackagingException("Unable to handle the file item " + item.getSource() + ", " +
@@ -177,31 +177,31 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
     private void embedFileSet(Log log, MavenProject project, FileSet fs, JavaArchive jar) {
         File directory = new File(fs.getDirectory());
-        if (! directory.isAbsolute()) {
+        if (!directory.isAbsolute()) {
             directory = new File(project.getBasedir(), fs.getDirectory());
         }
 
-        if (! directory.isDirectory()) {
-           log.warn("File set root directory (" + directory.getAbsolutePath() + ") does not exist " +
-               "- skipping");
-           return;
+        if (!directory.isDirectory()) {
+            log.warn("File set root directory (" + directory.getAbsolutePath() + ") does not exist " +
+                "- skipping");
+            return;
         }
 
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir(directory);
         if (fs.getOutputDirectory() == null) {
             fs.setOutputDirectory("/");
-        } else if (! fs.getOutputDirectory().startsWith("/")) {
+        } else if (!fs.getOutputDirectory().startsWith("/")) {
             fs.setOutputDirectory("/" + fs.getOutputDirectory());
         }
         List<String> excludes = fs.getExcludes();
         if (fs.isUseDefaultExcludes()) {
             excludes.addAll(FileUtils.getDefaultExcludesAsList());
         }
-        if (! excludes.isEmpty()) {
+        if (!excludes.isEmpty()) {
             scanner.setExcludes(excludes.toArray(new String[0]));
         }
-        if (! fs.getIncludes().isEmpty()) {
+        if (!fs.getIncludes().isEmpty()) {
             scanner.setIncludes(fs.getIncludes().toArray(new String[0]));
         }
         scanner.scan();
@@ -209,7 +209,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         for (String path : files) {
             File file = new File(directory, path);
             log.debug("Adding " + fs.getOutputDirectory() + path + " to the archive");
-            jar.addAsResource(file, fs.getOutputDirectory()  + path);
+            jar.addAsResource(file, fs.getOutputDirectory() + path);
         }
     }
 
@@ -219,7 +219,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
         // Check whether the file is explicitly includes
         List<String> includes = set.getOptions().getIncludes();
-        if (includes != null  && ! includes.isEmpty()) {
+        if (includes != null && !includes.isEmpty()) {
             boolean included = false;
 
             // Check for each include pattern whether or not the path is explicitly included
@@ -231,7 +231,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
             // If the path is not included, exclude the file
             // otherwise apply the excludes pattern on it.
-            if (! included) {
+            if (!included) {
                 return true;
             }
         }
@@ -268,9 +268,14 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
      * @param file the file, must not be {@code null}
      */
     private void embedDependency(Log log, DependencySet set, JavaArchive jar, File file) {
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            fis = new FileInputStream(file);
             jar.as(ZipImporter.class).importFrom(fis, path -> {
+                if (jar.contains(path)) {
+                    log.debug(path.get() + " already embedded in the jar");
+                    return false;
+                }
                 if (!toExclude(set, path)) {
                     return true;
                 } else {
@@ -278,9 +283,10 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
                     return false;
                 }
             });
-            IOUtils.closeQuietly(fis);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to read the file " + file.getAbsolutePath(), e);
+        } finally {
+            IOUtils.closeQuietly(fis);
         }
     }
 

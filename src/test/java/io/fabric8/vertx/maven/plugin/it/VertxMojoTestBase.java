@@ -131,6 +131,26 @@ public class VertxMojoTestBase {
         }
     }
 
+    static void installJarToLocalRepository(String local, String name, File jar) {
+        File repo = new File(local, "org/acme/" + name + "/1.0");
+        if (!repo.isDirectory()) {
+            repo.mkdirs();
+        }
+
+        try {
+            FileUtils.copyFileToDirectory(jar, repo);
+            String installedPomName = name + "-1.0.pom";
+            FileUtils.write(new File(repo, installedPomName), "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>org.acme</groupId>\n" +
+                "  <artifactId>" + name + "</artifactId>\n" +
+                "  <version>1.0</version>\n" +
+                "</project>", "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot copy the jar, or the pom file, to the local repository", e);
+        }
+    }
+
     static void prepareProject(File testDir, Verifier verifier) throws IOException {
         File pom = new File(testDir, "pom.xml");
         assertThat(pom).isFile();
