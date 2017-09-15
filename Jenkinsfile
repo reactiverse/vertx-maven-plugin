@@ -21,26 +21,25 @@ def dummy
 mavenNode {
   dockerNode {
     checkout scm
+    readTrusted 'release.groovy'
     sh "git remote set-url origin git@github.com:fabric8io/vertx-maven-plugin.git"
 
     def pipeline = load 'release.groovy'
+    def stagedProject
+    stage ('Stage'){
+      stagedProject = pipeline.stage()
+    }
 
-    stage 'Updating dependencies'
-    def prId = pipeline.updateDependencies('http://central.maven.org/maven2/')
+    stage ('Approve'){
+      pipeline.approveRelease(stagedProject)
+    }
 
-    stage 'Stage'
-    def stagedProject = pipeline.stage()
-
-    stage 'Approve'
-    pipeline.approveRelease(stagedProject)
-
-    stage 'Website'
-    pipeline.website(stagedProject)
-
-    stage 'Promote'
-    pipeline.release(stagedProject)
-    if (prId != null){
-      pipeline.mergePullRequest(prId)
+    stage ('Website'){
+      pipeline.website(stagedProject)
+    }
+    
+    stage ('Promote'){
+      pipeline.release(stagedProject)
     }
   }
 }
