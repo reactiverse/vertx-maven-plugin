@@ -17,11 +17,14 @@
  */
 
 @Library('github.com/fabric8io/fabric8-pipeline-library@master')
-def dummy
+def utils = new io.fabric8.Utils()
 mavenNode {
-  dockerNode {
-    checkout scm
-    readTrusted 'release.groovy'
+  checkout scm
+  readTrusted 'release.groovy'
+  if (utils.isCI()){
+    echo 'CI not provided by pipelines for this project yet'
+
+  } else if (utils.isCD()){
     sh "git remote set-url origin git@github.com:fabric8io/vertx-maven-plugin.git"
 
     def pipeline = load 'release.groovy'
@@ -30,13 +33,10 @@ mavenNode {
       stagedProject = pipeline.stage()
     }
 
-    stage ('Approve'){
-      pipeline.approveRelease(stagedProject)
-    }
-
-    stage ('Website'){
-      pipeline.website(stagedProject)
-    }
+    // disable generating website until it works so we can release
+    // stage ('Website'){
+    //   pipeline.website(stagedProject)
+    // }
     
     stage ('Promote'){
       pipeline.release(stagedProject)

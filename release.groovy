@@ -58,14 +58,6 @@ def release(project) {
     }
 }
 
-def mergePullRequest(prId) {
-    mergeAndWaitForPullRequest {
-        project = 'fabric8io/fabric8io/vertx-maven-plugin'
-        pullRequestId = prId
-    }
-
-}
-
 def website(stagedProject) {
     Model m = readMavenPom file: 'pom.xml'
     def projectArtifactId = m.artifactId
