@@ -21,7 +21,7 @@
 
     <groupId>io.fabric8</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.13</version>
     <packaging>maven-plugin</packaging>
 
     <name>Vert.x Maven Plugin</name>
