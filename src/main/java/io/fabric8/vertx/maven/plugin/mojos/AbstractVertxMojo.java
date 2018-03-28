@@ -260,7 +260,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
 
     /**
      * this method helps in resolving the {@link Artifact} as maven coordinates
-     * coordinates ::= group:artifact:version:[packaging]:[classifier]
+     * coordinates ::= group:artifact[:packaging[:classifier]]:version
      *
      * @param artifact - the artifact which need to be represented as maven coordinate
      * @return string representing the maven coordinate
@@ -273,15 +273,14 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         StringBuilder artifactCords = new StringBuilder().
             append(artifact.getGroupId())
             .append(":")
-            .append(artifact.getArtifactId())
-            .append(":")
-            .append(artifact.getVersion());
-        if (!"jar".equals(artifact.getType())) {
+            .append(artifact.getArtifactId());
+        if (!"jar".equals(artifact.getType()) || artifact.hasClassifier()) {
             artifactCords.append(":").append(artifact.getType());
         }
         if (artifact.hasClassifier()) {
             artifactCords.append(":").append(artifact.getClassifier());
         }
+        artifactCords.append(":").append(artifact.getVersion());
         return artifactCords.toString();
     }
 
