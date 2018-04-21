@@ -5,7 +5,7 @@ echo ===========================================
 
 mvn -Pdoc-html && \
 mvn -Pdoc-pdf && \
-git clone -b gh-pages git@github.com:fabric8io/vertx-maven-plugin gh-pages && \
+git clone -b gh-pages git@github.com:reactiverse/vertx-maven-plugin gh-pages && \
 cp -rv target/generated-docs/* gh-pages/ && \
 cd gh-pages && \
 mv index.pdf vertx-maven-plugin.pdf && \
