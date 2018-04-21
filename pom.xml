@@ -19,15 +19,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Vert.x Maven Plugin</name>
-    <description>A plugin to allow package, start, stop, run of Vert.x applications</description>
+    <name>A Maven Plugin for Eclipse Vert.x</name>
+    <description>A plugin to allow package, start, stop, run of Eclipse Vert.x applications</description>
 
-    <url>http://github.com/fabric8io/vertx-maven-plugin</url>
+    <url>https://github.com/reactiverse/vertx-maven-plugin</url>
 
     <issueManagement>
         <system>GitHub</system>
@@ -72,9 +72,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/fabric8io/vertx-maven-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@/github.com/fabric8io/vertx-maven-plugin.git</developerConnection>
-        <url>https://github.com/fabric8io/vertx-maven-plugin</url>
+        <connection>scm:git:https://github.com/reactiverse/vertx-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@/github.com/reactiverse/vertx-maven-plugin.git</developerConnection>
+        <url>https://github.com/reactiverse/vertx-maven-plugin</url>
         <tag>HEAD</tag>
     </scm>
 
