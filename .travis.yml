@@ -1,0 +1,26 @@
+language: java
+
+jdk:
+  - openjdk8
+
+addons:
+  sonarcloud:
+    organization: reactiverse-vertx-maven-plugin
+    token:
+      secure: "ZlhxyGANhTaCmJyvL8tqFL4o6lA7OZzY4X9HJlvqb0BQoUh3pFfqdx32VcdfICOL4UpQIrk3OkZm/4NLob4KHbTXDBjJrBwNuOocYNu2jtVnKrbRUmfFMkdVQy+CzT/mrz3NB31S93L275SD2C8tDCoKuSEJh6vUbBgNw41As3Uuuc7Vd5ZllM+EJ//KqfW0xGG+IEWMg6FT8jYWLfmic8ruYoJu0lEutpaKYd5nAZzZDrrWYVg2tD1VpdIpFocgXNfnER1+k+hhOjZ2/lrr8YKKTvC4+WjLwROVkQ6iinPsqxWBHKBkM1rBmYpG2Oy7d6sulg+yHPclwr1RZQ5pZMp806FVa08WZK9e2/sUNixmN6w3nONVXJaDIL2STiAyVpxTkA6N0b9+rb91+BfRwDOSrWtcYGmBq3lPn7Ljhm3Yx1CyQIUrolv0qQ2CittAO70BG2B2jnXjwiexjBqIcYtft2hXEHKgh78YnOcxZOCGZFm2PiDjmHZXb7ugByUc3jrLY4Ajwjba14HqvKK+D/ETYjC5lAthZC8gWMISUOQ7ULWZ46WqJeaROq2fCYFalS/vbIN/2iBORGDpEiZ9Txt92OAbrxJcylH03g3/PC6wRQFHIxvfkBLEMQLUbpTnz89YvpTOBcW5JcD92e71uLuujcyXWuG44tkUYfD0Qyo="
+
+env:
+  global:
+    - SONATYPE_USERNAME="clement.escoffier"
+    - secure: "1aWBp7FWqUzB+nL3IzpZonyD4S+DjrQJk2ylh+i0GSAjXyS2ZKEzu61Ho5MRP8TqeUp4Nbqa8wgas8N8Ep7/jEYAlfkmCZI0SzqpezDPBzEYF8kn0VTs2C8cKunE2GCCEFa5IIYKuIRfTBvBu77xCt2mCEKNHYsw6670aT/wAVoE7KdwwPZRNoQ27Y5W3Py4fS53ecIUgimHtGNb1+FRvWKxncVBlojerzvl63hU/tqb3WrjqPIymBN6t4I0x5rTXhkbjShKsaQ5WFXghaOt26+2UKpfA8Bhc8YUZ5I64fam63xGkfY3nGZC/xyfbtPCTN4kEqhb5VfK6bxjS4/2tuIpkS8hfo8YFXaO3e/pgVXXIPeMXcrfoy14O22dBgbkypoHGBXVvw/3muDLAOn2WbVbnHD7KMTuhev3NzNbHuiPwIWqXQ/6fgPSEysMWUlS3+h352NJlw4GMjhEtH0nI3Uk3w4aEYRFWrfiNa40Y6OpDciQ5GI5mj0FZYBBPRm5u4HvatQHtKndyWVl82zyouoHS6/xj4Ig+g1irS0GMir+PsAP5ln8UmJm1z/ZFkHasC+mY6+MGQnZy06TKm6E6xFuCwWMzH0Fu+m5evOgHudtpbBIYhhmdbZ/BcBHKghiipUJpsMHy8CvhhUfewLL5Bz6B2XgNQlP+UUji+cf72c="
+
+script:
+  - mvn clean install sonar:sonar -Pcoverage
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
+    - .build/deploy-snapshot.sh
+
+notifications:
+  email:
+    - clement@apache.org
