@@ -1,4 +1,4 @@
-= vert.x Maven Plugin
+= Maven Plugin for Eclipse Vert.x
 
 //[cols="2,2"]
 //|===
