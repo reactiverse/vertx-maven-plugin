@@ -50,10 +50,10 @@ https://reactiverse.github.io/vertx-maven-plugin/#vertx:package[vertx:package] f
 
 == Issues
 
-If you feel to add any feature you can open issue in https://github.com/fabric8io/vertx-maven-plugin/issues and
+If you feel to add any feature you can open issue in https://github.com/reactiverse/vertx-maven-plugin/issues and
 we will try to address it as soon as possible
 
 == Contributing
 
 We love contributions, if you wish to contribute a patch or feature, please open
-a issue in https://github.com/fabric8io/vertx-maven-plugin/issues and send in a PR.
+a issue in https://github.com/reactiverse/vertx-maven-plugin/issues and send in a PR.

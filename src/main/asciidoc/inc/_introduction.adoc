@@ -33,7 +33,7 @@ Generally, you will use the following configuration:
     <plugins>
         ...
         <plugin>
-            <groupId>io.fabric8</groupId>
+            <groupId>io.reactiverse</groupId>
             <artifactId>vertx-maven-plugin</artifactId>
             <version>${version}</version>
             <executions>

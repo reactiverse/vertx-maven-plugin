@@ -31,7 +31,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/fabric8io/vertx-maven-plugin/issues/</url>
+        <url>https://github.com/reactiverse/vertx-maven-plugin/issues/</url>
     </issueManagement>
 
     <developers>
@@ -82,7 +82,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Current plugin version -->
-        <fabric8.vertx.plugin.version>${project.version}</fabric8.vertx.plugin.version>
+        <reactiverse.vertx.plugin.version>${project.version}</reactiverse.vertx.plugin.version>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -578,7 +578,7 @@
             </build>
         </profile>
 
-        <!-- "release" profiles used for deploying with fabric8 -->
+        <!-- "release" profiles used for deploying with reactiverse -->
         <profile>
             <id>release</id>
             <build>

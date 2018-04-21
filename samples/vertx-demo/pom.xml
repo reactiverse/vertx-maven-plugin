@@ -32,7 +32,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>io.fabric8</groupId>
+                <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <executions>

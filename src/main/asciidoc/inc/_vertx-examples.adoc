@@ -14,7 +14,7 @@ This is the default configuration. It builds the fat jar in the _package_ phase,
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -68,7 +68,7 @@ By default the plugin stripped the version. However this behavior can be disable
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -97,7 +97,7 @@ Finally, you can also configure the `webRoot` dir:
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -141,7 +141,7 @@ The application id can be set in the `pom.xml` file:
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -164,7 +164,7 @@ Because it's a forked process, passing Java options needs to be done explicitly 
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -198,7 +198,7 @@ of application ids as shown below to trigger stop of the those applications
 [source,xml]
 ----
 <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>
@@ -226,7 +226,7 @@ of application ids as shown below to trigger stop of the those applications
 ----
 
  <plugin>
-    <groupId>io.fabric8</groupId>
+    <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <version>${version}</version>
     <executions>

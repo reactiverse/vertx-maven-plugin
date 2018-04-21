@@ -25,9 +25,9 @@
     <packaging>jar</packaging>
 
     <scm>
-        <connection>scm:git:https://github.com/fabric8io/vertx-maven-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@/github.com/fabric8io/vertx-maven-plugin.git</developerConnection>
-        <url>https://github.com/fabric8io/vertx-maven-plugin</url>
+        <connection>scm:git:https://github.com/reactiverse/vertx-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@/github.com/reactiverse/vertx-maven-plugin.git</developerConnection>
+        <url>https://github.com/reactiverse/vertx-maven-plugin</url>
         <tag>HEAD</tag>
     </scm>
 

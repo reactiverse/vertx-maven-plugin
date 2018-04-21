@@ -13,7 +13,7 @@
         <vertx.version>${vertxVersion}</vertx.version>
         <#if vertxVerticle??><vertx.verticle>${vertxVerticle}</vertx.verticle></#if>
         <!-- Maven plugins -->
-        <vertx-maven-plugin.version>${fabric8VMPVersion}</vertx-maven-plugin.version>
+        <vertx-maven-plugin.version>${reactiverseVMPVersion}</vertx-maven-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -35,7 +35,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>io.fabric8</groupId>
+                <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
                 <version>${r"${vertx-maven-plugin.version}"}</version>
                 <executions>

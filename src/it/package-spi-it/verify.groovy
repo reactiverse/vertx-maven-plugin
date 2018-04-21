@@ -16,7 +16,7 @@
  */
 
 
-import io.fabric8.vertx.maven.plugin.Verify
+import io.reactiverse.vertx.maven.plugin.Verify
 
 String base = basedir
 File primaryArtifactFile = new File(base, "target/vertx-demo-pkg-0.0.1.BUILD-SNAPSHOT.jar")

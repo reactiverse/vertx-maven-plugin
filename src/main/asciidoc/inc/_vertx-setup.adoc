@@ -8,7 +8,7 @@ This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is con
 
 [source,subs="attributes"]
 ----
-mvn io.fabric8:vertx-maven-plugin:{version}:setup
+mvn io.reactiverse:vertx-maven-plugin:{version}:setup
 ----
 
 The setup goal by default uses the plugin property _vertx-core-version_
@@ -18,7 +18,7 @@ if you wish to override the vertx version, then you can run the same command as 
 e.g.
 [source,subs="attributes-with-version"]
 ----
-mvn io.fabric8:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0
+mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0
 ----
 
 This will configure the vert.x and its dependencies to `3.4.0` i.e. Maven project property `vertx.version`
@@ -28,7 +28,7 @@ You can also generate a project if you don't have a `pom.xml` file:
 
 [source,subs="attributes"]
 ----
-mvn io.fabric8:vertx-maven-plugin:{version}:setup \
+mvn io.reactiverse:vertx-maven-plugin:{version}:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT

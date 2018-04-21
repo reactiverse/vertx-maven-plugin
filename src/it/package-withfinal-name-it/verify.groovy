@@ -16,7 +16,7 @@
  */
 
 
-import io.fabric8.vertx.maven.plugin.Verify
+import io.reactiverse.vertx.maven.plugin.Verify
 
 String base = basedir
 File primaryArtifactFile = new File(base, "target/my-vertx-app.jar")
