@@ -124,8 +124,8 @@ public class PackagingIT extends VertxMojoTestBase {
         initVerifier(testDir);
         prepareProject(testDir, verifier);
 
-        File A = new File("target/a-1.0.jar");
-        File B = new File("target/b-1.0.jar");
+        File A = new File("target/A-1.0.jar");
+        File B = new File("target/B-1.0.jar");
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.add(new StringAsset("A1"), "/res/A");
         jarArchive1.add(new StringAsset("B1"), "/res/B");
