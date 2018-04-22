@@ -103,7 +103,7 @@
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.0.24</plexus-utils.version>
         <maven-aether-provider.version>3.2.5</maven-aether-provider.version>
-        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.4</commons-lang3.version>
@@ -474,6 +474,7 @@
                         </executions>
                         <configuration>
                             <systemPropertyVariables>
+                                <!--suppress MavenModelInspection -->
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
                         </configuration>
@@ -602,6 +603,9 @@
         </profile>
         <profile>
             <id>coverage</id>
+            <properties>
+                <jacocoArgLine><!-- filled by the jacoco plugin --></jacocoArgLine>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -610,16 +614,55 @@
                         <version>0.7.9</version>
                         <executions>
                             <execution>
+                                <id>prepare-agent</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+                                    <propertyName>jacocoArgLine</propertyName>
+                                </configuration>
                             </execution>
+
                             <execution>
                                 <id>report</id>
-                                <phase>test</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <argLine>${jacocoArgLine}</argLine>
+                            <excludes>
+                                <exclude>**/IT*.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>integration-tests</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <argLine>${jacocoArgLine}</argLine>
+                                    <systemPropertyVariables>
+                                        <!--suppress MavenModelInspection -->
+                                        <maven.home>${maven.home}</maven.home>
+                                    </systemPropertyVariables>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
