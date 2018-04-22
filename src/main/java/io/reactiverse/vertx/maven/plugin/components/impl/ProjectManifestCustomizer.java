@@ -1,8 +1,6 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
-import io.reactiverse.vertx.maven.plugin.components.ServiceFileCombiner;
-import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -24,8 +22,6 @@ import java.util.stream.Collectors;
     hint = "project"
 )
 public class ProjectManifestCustomizer implements ManifestCustomizerService {
-
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss z");
 
     @Override
     public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
@@ -56,7 +52,7 @@ public class ProjectManifestCustomizer implements ManifestCustomizerService {
     }
 
     public static String manifestTimestampFormat(Date date) {
-        return simpleDateFormat.format(date);
+        return new SimpleDateFormat("yyyyMMdd HH:mm:ss z").format(date);
     }
 
     /**
