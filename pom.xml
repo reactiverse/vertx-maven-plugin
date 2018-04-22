@@ -639,7 +639,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
                         <configuration>
-                            <argLine>${jacocoArgLine}</argLine>
+                            <argLine>@{jacocoArgLine}</argLine>
                             <excludes>
                                 <exclude>**/IT*.java</exclude>
                             </excludes>
@@ -657,7 +657,7 @@
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
-                                    <argLine>${jacocoArgLine}</argLine>
+                                    <argLine>@{jacocoArgLine}</argLine>
                                     <systemPropertyVariables>
                                         <!--suppress MavenModelInspection -->
                                         <maven.home>${maven.home}</maven.home>
