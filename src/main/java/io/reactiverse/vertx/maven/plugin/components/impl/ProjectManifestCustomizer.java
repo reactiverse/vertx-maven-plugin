@@ -25,13 +25,7 @@ import java.util.stream.Collectors;
 )
 public class ProjectManifestCustomizer implements ManifestCustomizerService {
 
-    private static String DEFAULT_DATE_PATTERN = "yyyyMMdd HH:mm:ss z";
-
-    private static final SimpleDateFormat simpleDateFormat;
-
-    static {
-        simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
-    }
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss z");
 
     @Override
     public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
