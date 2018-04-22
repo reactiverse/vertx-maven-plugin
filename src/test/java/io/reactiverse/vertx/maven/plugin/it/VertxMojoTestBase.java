@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,12 +26,12 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class VertxMojoTestBase {
     static String VERSION;
-    static ImmutableMap<String, String> VARIABLES;
+    private static ImmutableMap<String, String> VARIABLES;
 
     @BeforeClass
     public static void init() {
         File constants = new File("target/classes/vertx-maven-plugin.properties");
-        assertThat(constants.isFile());
+        assertThat(constants).isFile();
         Properties properties = new Properties();
         try (FileInputStream fis = new FileInputStream(constants)) {
             properties.load(fis);
@@ -49,7 +51,7 @@ public class VertxMojoTestBase {
     static void awaitUntilServerDown() {
         await().atMost(1, TimeUnit.MINUTES).until(() -> {
             try {
-                String resp = get();
+                get(); // Ignore result on purpose
                 return false;
             } catch (Exception e) {
                 return true;
@@ -76,23 +78,29 @@ public class VertxMojoTestBase {
         return IOUtils.toString(url, "UTF-8");
     }
 
-    public static File initProject(String name) {
+    static File initProject(String name) {
         return initProject(name, name);
     }
 
-    public static File initEmptyProject(String name) {
+    static File initEmptyProject(String name) {
         File tc = new File("target/test-classes/" + name);
         if (tc.isDirectory()) {
-            tc.delete();
+            boolean delete = tc.delete();
+            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+                .log(Level.FINE, "test-classes deleted? " + delete);
         }
-        tc.mkdirs();
+        boolean mkdirs = tc.mkdirs();
+        LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            .log(Level.FINE, "test-classes created? " + mkdirs);
         return tc;
     }
 
-    public static File initProject(String name, String output) {
+    static File initProject(String name, String output) {
         File tc = new File("target/test-classes");
         if (!tc.isDirectory()) {
-            tc.mkdirs();
+            boolean mkdirs = tc.mkdirs();
+            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+                .log(Level.FINE, "test-classes created? " + mkdirs);
         }
 
         File in = new File("src/test/resources", name);
@@ -104,7 +112,9 @@ public class VertxMojoTestBase {
         if (out.isDirectory()) {
             FileUtils.deleteQuietly(out);
         }
-        out.mkdirs();
+        boolean mkdirs = out.mkdirs();
+        LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            .log(Level.FINE, out.getAbsolutePath() + " created? " + mkdirs);
         try {
             System.out.println("Copying " + in.getAbsolutePath() + " to " + out.getParentFile().getAbsolutePath());
             org.codehaus.plexus.util.FileUtils.copyDirectoryStructure(in, out);
@@ -117,7 +127,9 @@ public class VertxMojoTestBase {
     static void installPluginToLocalRepository(String local) {
         File repo = new File(local, "io/reactiverse/vertx-maven-plugin/" + VertxMojoTestBase.VERSION);
         if (!repo.isDirectory()) {
-            repo.mkdirs();
+            boolean mkdirs = repo.mkdirs();
+            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+                .log(Level.FINE, repo.getAbsolutePath() + " created? " + mkdirs);
         }
 
         File plugin = new File("target", "vertx-maven-plugin-" + VertxMojoTestBase.VERSION + ".jar");
@@ -134,7 +146,9 @@ public class VertxMojoTestBase {
     static void installJarToLocalRepository(String local, String name, File jar) {
         File repo = new File(local, "org/acme/" + name + "/1.0");
         if (!repo.isDirectory()) {
-            repo.mkdirs();
+            boolean mkdirs = repo.mkdirs();
+            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+                .log(Level.FINE, repo.getAbsolutePath() + " created? " + mkdirs);
         }
 
         try {
@@ -157,7 +171,7 @@ public class VertxMojoTestBase {
         verifier.filterFile("pom.xml", "pom.xml", "UTF-8", VertxMojoTestBase.VARIABLES);
     }
 
-    public File filter(File input, Map<String, String> variables) throws IOException {
+    void filter(File input, Map<String, String> variables) throws IOException {
         assertThat(input).isFile();
         String data = FileUtils.readFileToString(input, "UTF-8");
 
@@ -166,10 +180,9 @@ public class VertxMojoTestBase {
             data = StringUtils.replace(data, token, value);
         }
         FileUtils.write(input, data, "UTF-8");
-        return input;
     }
 
-    protected void runPackage(Verifier verifier) throws VerificationException, IOException {
+    void runPackage(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-package.log");
         verifier.executeGoal("package");
 

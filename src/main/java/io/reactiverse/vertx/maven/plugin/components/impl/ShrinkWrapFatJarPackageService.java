@@ -124,8 +124,10 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             jar.as(ZipExporter.class).exportTo(theCreatedFile);
 
             if (useTmpFile) {
-                jarFile.delete();
-                theCreatedFile.renameTo(jarFile);
+                boolean delete = jarFile.delete();
+                boolean renameTo = theCreatedFile.renameTo(jarFile);
+                config.getMojo().getLog().debug("Main jar file deleted: " + delete);
+                config.getMojo().getLog().debug("Main jar file replaced by temporary file: " + renameTo);
             }
 
         } catch (Exception e) {
