@@ -620,7 +620,7 @@
                                 </goals>
                                 <phase>generate-test-resources</phase>
                                 <configuration>
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
                                     <propertyName>jacocoArgLine</propertyName>
                                 </configuration>
                             </execution>
