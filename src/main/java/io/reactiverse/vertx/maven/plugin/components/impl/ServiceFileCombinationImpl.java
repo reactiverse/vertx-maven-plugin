@@ -32,7 +32,7 @@ import static com.google.common.io.Closeables.closeQuietly;
 /**
  * This component is used to perform Services relocation - typically moving came Service Providers found in
  * META-INF/services to a single file
- * Right now it supports only combine - wherein all same service providers are combined into on file with one
+ * Right now it supports only COMBINE - wherein all same service providers are combined into on file with one
  * line entry for each Service Provider implementation
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -45,7 +45,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
     @Override
     public void doCombine(ServiceFileCombinationConfig config) {
 
-        if (config.getStrategy() == CombinationStrategy.none) {
+        if (config.getStrategy() == CombinationStrategy.NONE) {
             return;
         }
 
@@ -136,7 +136,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
                     return Collections.emptyList();
                 }
                 for (String line : local) {
-                    if (line.trim().equalsIgnoreCase("${combine}")) {
+                    if (line.trim().equalsIgnoreCase("${COMBINE}")) {
                         //Copy the ones form the dependencies on this line
                         lines.addAll(fromDeps);
                     } else {

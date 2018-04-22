@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,11 +87,11 @@ public class VertxMojoTestBase {
         File tc = new File("target/test-classes/" + name);
         if (tc.isDirectory()) {
             boolean delete = tc.delete();
-            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            Logger.getLogger(VertxMojoTestBase.class.getName())
                 .log(Level.FINE, "test-classes deleted? " + delete);
         }
         boolean mkdirs = tc.mkdirs();
-        LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+        Logger.getLogger(VertxMojoTestBase.class.getName())
             .log(Level.FINE, "test-classes created? " + mkdirs);
         return tc;
     }
@@ -99,7 +100,7 @@ public class VertxMojoTestBase {
         File tc = new File("target/test-classes");
         if (!tc.isDirectory()) {
             boolean mkdirs = tc.mkdirs();
-            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            Logger.getLogger(VertxMojoTestBase.class.getName())
                 .log(Level.FINE, "test-classes created? " + mkdirs);
         }
 
@@ -113,7 +114,7 @@ public class VertxMojoTestBase {
             FileUtils.deleteQuietly(out);
         }
         boolean mkdirs = out.mkdirs();
-        LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+        Logger.getLogger(VertxMojoTestBase.class.getName())
             .log(Level.FINE, out.getAbsolutePath() + " created? " + mkdirs);
         try {
             System.out.println("Copying " + in.getAbsolutePath() + " to " + out.getParentFile().getAbsolutePath());
@@ -128,7 +129,7 @@ public class VertxMojoTestBase {
         File repo = new File(local, "io/reactiverse/vertx-maven-plugin/" + VertxMojoTestBase.VERSION);
         if (!repo.isDirectory()) {
             boolean mkdirs = repo.mkdirs();
-            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            Logger.getLogger(VertxMojoTestBase.class.getName())
                 .log(Level.FINE, repo.getAbsolutePath() + " created? " + mkdirs);
         }
 
@@ -147,7 +148,7 @@ public class VertxMojoTestBase {
         File repo = new File(local, "org/acme/" + name + "/1.0");
         if (!repo.isDirectory()) {
             boolean mkdirs = repo.mkdirs();
-            LogManager.getLogManager().getLogger(VertxMojoTestBase.class.getName())
+            Logger.getLogger(VertxMojoTestBase.class.getName())
                 .log(Level.FINE, repo.getAbsolutePath() + " created? " + mkdirs);
         }
 

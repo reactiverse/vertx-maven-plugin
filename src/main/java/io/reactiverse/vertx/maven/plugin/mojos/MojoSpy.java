@@ -32,9 +32,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MojoSpy extends AbstractExecutionListener {
 
-    private static final List<MojoExecution> MOJOS = new CopyOnWriteArrayList<>();
+    static final List<MojoExecution> MOJOS = new CopyOnWriteArrayList<>();
 
-    private static final List<String> PHASES = Arrays.asList(
+    static final List<String> PHASES = Arrays.asList(
         "generate-sources",
         "process-sources",
         "generate-resources",

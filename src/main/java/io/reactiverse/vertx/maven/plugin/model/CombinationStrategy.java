@@ -24,9 +24,9 @@ public enum CombinationStrategy {
     /**
      * Combine all service providers
      */
-    combine,
+    COMBINE,
     /**
      * Skip the combination and use only the ones defined in the current project.
      */
-    none
+    NONE
 }

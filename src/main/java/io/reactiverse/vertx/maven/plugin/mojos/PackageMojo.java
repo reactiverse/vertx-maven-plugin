@@ -49,7 +49,7 @@ public class PackageMojo extends AbstractVertxMojo {
     /**
      * The service provider combination strategy.
      */
-    @Parameter(name = "serviceProviderCombination", defaultValue = "combine")
+    @Parameter(name = "serviceProviderCombination", defaultValue = "COMBINE")
     protected CombinationStrategy serviceProviderCombination;
 
     /**

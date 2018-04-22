@@ -73,20 +73,24 @@ public class ServiceUtils {
     public static ScopeFilter newScopeFilter(String scope) {
         Set<String> scopes = new HashSet<>();
 
+        String provided = "provided";
+        String compile = "compile";
+        String system = "system";
+        
         if (Artifact.SCOPE_COMPILE.equals(scope)) {
-            scopes.addAll(Arrays.asList("compile", "provided", "system"));
+            scopes.addAll(Arrays.asList(compile, provided, system));
         }
         if (Artifact.SCOPE_PROVIDED.equals(scope)) {
-            scopes.add("provided");
+            scopes.add(provided);
         }
         if (Artifact.SCOPE_RUNTIME.equals(scope)) {
-            scopes.addAll(Arrays.asList("compile", "runtime"));
+            scopes.addAll(Arrays.asList(compile, "runtime"));
         }
         if (Artifact.SCOPE_SYSTEM.equals(scope)) {
-            scopes.add("system");
+            scopes.add(system);
         }
         if (Artifact.SCOPE_TEST.equals(scope)) {
-            scopes.addAll(Arrays.asList("compile", "provided", "runtime", "system", "test"));
+            scopes.addAll(Arrays.asList(compile, provided, "runtime", system, "test"));
         }
 
         return ScopeFilter.including(scopes);
