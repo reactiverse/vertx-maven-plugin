@@ -18,8 +18,8 @@ script:
   - mvn clean install sonar:sonar -Pcoverage
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
-    - .build/deploy-snapshot.sh
+#    - bash <(curl -s https://codecov.io/bash)
+#    - .build/deploy-snapshot.sh
 
 notifications:
   email:
