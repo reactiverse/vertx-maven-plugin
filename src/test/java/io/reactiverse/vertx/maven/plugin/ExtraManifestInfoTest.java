@@ -18,12 +18,9 @@ package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
 import io.reactiverse.vertx.maven.plugin.components.impl.SCMManifestCustomizer;
-import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusTestCase;
@@ -45,9 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ExtraManifestInfoTest extends PlexusTestCase {
 
-    ScmManager scmManager;
-
-    protected Model buildModel(File pomFile) {
+    private Model buildModel(File pomFile) {
         try {
             return new MavenXpp3Reader().read(ReaderFactory.newXmlReader(pomFile));
         } catch (IOException var3) {
@@ -58,13 +53,13 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
     }
 
     @Before
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        scmManager = (ScmManager) lookup(ScmManager.ROLE);
-        assertThat(scmManager);
+        ScmManager scmManager = (ScmManager) lookup(ScmManager.ROLE);
+        assertThat(scmManager).isNotNull();
     }
 
-    public void testExtraManifestsNoClassifier() throws Exception {
+    public void testExtraManifestsNoClassifier() {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-jar.xml").toFile();
         assertNotNull(testJarPom);
         assertTrue(testJarPom.exists());
@@ -79,7 +74,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
         Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
-            public void execute() throws MojoExecutionException, MojoFailureException {
+            public void execute() {
 
             }
 
@@ -88,7 +83,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
                 return scmManager;
             }
         }, mavenProject);
-        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
+        atts.forEach(attributes::putValue);
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -101,7 +96,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
     }
 
-    public void testExtraManifestsWithClassifier() throws Exception {
+    public void testExtraManifestsWithClassifier() {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-classifier-jar.xml").toFile();
         assertNotNull(testJarPom);
         assertTrue(testJarPom.exists());
@@ -116,7 +111,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
         Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
-            public void execute() throws MojoExecutionException, MojoFailureException {
+            public void execute() {
 
             }
 
@@ -125,7 +120,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
                 return scmManager;
             }
         }, mavenProject);
-        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
+        atts.forEach(attributes::putValue);
 
         assertThat(attributes.isEmpty()).isFalse();
 
@@ -138,7 +133,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
 
     }
 
-    public void testExtraManifestsWithSCMUrlAndTag() throws Exception {
+    public void testExtraManifestsWithSCMUrlAndTag() {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-scm-jar.xml").toFile();
         assertNotNull(testJarPom);
         assertTrue(testJarPom.exists());
@@ -153,7 +148,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
         Map<String, String> atts = customizer.getEntries(new PackageMojo() {
             @Override
-            public void execute() throws MojoExecutionException, MojoFailureException {
+            public void execute() {
 
             }
 
@@ -163,11 +158,11 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
             }
         }, mavenProject);
 
-        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
+        atts.forEach(attributes::putValue);
 
         atts = new SCMManifestCustomizer().getEntries(new PackageMojo() {
             @Override
-            public void execute() throws MojoExecutionException, MojoFailureException {
+            public void execute() {
 
             }
 
@@ -176,7 +171,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
                 return scmManager;
             }
         }, mavenProject);
-        atts.entrySet().forEach(entry -> attributes.putValue(entry.getKey(), entry.getValue()));
+        atts.forEach(attributes::putValue);
 
         assertThat(attributes.isEmpty()).isFalse();
 

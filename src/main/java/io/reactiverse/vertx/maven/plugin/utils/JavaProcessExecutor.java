@@ -78,6 +78,8 @@ public class JavaProcessExecutor extends JavaExecutor {
             if (process.isAlive()) {
                 process.destroy();
             }
+            // We sure the interrupt flag is restored.
+            Thread.currentThread().interrupt();
             return Optional.empty();
         } catch (Exception e) {
             if (process != null  && process.isAlive()) {

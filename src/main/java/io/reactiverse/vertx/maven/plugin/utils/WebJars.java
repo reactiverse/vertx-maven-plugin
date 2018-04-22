@@ -67,9 +67,7 @@ public class WebJars {
         }
         Set<String> found = new LinkedHashSet<>();
         if (file.isFile() && file.getName().endsWith(".jar")) {
-            JarFile jar = null;
-            try {
-                jar = new JarFile(file);
+            try (JarFile jar = new JarFile(file)) {
 
                 // Fast return if the base structure is not there
                 if (jar.getEntry(WEBJAR_LOCATION) == null) {
@@ -88,13 +86,6 @@ public class WebJars {
                 log.error("Cannot check if the file " + file.getName()
                     + " is a webjar, cannot open it", e);
                 return false;
-            } finally {
-                final JarFile finalJar = jar;
-                IOUtils.closeQuietly(() -> {
-                    if (finalJar != null) {
-                        finalJar.close();
-                    }
-                });
             }
 
             for (String lib : found) {
