@@ -192,7 +192,7 @@ public class VertxMojoTestBase {
         verifier.resetStreams();
     }
 
-    public Map<String, String> getEnv() {
+    Map<String, String> getEnv() {
         String opts = System.getProperty("mavenOpts");
         Map<String, String> env = new HashMap<>();
         if (opts != null) {
