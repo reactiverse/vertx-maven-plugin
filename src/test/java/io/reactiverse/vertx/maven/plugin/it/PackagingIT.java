@@ -16,13 +16,11 @@
 
 package io.reactiverse.vertx.maven.plugin.it;
 
-import io.reactiverse.vertx.maven.plugin.utils.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
-import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -30,8 +28,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -43,13 +39,13 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PackagingIT extends VertxMojoTestBase {
 
-    String PACKAGING_META_INF = "projects/packaging-meta-inf-it";
-    String PACKAGING_DUPLICATE = "projects/packaging-duplicate-it";
+    private String PACKAGING_META_INF = "projects/packaging-meta-inf-it";
+    private String PACKAGING_DUPLICATE = "projects/packaging-duplicate-it";
 
     private Verifier verifier;
 
 
-    public void initVerifier(File root) throws VerificationException {
+    private void initVerifier(File root) throws VerificationException {
         verifier = new Verifier(root.getAbsolutePath());
         verifier.setAutoclean(false);
         installPluginToLocalRepository(verifier.getLocalRepository());

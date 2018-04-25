@@ -72,7 +72,7 @@ public class RunIT extends VertxMojoTestBase {
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         builder.add(previous);
         builder.add("vertx:run");
-        verifier.executeGoals(builder.build());
+        verifier.executeGoals(builder.build(), getEnv());
     }
 
 }

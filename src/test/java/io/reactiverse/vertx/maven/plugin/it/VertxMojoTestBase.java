@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -185,9 +186,18 @@ public class VertxMojoTestBase {
 
     void runPackage(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-package.log");
-        verifier.executeGoal("package");
+        verifier.executeGoal("package", getEnv());
 
         verifier.assertFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
         verifier.resetStreams();
+    }
+
+    public Map<String, String> getEnv() {
+        String opts = System.getProperty("mavenOpts");
+        Map<String, String> env = new HashMap<>();
+        if (opts != null) {
+            env.put("MAVEN_OPTS", opts);
+        }
+        return env;
     }
 }

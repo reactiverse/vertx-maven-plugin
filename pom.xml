@@ -123,6 +123,7 @@
         <org.eclipse.jgit.version>4.4.1.201607150455-r</org.eclipse.jgit.version>
 
         <skipTests>false</skipTests>
+        <jacoco.version>0.7.9</jacoco.version>
     </properties>
 
     <dependencyManagement>
@@ -611,7 +612,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.9</version>
+                        <version>${jacoco.version}</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>
@@ -622,6 +623,20 @@
                                 <configuration>
                                     <destFile>${project.build.directory}/jacoco.exec</destFile>
                                     <propertyName>jacocoArgLine</propertyName>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>prepare-agent-integration</id>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                    <propertyName>jacocoArgLine</propertyName>
+                                    <append>true</append>
                                 </configuration>
                             </execution>
 
@@ -661,6 +676,7 @@
                                     <systemPropertyVariables>
                                         <!--suppress MavenModelInspection -->
                                         <maven.home>${maven.home}</maven.home>
+                                        <mavenOpts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true</mavenOpts>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>

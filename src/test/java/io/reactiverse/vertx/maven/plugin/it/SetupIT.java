@@ -133,7 +133,7 @@ public class SetupIT extends VertxMojoTestBase {
         for (String p : params) {
             builder.add(p);
         }
-        verifier.executeGoals(builder.build());
+        verifier.executeGoals(builder.build(), getEnv());
     }
 
 }

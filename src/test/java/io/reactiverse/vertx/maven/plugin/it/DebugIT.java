@@ -85,7 +85,7 @@ public class DebugIT extends VertxMojoTestBase {
 
     private void debug(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(ImmutableList.of("compile", "vertx:debug"));
+        verifier.executeGoals(ImmutableList.of("compile", "vertx:debug"), getEnv());
     }
 
 }

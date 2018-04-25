@@ -46,11 +46,11 @@ public class MavenProcessInvoker extends DefaultInvoker {
             cliBuilder.setMavenExecutable(mavenExecutable);
         }
 
-
         File workingDirectory = getWorkingDirectory();
         if (workingDirectory != null) {
             cliBuilder.setWorkingDirectory(getWorkingDirectory());
         }
+
 
         Commandline cli;
         try {

@@ -184,14 +184,14 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     private void runStart(Verifier verifier) throws VerificationException, IOException {
         verifier.setLogFileName("build-start.log");
-        verifier.executeGoal("vertx:start");
+        verifier.executeGoal("vertx:start", getEnv());
         assertInLog(verifier, "BUILD SUCCESS", "Starting vert.x application...");
         verifier.resetStreams();
     }
 
     private void runStop(Verifier verifier) throws VerificationException, IOException {
         verifier.setLogFileName("build-stop.log");
-        verifier.executeGoal("vertx:stop");
+        verifier.executeGoal("vertx:stop", getEnv());
         assertInLog(verifier, "BUILD SUCCESS", "terminated with status 0");
         verifier.resetStreams();
     }

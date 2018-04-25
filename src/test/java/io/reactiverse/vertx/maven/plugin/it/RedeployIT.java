@@ -262,7 +262,8 @@ public class RedeployIT extends VertxMojoTestBase {
 
     private void run(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(ImmutableList.of("compile", "vertx:run"));
+
+        verifier.executeGoals(ImmutableList.of("compile", "vertx:run"), getEnv());
     }
 
     private void run(Verifier verifier, String... previous) throws VerificationException {
@@ -270,7 +271,7 @@ public class RedeployIT extends VertxMojoTestBase {
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         builder.add(previous);
         builder.add("vertx:run");
-        verifier.executeGoals(builder.build());
+        verifier.executeGoals(builder.build(), getEnv());
     }
 
 }
