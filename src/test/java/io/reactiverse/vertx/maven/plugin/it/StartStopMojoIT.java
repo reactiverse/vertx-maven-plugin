@@ -37,6 +37,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @After
     public void waitForStop() {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         try {
             runStop(verifier);
         } catch (VerificationException | IOException e) {
@@ -49,6 +53,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testJVMOptions() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_OPTS);
         assertThat(testDir).isDirectory();
 
@@ -66,6 +74,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testWithMainClass() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_MAIN);
         assertThat(testDir).isDirectory();
 
@@ -82,6 +94,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testWithCustomLauncher() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_CUSTOM);
         assertThat(testDir).isDirectory();
 
@@ -98,6 +114,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testWithMainClassInExplodedMode() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_MAIN_EXPLODED);
         assertThat(testDir).isDirectory();
 
@@ -115,6 +135,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testWithCustomLauncherInExplodedMode() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_CUSTOM_EXPLODED);
         assertThat(testDir).isDirectory();
 
@@ -132,6 +156,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testInExplodedMode() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_EXPLODED);
         assertThat(testDir).isDirectory();
 
@@ -149,6 +177,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testStartStop() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_START);
         assertThat(testDir).isDirectory();
 
@@ -166,6 +198,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testStartWithConf() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_WITH_CONF);
         assertThat(testDir).isDirectory();
 
@@ -198,6 +234,10 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
     @Test
     public void testStartWithConfExploded() throws IOException, VerificationException {
+        if (isCoverage()) {
+            System.out.println("Test skipped in coverage");
+            return;
+        }
         File testDir = initProject(ROOT_WITH_CONF_EXPLODED);
         assertThat(testDir).isDirectory();
 
@@ -219,29 +259,7 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
         String content = FileUtils.readFileToString(log, "UTF-8");
         for (String snippet : snippets) {
-            if (System.getProperty("coverage") == null) {
-                assertThat(content).contains(snippet);
-            } else {
-                if (content.contains(snippet)) {
-                    System.out.println("assertInLog - Assertion checked");
-                } else {
-                    System.out.println("===================================");
-                    System.out.println("assertInLog - Assertion failed");
-                    System.out.println("assertInLog - Text:\n" + content + "\nDoes not contains:\n" + snippet);
-                    File start = new File(verifier.getBasedir(), "build-start.log");
-                    File stop = new File(verifier.getBasedir(), "build-stop.log");
-                    if (start.isFile()) {
-                        System.out.println("Content of build-start.log:");
-                        System.out.println(FileUtils.readFileToString(start, "UTF-8"));
-                        System.out.println("");
-                    }
-                    if (stop.isFile()) {
-                        System.out.println("Content of build-stop.log:");
-                        System.out.println(FileUtils.readFileToString(stop, "UTF-8"));
-                    }
-                    System.out.println("===================================");
-                }
-            }
+            assertThat(content).contains(snippet);
         }
     }
 

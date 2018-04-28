@@ -50,6 +50,10 @@ public class VertxMojoTestBase {
             "@project.version@", VERSION);
     }
 
+    public  boolean isCoverage() {
+        return System.getProperty("coverage") != null;
+    }
+
     static void awaitUntilServerDown() {
         await().atMost(5, TimeUnit.MINUTES).until(() -> {
             try {
