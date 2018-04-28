@@ -113,16 +113,17 @@
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!-- Test dependency versions -->
-        <vertx-core.version>3.4.2</vertx-core.version>
+        <vertx-core.version>3.5.1</vertx-core.version>
         <assertj-core.version>3.6.2</assertj-core.version>
         <junit.version>4.8.2</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
         <maven-scm-plugin.version>1.9.5</maven-scm-plugin.version>
         <org.eclipse.jgit.version>4.4.1.201607150455-r</org.eclipse.jgit.version>
+        <jacoco.version>0.7.9</jacoco.version>
+
 
         <skipTests>false</skipTests>
-        <jacoco.version>0.7.9</jacoco.version>
     </properties>
 
     <dependencyManagement>
