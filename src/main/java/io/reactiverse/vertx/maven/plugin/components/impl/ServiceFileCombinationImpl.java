@@ -129,26 +129,30 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
             if (deps != null) {
                 deps.forEach(fromDeps::addAll);
             }
-            Set<String> lines = new LinkedHashSet<>();
             if (local != null) {
                 if (local.isEmpty()) {
                     // Drop this SPI
                     return Collections.emptyList();
                 }
-                for (String line : local) {
-                    if (line.trim().equalsIgnoreCase("${COMBINE}")) {
-                        //Copy the ones form the dependencies on this line
-                        lines.addAll(fromDeps);
-                    } else {
-                        // Just copy the line
-                        lines.add(line);
-                    }
-                }
-                return new ArrayList<>(lines);
+                return computeOutput(local, fromDeps);
             } else {
                 return new ArrayList<>(fromDeps);
             }
         }
+    }
+
+    private List<String> computeOutput(List<String> local, Set<String> fromDeps) {
+        Set<String> lines = new LinkedHashSet<>();
+        for (String line : local) {
+            if (line.trim().equalsIgnoreCase("${COMBINE}")) {
+                //Copy the ones form the dependencies on this line
+                lines.addAll(fromDeps);
+            } else {
+                // Just copy the line
+                lines.add(line);
+            }
+        }
+        return new ArrayList<>(lines);
     }
 
     private Map<String, List<String>> findLocalDescriptors(MavenProject project, List<String> patterns) {
@@ -185,39 +189,42 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
 
         for (File file : deps) {
             JavaArchive archive = ShrinkWrap.createFromZipFile(JavaArchive.class, file);
-            Map<ArchivePath, Node> content = archive.getContent(path -> {
-                for (String pattern : patterns) {
-                    if (SelectorUtils.match(pattern, path.get())) {
-                        return true;
-                    }
-                }
-                return false;
-            });
+            Map<ArchivePath, Node> content = getMatchingFilesFromJar(patterns, archive);
 
             for (Map.Entry<ArchivePath, Node> entry : content.entrySet()) {
                 Asset asset = entry.getValue().getAsset();
                 if (asset != null) {
                     List<String> lines;
-                    InputStream input = null;
                     String path = entry.getKey().get();
-                    try {
-                        input = asset.openStream();
-                        lines = IOUtils.readLines(input, "UTF-8");
-                    } catch (IOException e) {
-                        throw new RuntimeException("Cannot read " + path, e);
-                    } finally {
-                        closeQuietly(input);
-                    }
+                    lines = read(asset, path);
 
-                    List<List<String>> items = map.get(path);
-                    if (items == null) {
-                        items = new ArrayList<>();
-                    }
+                    List<List<String>> items = map.computeIfAbsent(path, (k) -> new ArrayList<>());
                     items.add(lines);
                     map.put(path, items);
                 }
             }
         }
         return map;
+    }
+
+    private List<String> read(Asset asset, String path) {
+        List<String> lines;
+        try (InputStream input = asset.openStream()){
+            lines = IOUtils.readLines(input, "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot read " + path, e);
+        }
+        return lines;
+    }
+
+    private Map<ArchivePath, Node> getMatchingFilesFromJar(List<String> patterns, JavaArchive archive) {
+        return archive.getContent(path -> {
+                    for (String pattern : patterns) {
+                        if (SelectorUtils.match(pattern, path.get())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 }
