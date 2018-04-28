@@ -7,7 +7,7 @@ REPO="reactiverse/vertx-maven-plugin"
 BRANCH="master"
 
 set -e
-
+echo "Configuring deployment using ${SONATYPE_USERNAME} for repository ${TRAVIS_REPO_SLUG}"
 if [ "$TRAVIS_REPO_SLUG" != "$REPO" ]; then
   echo "Skipping snapshot deployment: wrong repository. Expected '$REPO' but was '$TRAVIS_REPO_SLUG'."
 elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
