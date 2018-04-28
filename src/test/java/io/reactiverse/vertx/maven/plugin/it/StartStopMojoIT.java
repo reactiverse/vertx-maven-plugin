@@ -16,19 +16,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StartStopMojoIT extends VertxMojoTestBase {
 
-    String ROOT_START = "projects/start-it";
-    String ROOT_OPTS = "projects/start-java-opts-it";
-    String ROOT_MAIN = "projects/start-with-main-class-it";
-    String ROOT_CUSTOM = "projects/start-with-custom-launcher-it";
-    String ROOT_CUSTOM_EXPLODED = "projects/start-with-custom-launcher-exploded-it";
-    String ROOT_MAIN_EXPLODED = "projects/start-with-main-class-exploded-it";
-    String ROOT_EXPLODED = "projects/start-exploded-it";
-    String ROOT_WITH_CONF = "projects/start-with-conf-it";
-    String ROOT_WITH_CONF_EXPLODED = "projects/start-with-conf-exploded-it";
+    private String ROOT_START = "projects/start-it";
+    private String ROOT_OPTS = "projects/start-java-opts-it";
+    private String ROOT_MAIN = "projects/start-with-main-class-it";
+    private String ROOT_CUSTOM = "projects/start-with-custom-launcher-it";
+    private String ROOT_CUSTOM_EXPLODED = "projects/start-with-custom-launcher-exploded-it";
+    private String ROOT_MAIN_EXPLODED = "projects/start-with-main-class-exploded-it";
+    private String ROOT_EXPLODED = "projects/start-exploded-it";
+    private String ROOT_WITH_CONF = "projects/start-with-conf-it";
+    private String ROOT_WITH_CONF_EXPLODED = "projects/start-with-conf-exploded-it";
     private Verifier verifier;
 
 
-    public void initVerifier(File root) throws VerificationException {
+    private void initVerifier(File root) throws VerificationException {
         verifier = new Verifier(root.getAbsolutePath());
         verifier.setAutoclean(false);
 
@@ -213,7 +213,7 @@ public class StartStopMojoIT extends VertxMojoTestBase {
         assertThat(response).isEqualTo("Hello !");
     }
 
-    public void assertInLog(Verifier verifier, String... snippets) throws IOException {
+    private void assertInLog(Verifier verifier, String... snippets) throws IOException {
         File log = new File(verifier.getBasedir(), verifier.getLogFileName());
         assertThat(log).isFile();
 
