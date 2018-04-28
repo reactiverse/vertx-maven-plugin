@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.4">
+<meta name="author" content="Kamesh Sampath, Roland Huß, Clement Escoffier">
+<title>Vert.x Maven Plugin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Remove comment around @import statement below when using as a custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden],template{display:none}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+body{-webkit-font-smoothing:antialiased}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.spread{width:100%}
+p.lead,.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{font-size:1.21875em;line-height:1.6}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #ddddd8;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite:before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media only screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7;font-weight:bold}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+body{tab-size:4}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
+.clearfix:after,.float-group:after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
+b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
+b.button:before{content:"[";padding:0 3px 0 2px}
+b.button:after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header:before,#header:after,#content:before,#content:after,#footnotes:before,#footnotes:after,#footer:before,#footer:after{content:" ";display:table}
+#header:after,#content:after,#footnotes:after,#footer:after{clear:both}
+#content{margin-top:1.25em}
+#content:before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #ddddd8}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #ddddd8;padding-bottom:8px}
+#header .details{border-bottom:1px solid #ddddd8;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span:before{content:"\00a0\2013\00a0"}
+#header .details br+span.author:before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark:before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber:after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #ddddd8;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #efefed;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media only screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #efefed;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #efefed;left:auto;right:0}}
+@media only screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+.sect1{padding-bottom:.625em}
+@media only screen and (min-width:768px){.sect1{padding-bottom:1.25em}}
+.sect1+.sect1{border-top:1px solid #efefed}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor:before,h2>a.anchor:before,h3>a.anchor:before,#toctitle>a.anchor:before,.sidebarblock>.content>.title>a.anchor:before,h4>a.anchor:before,h5>a.anchor:before,h6>a.anchor:before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
+.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;padding:1em;font-size:.8125em}
+.literalblock pre.nowrap,.literalblock pre[class].nowrap,.listingblock pre.nowrap,.listingblock pre[class].nowrap{overflow-x:auto;white-space:pre;word-wrap:normal}
+@media only screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}
+@media only screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}
+.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]:before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]:before{display:block}
+.listingblock.terminal pre .command:before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt]):before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0;line-height:1.45}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #ddddd8}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock blockquote p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote:before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.5em;margin-right:.5ex;text-align:right}
+.quoteblock .quoteblock{margin-left:0;margin-right:0;padding:.5em 0;border-left:3px solid rgba(0,0,0,.6)}
+.quoteblock .quoteblock blockquote{padding:0 0 0 .75em}
+.quoteblock .quoteblock blockquote:before{display:none}
+.verseblock{margin:0 1em 1.25em 1em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract{margin:0 0 1.25em 0;display:block}
+.quoteblock.abstract blockquote,.quoteblock.abstract blockquote p{text-align:left;word-spacing:0}
+.quoteblock.abstract blockquote:before,.quoteblock.abstract blockquote p:first-of-type:before{display:none}
+table.tableblock{max-width:100%;border-collapse:separate}
+table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot{border-width:1px 0}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
+ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
+ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
+ul.inline>li>*{display:block}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:last-of-type{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
+.imageblock.right,.imageblock[style*="float: right"]{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em 0;border-width:1px 0 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;text-indent:-1.05em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@media print{@page{margin:1.25cm .75cm}
+*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare):after,a[href^="https:"]:not(.bare):after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]:after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #ddddd8!important;padding-bottom:0!important}
+.sect1{padding-bottom:0!important}
+.sect1+.sect1{border:0!important}
+#header>h1:first-child{margin-top:1.25rem}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em 0}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span:before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]:before{display:block}
+#footer{background:none!important;padding:0 .9375em}
+#footer-text{color:rgba(0,0,0,.6)!important;font-size:.9em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Vert.x Maven Plugin</h1>
+<div class="details">
+<span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier</span><br>
+<span id="revnumber">version 1.0-SNAPSHOT,</span>
+<span id="revdate">2018-04-28</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Vert.x Maven Plugin</div>
+<ul class="sectlevel1">
+<li><a href="#introduction">1. Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#using-the-plugin">1.1. Using the plugin</a></li>
+<li><a href="#packaging">1.2. Packaging</a></li>
+<li><a href="#running">1.3. Running</a>
+<ul class="sectlevel3">
+<li><a href="#in-foreground-using-strong-a-href-vertx-run-vertx-run-a-strong">1.3.1. In foreground using <strong><a href="#vertx:run">vertx:run</a></strong></a></li>
+<li><a href="#in-background-using-strong-a-href-vertx-start-vertx-start-a-strong">1.3.2. In background using <strong><a href="#vertx:start">vertx:start</a></strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#common:configurations">2. Common Configurations</a></li>
+<li><a href="#common:run-configurations">3. Common Run Configurations</a></li>
+<li><a href="#maven-goals">4. Maven Goals</a>
+<ul class="sectlevel2">
+<li><a href="#vertx:setup">4.1. <strong>vertx:setup</strong></a>
+<ul class="sectlevel3">
+<li><a href="#example">4.1.1. Example</a></li>
+</ul>
+</li>
+<li><a href="#vertx:initialize">4.2. <strong>vertx:initialize</strong></a>
+<ul class="sectlevel3">
+<li><a href="#initialize-configuration">4.2.1. Configuration</a></li>
+<li><a href="#redeployment">4.2.2. Redeployment</a></li>
+</ul>
+</li>
+<li><a href="#vertx:package">4.3. <strong>vertx:package</strong></a>
+<ul class="sectlevel3">
+<li><a href="#package-configuration">4.3.1. Configuration</a></li>
+</ul>
+</li>
+<li><a href="#vertx:run">4.4. <strong>vertx:run</strong></a></li>
+<li><a href="#vertx:debug">4.5. <strong>vertx:debug</strong></a></li>
+<li><a href="#vertx:start">4.6. <strong>vertx:start</strong></a></li>
+<li><a href="#vertx:stop">4.7. <strong>vertx:stop</strong></a></li>
+<li><a href="#vertx:setup">4.8. <strong>vertx:setup</strong></a>
+<ul class="sectlevel3">
+<li><a href="#example-2">4.8.1. Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#vertx:examples">5. Example Configurations</a>
+<ul class="sectlevel2">
+<li><a href="#package-goal-examples">5.1. vert.x:package Examples</a>
+<ul class="sectlevel3">
+<li><a href="#webjars-and-javascript-dependencies">5.1.1. Webjars and javascript dependencies</a></li>
+<li><a href="#using-full-names-for-webjars-and-javascript-dependencies">5.1.2. Using full names for webjars and javascript dependencies</a></li>
+</ul>
+</li>
+<li><a href="#start-goal-examples">5.2. vert.x:start Examples</a>
+<ul class="sectlevel3">
+<li><a href="#start-with-java-opts">5.2.1. start goal with custom java options</a></li>
+<li><a href="#stopping-one-or-more-applications">5.2.2. stopping one or more applications</a></li>
+<li><a href="#run-with-extra-args">5.2.3. Adding some extra options to run command</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#how-does-the-redeploy-work">6. How does the redeploy work</a>
+<ul class="sectlevel2">
+<li><a href="#references">6.1. References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>&#169; 2016-2017 The original authors.</p>
+</div>
+<!-- toc disabled -->
+</div>
+</div>
+<div class="sect1">
+<h2 id="introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://vertx.io/">Eclipse Vert.x</a> is a toolkit to build reactive and distributed systems on the top of the JVM. Vert.x
+applications can be  developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby&#8230;&#8203;
+ As a toolkit, Vert.x is un-opinionated.</p>
+</div>
+<div class="paragraph">
+<p>The maven-vertx-plugin is a plugin for Apache Maven for packaging and running Vert.x applications. The plugin tries
+provide an opinionated way to build Vert.x application:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>applications are packaged as a <em>fat</em> jar (containing your code and all the dependencies including Vert.x)</p>
+</li>
+<li>
+<p>the application is configured  with an <code>application.json</code> file or an <code>application.yml</code> file (translated to json).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The last version of the Vert.x Maven Plugin is <strong>1.0-SNAPSHOT</strong>.</p>
+</div>
+<div class="sect2">
+<h3 id="using-the-plugin">1.1. Using the plugin</h3>
+<div class="paragraph">
+<p>The plugin provides a set of goals such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>setup - add the Vert.x Maven Plugin to your <code>pom.xml</code></p>
+</li>
+<li>
+<p>initialize - manage <em>js</em> dependencies and <em>webjars</em>, also initiates the redeployment</p>
+</li>
+<li>
+<p>package - package your Vert.x application as a <em>fat</em> jar</p>
+</li>
+<li>
+<p>run - run your application</p>
+</li>
+<li>
+<p>start / stop - start your application in background / stop it</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Generally, you will use the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;plugins&gt;
+        ...
+        &lt;plugin&gt;
+            &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+            &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;${version}&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;vmp&lt;/id&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;initialize&lt;/goal&gt;
+                        &lt;goal&gt;package&lt;/goal&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+            &lt;configuration&gt;
+                &lt;redeploy&gt;true&lt;/redeploy&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+        ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="packaging">1.2. Packaging</h3>
+<div class="paragraph">
+<p>This plugin packaged the Vert.x application as a fat or über jar. These jars are executable, and so can be launched
+using: <code>java -jar &lt;my-app.jar&gt;</code>.  The packaging process adds certain <strong>MANIFEST.MF</strong> entries that control how the
+application is launched.  The plugin takes care of adding the required entries
+to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+</div>
+<div class="paragraph">
+<p>The following are the Manifest entries that will be added based on the configuration elements:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Package configuration</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 71.4286%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Manifest Attribute</th>
+<th class="tableblock halign-left valign-top">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.verticle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main-Verticle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle, <em>i.e.</em> the entry point of your application. Used when the <code>Main-Class</code> is <code>io.vertx.core.Launcher</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.launcher</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main-Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main class used to start the application, defaults to <code>io.vertx.core.Launcher</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The package is generated using:  <code>mvn clean package</code></p>
+</div>
+<div class="paragraph">
+<p>For more information on packaging refer to <strong><a href="#vertx:package">vertx:package</a></strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="running">1.3. Running</h3>
+<div class="paragraph">
+<p>The plugin allows running vert.x applications in following ways:</p>
+</div>
+<div class="sect3">
+<h4 id="in-foreground-using-strong-a-href-vertx-run-vertx-run-a-strong">1.3.1. In foreground using <strong><a href="#vertx:run">vertx:run</a></strong></h4>
+<div class="paragraph">
+<p>The Vert.x application could also be run without building the fat jars, typically during the
+development mode.  The <strong><a href="#vertx:run">vertx:run</a></strong> goal helps in running the application. The
+application will be run in as forked process with additional configurations based on the goals.</p>
+</div>
+<div class="paragraph">
+<p>To run the application vert.x application in foreground, execute the following maven command</p>
+</div>
+<div class="paragraph">
+<p><code>mvn clean compile vertx:run</code></p>
+</div>
+<div class="paragraph">
+<p>You can enable the <em>edeploy</em> mode rebuilding and restarting the application upon file changes.</p>
+</div>
+<div class="paragraph">
+<p>For more information on configuration options refer to  <strong><a href="#vertx:run">vertx:run</a></strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="in-background-using-strong-a-href-vertx-start-vertx-start-a-strong">1.3.2. In background using <strong><a href="#vertx:start">vertx:start</a></strong></h4>
+<div class="paragraph">
+<p>This allows the application be run using the uber or fat jar as background process.
+This option also attaches a configurable id or an autogenerated id which could be used to stop the process
+using <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
+</div>
+<div class="paragraph">
+<p>To start the application vert.x application in background, execute the following maven command</p>
+</div>
+<div class="paragraph">
+<p><code>mvn clean install vertx:start</code></p>
+</div>
+<div class="paragraph">
+<p>For more information on configuration options refer to <strong><a href="#vertx:start">vertx:start</a></strong></p>
+</div>
+<div class="paragraph">
+<p>To stop the application vert.x application running in background, execute the following maven command</p>
+</div>
+<div class="paragraph">
+<p><code>mvn vertx:stop</code></p>
+</div>
+<div class="paragraph">
+<p>For more information on configuration options refer to <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
+</div>
+<!-- toc disabled -->
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="common:configurations">2. Common Configurations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All goals share the following configuration:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Package configuration</caption>
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 62.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Property</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>verticle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main verticle to start up</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.verticle</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>launcher</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main class to use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>io.vertx.core.Launcher</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.launcher</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Skip the processing executed by this plugin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.skip</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="common:run-configurations">3. Common Run Configurations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These are the common configuration shared by the run based goals such as <strong><a href="#vertx:run">run</a></strong>,
+ <strong><a href="#vertx:start">start</a></strong> and  <strong><a href="#vertx:stop">stop</a></strong>.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. Run configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the application configuration file path that will be passed to the vertx launcher as <code>-conf</code>.
+If a yaml file is configured then it will be converted to json by the plugin.  The converted file will
+be saved in <code>${project.outputDir}/conf</code> directory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${basedir}/src/main/${project.artifactId}.json</code> or <code>${basedir}/src/main/${project.artifactId}.yaml</code> or <code>${basedir}/src/main/${project.artifactId}.yml</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redeploy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">controls whether vertx redeploy is enabled</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">workDirectory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The working directory of the running process of the application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.directory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.basedir}</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Right now the plugin supports only file based Vert.x configuration
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="maven-goals">4. Maven Goals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This plugin supports the following goals which are explained in detail
+in the next sections.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 4. Plugin Goals</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Goal</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:setup"><strong>vertx:setup</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add the vertx-maven-plugin to your <code>pom.xml</code> file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:initialize"><strong>vertx:initialize</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <em>js</em> dependencies to <em>webroot</em>, unpack webjars to <em>webroot</em> and initialize the redeployment mode</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:package"><strong>vertx:package</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Package Vert.x applications</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:run"><strong>vertx:run</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Run a Vert.x application in foreground</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:debug"><strong>vertx:debug</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debug a Vert.x application in foreground</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:start"><strong>vertx:start</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Run a Vert.x application in daemon mode with specific id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:setup"><strong>vertx:setup</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets up vert.x maven plugin and basic vert.x dependencies on an existing maven project</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:stop"><strong>vertx:stop</strong></a></strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stops the vert.x application running in daemon mode</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="vertx:setup">4.1. <strong>vertx:setup</strong></h3>
+<div class="paragraph">
+<p>This goal adds the Vert.x Maven Plugin to your <code>pom.xml</code> file. The plugin is configured with a default configuration.</p>
+</div>
+<div class="sect3">
+<h4 id="example">4.1.1. Example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0-SNAPSHOT:setup</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The setup goal by default uses the plugin property <em>vertx-core-version</em>
+from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
+if you wish to override the vertx version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code></p>
+</div>
+<div class="paragraph">
+<p>e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will configure the vert.x and its dependencies to <code>3.4.0</code> i.e. Maven project property <code>vertx.version</code>
+set to <code>3.4.0</code></p>
+</div>
+<div class="paragraph">
+<p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0-SNAPSHOT:setup \
+    -DprojectGroupId=org.acme \
+    -DprojectArtifactId=acme-project \
+    -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
+    -Dverticle=org.acme.Foo \
+    -Ddependencies=web,jmx,mongo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>verticle</code> parameter creates a new verticle class file.
+The <code>dependencies</code> parameters specifies the Vert.x dependencies you need.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies are selected from a list of know dependencies matching the one listed on <a href="http://vertx.io/docs" class="bare">http://vertx.io/docs</a>. In
+addition, you can configure dependencies using the following syntax: <code>groupId:artifactId:version:classifier</code> such as in:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
+commons-io:commons-io:2.5 =&gt; Regular dependency
+io.vertx:vertx-template-engines:3.4.1:shaded =&gt; Dependency with classifier</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:initialize">4.2. <strong>vertx:initialize</strong></h3>
+<div class="paragraph">
+<p>This goals has several aims:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>copy <em>js</em> dependencies to the <em>webroot</em> directory</p>
+</li>
+<li>
+<p>unpack <em>webjars</em> dependencies to the <em>webroot</em> directory</p>
+</li>
+<li>
+<p>initialize the <em>recording</em> of the build used for the redeployment</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="initialize-configuration">4.2.1. Configuration</h4>
+<div class="paragraph">
+<p>The initialize goal has the following parameters apart from the ones mentioned in
+ <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 5. Package Configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">webRoot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The location where <em>js</em> dependencies and <em>webjars</em> are copied.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">${project.baseDir}/target/classes/webroot</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stripWebJarVersion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the version is stripped when unpacking webjars</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stripJavaScriptDependencyVersion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the version is stripped when copying the JavaScript file</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The <code>webroot</code> directory is generally used by the <code>StaticHandler</code> from Vert.x Web.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="redeployment">4.2.2. Redeployment</h4>
+<div class="paragraph">
+<p>The initialize goal is used to configure the redeployment used in <code>vertx:run</code>. It starts observing the executed
+plugins in your build to <em>replay</em> them when a file changes.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:package">4.3. <strong>vertx:package</strong></h3>
+<div class="paragraph">
+<p>This goal packages a Vert.x application as fat or über jar with its dependencies bundled as part of the jar.</p>
+</div>
+<div class="sect3">
+<h4 id="package-configuration">4.3.1. Configuration</h4>
+<div class="paragraph">
+<p>The package goal has the following parameters apart from the ones mentioned in
+ <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 6. Package Configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serviceProviderCombination</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not SPI files (<code>META-INF/services</code>) need to be be combined. Accepted valued as <code>combine</code> and <code>none</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">combine</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">classifier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The classifier to add to the artifact generated. If given, the artifact will be attached with that classifier
+  and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
+  the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
+  artifact allows to deploy it alongside to the original one. Attachment is controlled using the <code>attach</code>
+  parameter.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">attach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the created archive needs to be attached to the project. If attached, the <em>fat</em> jar is
+  installed and deployed alongside the main artifact (plain jar). Notice that you can&#8217;t disable attachment if
+  the classifier is not set (it would mean detaching the main artifact).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">skipScmMetadata</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the SCM metadata should be retrieved from the SVN or Git repository</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:run">4.4. <strong>vertx:run</strong></h3>
+<div class="paragraph">
+<p>This goal allows to run the Vert.x application as part of the maven build.
+The application is always run as a forked process.</p>
+</div>
+<div class="paragraph">
+<p>The goal has the following exclusive configuration apart from the applicable <strong><a href="#common:run-configurations">Common Run Configuration</a></strong></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runArgs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The list of arguments that can be passed as part of <code>run</code> command.  You can also pass the required run arguments using the system
+property. e.g. <code>-Dvertx.runArgs="--worker --instances=2"</code>. The system property takes precedence over the plugin configurations</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.runArgs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application. This property is passed as the <code>-config</code> option to vertx
+run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>no arguments</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redeploy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the redeployment is enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redeployScanPeriod</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The file system check period (in milliseconds)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.scan.period</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redeployGracePeriod</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time (in milliseconds) to wait between 2 re-deployments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.grace.period</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redeployTerminationPeriod</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
+  This is useful on Windows, where the process is not killed immediately.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.termination.period</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1000 (1 second)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">worker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified the verticle will be a worker verticle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>When the redeployment is enabled, it replays the plugin configured between the <em>generate-source</em> and
+<em>process-classes</em> phases.</p>
+</div>
+<div class="paragraph">
+<p>So to start a Vert.x application just launch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn vertx:run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the sources are not compiled, the plugin executes <code>mvn compile</code> for you.</p>
+</div>
+<div class="paragraph">
+<p><strong>IMPORTANT</strong>: <code>vertx:run</code> starts the application in a forked JVM.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:debug">4.5. <strong>vertx:debug</strong></h3>
+<div class="paragraph">
+<p>This goal allows to debug the Vert.x application. The application is started in a JVM with the debugging enabled. In
+your IDE, you need to create a <strong>remote</strong> debug configuration to plug the debugger.</p>
+</div>
+<div class="paragraph">
+<p>The goal does not have any exclusive configuration,  <strong><a href="#common:run-configurations">Common Run Configuration</a></strong>
+defines all the applicable configurations for the goal.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application. This property is passed as the <code>-config</code> option to vertx
+run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>no arguments</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">debugPort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The debugger port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">debug.port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5005</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">debugSuspend</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the application must wait until a debugger is attached to start</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">debug.suspend</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>IMPORTANT</strong>: the redeploy mode and debug cannot be used together. When <code>vertx:debug</code> is launched, the redeployment
+mode is disabled.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:start">4.6. <strong>vertx:start</strong></h3>
+<div class="paragraph">
+<p>This goal allows to start the Vert.x application as a background process from maven build. This goal triggers the vert.x
+<code>start</code> command, passing the configuration values as mentioned below.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 7. Run configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">startMode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The property to decide how the vert.x application will be started in background.  The application can be started in
+<strong>jar</strong> mode in which the application will be packaged as fat jar and started, or can be run in <strong>exploded</strong> mode where the
+ application will be launched with exploded <em>classesDirectory</em> and maven dependencies to the classpath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.start.mode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jar</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">appId</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application id that will added as <strong>-id</strong> option to the vert.x start command</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.app.id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If this is not passed a default uuid will be generated and set as appId</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
+typically passed to vert.x applications using --java-opts</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Apart from the above list of exclusive start configuration, the goal shares the common
+<strong><a href="#common:run-configurations">Common Run Configuration</a></strong> with the following configuration
+ignored by the goal,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>redeploy</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:stop">4.7. <strong>vertx:stop</strong></h3>
+<div class="paragraph">
+<p>This goal allows to stop the vert.x application running as background process from maven build. This goal triggers the vert.x
+<code>stop</code> command, passing the configuration values as mentioned below.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 8. Run configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">appIds</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application id&#8217;s that will stopped using the vert.x stop command</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If this is not passed, the vertx-start-proc.id file present workingDirectory will be read for the
+application id</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Apart from the above list of exclusive start configuration, the goal shares the common
+<strong><a href="#common:run-configurations">Common Run Configuration</a></strong> with the following configuration
+ignored by the goal,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>redeploy</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:setup">4.8. <strong>vertx:setup</strong></h3>
+<div class="paragraph">
+<p>This goal adds the Vert.x Maven Plugin to your <code>pom.xml</code> file. The plugin is configured with a default configuration.</p>
+</div>
+<div class="sect3">
+<h4 id="example-2">4.8.1. Example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0-SNAPSHOT:setup</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The setup goal by default uses the plugin property <em>vertx-core-version</em>
+from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
+if you wish to override the vertx version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code></p>
+</div>
+<div class="paragraph">
+<p>e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will configure the vert.x and its dependencies to <code>3.4.0</code> i.e. Maven project property <code>vertx.version</code>
+set to <code>3.4.0</code></p>
+</div>
+<div class="paragraph">
+<p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0-SNAPSHOT:setup \
+    -DprojectGroupId=org.acme \
+    -DprojectArtifactId=acme-project \
+    -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
+    -Dverticle=org.acme.Foo \
+    -Ddependencies=web,jmx,mongo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>verticle</code> parameter creates a new verticle class file.
+The <code>dependencies</code> parameters specifies the Vert.x dependencies you need.</p>
+</div>
+<div class="paragraph">
+<p>Dependencies are selected from a list of know dependencies matching the one listed on <a href="http://vertx.io/docs" class="bare">http://vertx.io/docs</a>. In
+addition, you can configure dependencies using the following syntax: <code>groupId:artifactId:version:classifier</code> such as in:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
+commons-io:commons-io:2.5 =&gt; Regular dependency
+io.vertx:vertx-template-engines:3.4.1:shaded =&gt; Dependency with classifier</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="vertx:examples">5. Example Configurations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following sections shows example plugin snippets for the goals provided by the plugin.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+please update the plugin version as needed (latest is <strong>1.0-SNAPSHOT</strong>).
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="package-goal-examples">5.1. vert.x:package Examples</h3>
+<div class="paragraph">
+<p>This is the default configuration. It builds the fat jar in the <em>package</em> phase, and support <code>.js</code>
+ and webjars dependencies. <code>mvn compile vertx:run</code> enables the redeployment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;vmp&lt;/id&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;initialize&lt;/goal&gt;
+                &lt;goal&gt;package&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+        &lt;redeploy&gt;true&lt;/redeploy&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="webjars-and-javascript-dependencies">5.1.1. Webjars and javascript dependencies</h4>
+<div class="paragraph">
+<p>When the <em>js</em> dependencies and the webjars are handled, it stripped the version by default. Let&#8217;s illustrate this
+with the following dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.vertx&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-web&lt;/artifactId&gt;
+    &lt;version&gt;3.4.1&lt;/version&gt;
+    &lt;classifier&gt;client&lt;/classifier&gt;
+    &lt;type&gt;js&lt;/type&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+    &lt;artifactId&gt;jquery&lt;/artifactId&gt;
+    &lt;version&gt;3.1.1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first dependency is a <code>js</code> dependency (<code>&lt;type&gt;js&lt;/type&gt;</code>). The plugins resolves the dependency and copy the file
+to the <code>webroot</code> directory (the default is <code>${project.baseDir}/target/classes/webroot</code>). The output file name is:
+<code>vertx-web-client.js</code>.</p>
+</div>
+<div class="paragraph">
+<p>The second dependency is a webjar. A <a href="http://www.webjars.org/">webjar</a> is a jar file containing web resources. The
+plugin extracts the web resource to the <code>webroot</code> directory. In this example, it creates: <code>${project
+.baseDir}/target/classes/webroot/jquery/jquery.js</code> (and other includes resources).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="using-full-names-for-webjars-and-javascript-dependencies">5.1.2. Using full names for webjars and javascript dependencies</h4>
+<div class="paragraph">
+<p>By default the plugin stripped the version. However this behavior can be disabled using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;vmp&lt;/id&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;initialize&lt;/goal&gt;
+                &lt;goal&gt;package&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+        &lt;redeploy&gt;true&lt;/redeploy&gt;
+        &lt;stripWebJarVersion&gt;false&lt;/stripWebJarVersion&gt;
+        &lt;stripJavaScriptDependencyVersion&gt;false&lt;/stripJavaScriptDependencyVersion&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, the <code>vertx-web-client.js</code> output file is: <code>vertx-web-3.4.1-client.js</code>, while for jquery, resources are
+unpacked in <code>${project.baseDir}/target/classes/webroot/jquery/3.1.1</code>. You can always look into the
+<code>target/classes/webroot</code> directory to check the output files.</p>
+</div>
+<div class="paragraph">
+<p>Finally, you can also configure the <code>webRoot</code> dir:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;id&gt;vmp&lt;/id&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;initialize&lt;/goal&gt;
+                &lt;goal&gt;package&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+        &lt;webRoot&gt;target/classes/assets&lt;/webRoot&gt;
+        &lt;redeploy&gt;true&lt;/redeploy&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that the <code>webRoot</code> directory is relative to the project directory.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="start-goal-examples">5.2. vert.x:start Examples</h3>
+<div class="paragraph">
+<p>You can start your application in background using: <code>mvn clean package vertx:start</code>. The application is started in
+background. An id is automatically associated with the process. This id can be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh" data-lang="sh">mvn clean package vertx:start -Dvertx.app.id=my-vertx-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This id is useful to stop the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh" data-lang="sh">mvn vertx:stop -Dvertx.app.id=my-vertx-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The application id can be set in the <code>pom.xml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+          &lt;phase&gt;initialize&lt;/phase&gt;
+          &lt;phase&gt;package&lt;/phase&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+        &lt;appId&gt;my-app-id&lt;/appId&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="start-with-java-opts">5.2.1. start goal with custom java options</h4>
+<div class="paragraph">
+<p>Because it&#8217;s a forked process, passing Java options needs to be done explicitly using a specific property:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+      &lt;execution&gt;
+          &lt;phase&gt;initialize&lt;/phase&gt;
+          &lt;phase&gt;package&lt;/phase&gt;
+      &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+       &lt;jvmArgs&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+          &lt;jvmArg&gt;-Xms512m&lt;/jvmArg&gt;
+          &lt;jvmArg&gt;-Xmx1024m&lt;/jvmArg&gt;
+       &lt;/jvmArgs&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The jvm arguments that gets passed as <code>--java-opts</code> to the vert.x application</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also pass these parameters in the command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>mvn clean package vertx:start -Dvertx.jvmArguments=-Xms512m -D-Dfoo=far</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="stopping-one-or-more-applications">5.2.2. stopping one or more applications</h4>
+<div class="paragraph">
+<p>When you have configured to <a href="#start-with-app-id">[start-with-app-id]</a> or know the application ids, then you can add list
+of application ids as shown below to trigger stop of the those applications</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;package&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;start&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+              &lt;appIds&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+                 &lt;appId&gt;my-app-id-1&lt;/appId&gt;
+                 &lt;appId&gt;my-app-id-2&lt;/appId&gt;
+              &lt;/appIds&gt;
+            &lt;/configuration&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>List of custom unique application ids</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-with-extra-args">5.2.3. Adding some extra options to run command</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml"> &lt;plugin&gt;
+    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;${version}&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;package&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;run&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+                &lt;runArgs&gt;
+                    &lt;runArg&gt;--cluster&lt;/runArg&gt;
+                &lt;/runArgs&gt;
+            &lt;/configuration&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="how-does-the-redeploy-work">6. How does the redeploy work</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>During the <em>initialize</em> phase, the plugin start observing the mojos (Maven plugins) that are executed. When the Vert.x application is launched, it watches for changed in <code>src/main</code>. When a file is changed (created, updated or deleted), it replays the executed mojos. It executes all the mojos from the <em>generate-sources</em> to the <em>process-classes</em> phases, using the same configuration are the initial (observed) one.</p>
+</div>
+<div class="paragraph">
+<p>When these mojos are executed, they may update files in <code>target/classes</code>. The Vert.x application has been launched to observes changed from this location and restart when change happens. The application is restarted completely, <em>i.e.</em> stopped and restarted.</p>
+</div>
+<div class="paragraph">
+<p>Such mechanism let you use any Maven plugin (executed in the right set of phase). The plugin is re-executed and then the Vert.x application is restarted.</p>
+</div>
+<div class="sect2">
+<h3 id="references">6.1. References</h3>
+<div class="paragraph">
+<p><a href="http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html">Maven Properties</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0-SNAPSHOT<br>
+Last updated 2018-04-27 18:15:12 CEST
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
+</body>
+</html>
