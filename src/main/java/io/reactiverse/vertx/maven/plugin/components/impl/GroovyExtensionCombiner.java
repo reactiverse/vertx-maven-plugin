@@ -30,8 +30,7 @@ import java.util.*;
 public class GroovyExtensionCombiner {
 
     public static List<String> merge(String projectName, String projectVersion,
-                                     List<String> local, List<List<String>>
-                                         deps) {
+                                     List<String> local, List<List<String>> deps) {
         List<String> extensionClassesList = new ArrayList<>();
         List<String> staticExtensionClassesList = new ArrayList<>();
 

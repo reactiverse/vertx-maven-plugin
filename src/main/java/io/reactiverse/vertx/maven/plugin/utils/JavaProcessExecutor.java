@@ -17,9 +17,11 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.Arg;
 import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.StreamPumper;
 
 import java.io.File;
 import java.net.URL;
@@ -28,38 +30,33 @@ import java.util.*;
 /**
  * @author kameshs
  */
-public class JavaProcessExecutor extends JavaExecutor {
+public class JavaProcessExecutor {
 
-    protected List<String> argsList = new ArrayList<>();
+    private List<String> argsList = new ArrayList<>();
 
-    protected Log logger;
+    private Log logger;
 
-    protected boolean waitFor = true;
+    private boolean waitFor = true;
 
-    protected File workingDirectory;
-
-    protected Thread watchdog;
+    private File workingDirectory;
 
     protected List<String> jvmArgs;
 
-    @Override
-    public Optional<Process> execute() throws Exception {
+    private final File java = findJava();
+    private Collection<URL> classPathUrls;
 
+    public Process execute() throws Exception {
         Commandline commandLine = buildCommandLine();
 
         Process process = null;
-
         try {
-
             logger.debug("Executing command :" + commandLine);
-
             process = commandLine.execute();
-
             Process reference = process;
-            watchdog = new Thread(() -> {
-               if (reference != null  && reference.isAlive()) {
-                   reference.destroy();
-               }
+            Thread watchdog = new Thread(() -> {
+                if (reference != null && reference.isAlive()) {
+                    reference.destroy();
+                }
             });
 
             Runtime.getRuntime().addShutdownHook(watchdog);
@@ -67,12 +64,12 @@ public class JavaProcessExecutor extends JavaExecutor {
             if (waitFor) {
                 redirectOutput(process, logger);
                 process.waitFor();
-                if (! process.isAlive()) {
+                if (!process.isAlive()) {
                     Runtime.getRuntime().removeShutdownHook(watchdog);
                 }
             }
 
-            return Optional.of(process);
+            return process;
 
         } catch (InterruptedException e) {
             if (process.isAlive()) {
@@ -80,9 +77,9 @@ public class JavaProcessExecutor extends JavaExecutor {
             }
             // We sure the interrupt flag is restored.
             Thread.currentThread().interrupt();
-            return Optional.empty();
+            return process;
         } catch (Exception e) {
-            if (process != null  && process.isAlive()) {
+            if (process != null && process.isAlive()) {
                 process.destroy();
             }
             throw new Exception("Error running java command : " + e.getMessage(), e);
@@ -90,14 +87,13 @@ public class JavaProcessExecutor extends JavaExecutor {
 
     }
 
-    @Override
-    public Commandline buildCommandLine() throws Exception {
+    private Commandline buildCommandLine() throws Exception {
         Commandline cli = new Commandline();
 
         //Disable explicit quoting of arguments
         cli.getShell().setQuotedArgumentsEnabled(false);
 
-        cli.setExecutable(javaPath.toString());
+        cli.setExecutable(java.getAbsolutePath());
 
         cli.setWorkingDirectory(workingDirectory);
 
@@ -108,8 +104,10 @@ public class JavaProcessExecutor extends JavaExecutor {
         return cli;
     }
 
-    @Override
-    public void argsLine(Commandline commandline) {
+    private void argsLine(Commandline commandline) {
+        if (jvmArgs == null) {
+            return;
+        }
         List<String> full = new ArrayList<>(jvmArgs);
         full.addAll(argsList);
 
@@ -146,5 +144,81 @@ public class JavaProcessExecutor extends JavaExecutor {
             this.jvmArgs = jvmArgs;
         }
         return this;
+    }
+
+    public JavaProcessExecutor withWorkDirectory(File directory) {
+        if (! directory.isDirectory()) {
+            throw new IllegalArgumentException("The working directory "
+                + directory.getAbsolutePath() + " is not a directory");
+        }
+        this.workingDirectory = directory;
+        return this;
+    }
+
+    private void redirectOutput(Process process, Log logger) {
+        StreamToLogConsumer logConsumer = logger::info;
+
+        StreamPumper outPumper = new StreamPumper(process.getInputStream(), logConsumer);
+        StreamPumper errPumper = new StreamPumper(process.getErrorStream(), logConsumer);
+
+        outPumper.setPriority(Thread.MIN_PRIORITY + 1);
+        errPumper.setPriority(Thread.MIN_PRIORITY + 1);
+
+        outPumper.start();
+        errPumper.start();
+    }
+
+
+    /**
+     * This add or build the classpath that will be passed to the forked process JVM i.e &quot;-cp&quot;
+     *
+     * @param argsList - the forked process argument list to which the classpath will be appended
+     * @throws MojoExecutionException - any error that might occur while building or adding classpath
+     */
+    private void addClasspath(List<String> argsList) throws MojoExecutionException {
+        try {
+
+            StringBuilder classpath = new StringBuilder();
+
+            for (URL ele : this.classPathUrls) {
+                classpath = classpath
+                    .append(classpath.length() > 0 ? File.pathSeparator : "")
+                    .append(new File(ele.toURI()));
+            }
+
+            String oldClasspath = System.getProperty("java.class.path");
+
+            if (oldClasspath != null) {
+                classpath.append(File.pathSeparator);
+                classpath.append(oldClasspath);
+            }
+
+            argsList.add(0, "-cp");
+            argsList.add(1, classpath.toString());
+
+        } catch (Exception ex) {
+            throw new MojoExecutionException("Could not build classpath", ex);
+        }
+    }
+
+    /**
+     * An utility to find the Java Executable from the host
+     *
+     * @return - the {@link File} representing the Java executable path
+     */
+    private File findJava() {
+        String javaHome = System.getProperty("java.home");
+        File found;
+        if (javaHome == null) {
+            found = ExecUtils.findExecutableInSystemPath("java");
+        } else {
+            File bin = new File(javaHome, "bin");
+            found = ExecUtils.find("java", bin);
+        }
+
+        if (found == null || ! found.isFile()) {
+            throw new IllegalStateException("Unable to find the java executable in JAVA_HOME or in the system path");
+        }
+        return found;
     }
 }
