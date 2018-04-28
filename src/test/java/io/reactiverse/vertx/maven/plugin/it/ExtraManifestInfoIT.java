@@ -127,7 +127,7 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
 
         String projectGroupId = manifest.getMainAttributes().getValue(
             "Project-Group");
-        assertThat(projectGroupId).isEqualTo("org.workspace7.maven.plugins.vertx.it");
+        assertThat(projectGroupId).isEqualTo("io.reactiverse.vmp.it");
 
         String projectVersion = manifest.getMainAttributes().getValue(
             "Project-Version");

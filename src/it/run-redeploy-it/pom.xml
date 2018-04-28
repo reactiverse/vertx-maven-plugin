@@ -19,7 +19,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
+    <groupId>io.reactiverse.vmp.it</groupId>
     <artifactId>vertx-demo-run</artifactId>
     <version>0.0.1.BUILD-SNAPSHOT</version>
     <properties>

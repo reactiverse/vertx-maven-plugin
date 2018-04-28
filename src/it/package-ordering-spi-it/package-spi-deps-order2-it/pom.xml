@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>package-ordering-spi-it</artifactId>
-        <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
+        <groupId>io.reactiverse.vmp.it</groupId>
         <version>0.0.1.BUILD-SNAPSHOT</version>
     </parent>
     <artifactId>package-spi-deps-order2-it</artifactId>
@@ -62,12 +62,12 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
+            <groupId>io.reactiverse.vmp.it</groupId>
             <artifactId>spi-dep-two</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
+            <groupId>io.reactiverse.vmp.it</groupId>
             <artifactId>spi-dep-one</artifactId>
             <version>${project.version}</version>
         </dependency>

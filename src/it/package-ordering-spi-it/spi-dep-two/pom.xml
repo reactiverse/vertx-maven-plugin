@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>package-ordering-spi-it</artifactId>
-        <groupId>org.workspace7.maven.plugins.vertx.it</groupId>
+        <groupId>io.reactiverse.vmp.it</groupId>
         <version>0.0.1.BUILD-SNAPSHOT</version>
     </parent>
     <artifactId>spi-dep-two</artifactId>
