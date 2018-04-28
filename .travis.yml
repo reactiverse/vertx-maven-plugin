@@ -19,7 +19,7 @@ script:
 
 after_success:
 #    - bash <(curl -s https://codecov.io/bash)
-#    - .build/deploy-snapshot.sh
+    - .build/deploy-snapshot.sh
 
 notifications:
   email:
