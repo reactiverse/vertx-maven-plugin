@@ -219,7 +219,29 @@ public class StartStopMojoIT extends VertxMojoTestBase {
 
         String content = FileUtils.readFileToString(log, "UTF-8");
         for (String snippet : snippets) {
-            assertThat(content).contains(snippet);
+            if (System.getProperty("coverage") == null) {
+                assertThat(content).contains(snippet);
+            } else {
+                if (content.contains(snippet)) {
+                    System.out.println("assertInLog - Assertion checked");
+                } else {
+                    System.out.println("===================================");
+                    System.out.println("assertInLog - Assertion failed");
+                    System.out.println("assertInLog - Text:\n" + content + "\nDoes not contains:\n" + snippet);
+                    File start = new File(verifier.getBasedir(), "build-start.log");
+                    File stop = new File(verifier.getBasedir(), "build-stop.log");
+                    if (start.isFile()) {
+                        System.out.println("Content of build-start.log:");
+                        System.out.println(FileUtils.readFileToString(start, "UTF-8"));
+                        System.out.println("");
+                    }
+                    if (stop.isFile()) {
+                        System.out.println("Content of build-stop.log:");
+                        System.out.println(FileUtils.readFileToString(stop, "UTF-8"));
+                    }
+                    System.out.println("===================================");
+                }
+            }
         }
     }
 

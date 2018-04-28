@@ -674,6 +674,7 @@
                                 <configuration>
                                     <argLine>@{jacocoArgLine}</argLine>
                                     <systemPropertyVariables>
+                                        <coverage>true</coverage>
                                         <!--suppress MavenModelInspection -->
                                         <maven.home>${maven.home}</maven.home>
                                         <mavenOpts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true</mavenOpts>
