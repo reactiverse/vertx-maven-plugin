@@ -51,7 +51,7 @@ public class VertxMojoTestBase {
     }
 
     static void awaitUntilServerDown() {
-        await().atMost(1, TimeUnit.MINUTES).until(() -> {
+        await().atMost(5, TimeUnit.MINUTES).until(() -> {
             try {
                 get(); // Ignore result on purpose
                 return false;
@@ -63,7 +63,7 @@ public class VertxMojoTestBase {
 
     static String getHttpResponse() {
         AtomicReference<String> resp = new AtomicReference<>();
-        await().atMost(1, TimeUnit.MINUTES).until(() -> {
+        await().atMost(5, TimeUnit.MINUTES).until(() -> {
             try {
                 String content = get();
                 resp.set(content);
