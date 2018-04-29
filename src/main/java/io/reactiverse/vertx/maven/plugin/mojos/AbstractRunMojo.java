@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) 2016-2017 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
@@ -19,7 +18,6 @@ package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.*;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -33,7 +31,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -93,7 +90,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * <li>run</li>
      * </ul>
      */
-    protected String vertxCommand = "run";
+    String vertxCommand = "run";
 
     /**
      * This property will be passed as the -config option to vertx run. It defaults to file
@@ -125,7 +122,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      * to hold extra options that can be passed to run command
      */
-    protected List<String> optionalRunExtraArgs;
+    List<String> optionalRunExtraArgs;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -184,7 +181,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @param args - the forked process argument list to which the classpath will be appended
      * @throws MojoExecutionException - any error that might occur while building or adding classpath
      */
-    protected void addClasspath(List<String> args) throws MojoExecutionException {
+    void addClasspath(List<String> args) throws MojoExecutionException {
         try {
             StringBuilder classpath = new StringBuilder();
             for (URL ele : getClassPathUrls()) {
@@ -206,7 +203,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @param classpathUrls - the existing classpath url collection to which the ${project.build.outputDirectory} be added
      * @throws IOException - any exception that might occur while get the classes directory as URL
      */
-    protected void addClassesDirectory(List<URL> classpathUrls) throws IOException {
+    private void addClassesDirectory(List<URL> classpathUrls) throws IOException {
         classpathUrls.add(this.classesDirectory.toURI().toURL());
     }
 
@@ -216,7 +213,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      *
      * @param argsList - the existing collection of arguments to which the vertx arguments will be added
      */
-    protected void addVertxArgs(List<String> argsList) {
+    private void addVertxArgs(List<String> argsList) {
 
         Objects.requireNonNull(launcher);
 
@@ -301,12 +298,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      * This method will add the extra arguments required for the run either used by core Vert.x Launcher
      * or by custom Launcher
-     * @param argsList
+     *
+     * @param argsList the list of arguments
      */
     private void addRunExtraArgs(List<String> argsList) {
-
         if ("run".equals(vertxCommand)) {
-            if(optionalRunExtraArgs !=null && !optionalRunExtraArgs.isEmpty()){
+            if (optionalRunExtraArgs != null && !optionalRunExtraArgs.isEmpty()) {
                 argsList.addAll(optionalRunExtraArgs);
             }
         }
@@ -321,7 +318,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * {@code io.vertx.core.Launcher}
      * @throws MojoExecutionException - any error that might occur while checking
      */
-    protected boolean isVertxLauncher(String launcher) throws MojoExecutionException {
+    boolean isVertxLauncher(String launcher) throws MojoExecutionException {
         if (launcher != null) {
             if (IO_VERTX_CORE_LAUNCHER.equals(launcher)) {
                 return true;
@@ -329,16 +326,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 try {
                     Class customLauncher = buildClassLoader(getClassPathUrls()).loadClass(launcher);
                     List<Class<?>> superClasses = ClassUtils.getAllSuperclasses(customLauncher);
-                    boolean isAssignable = false;
-                    if (superClasses != null) {
-                        for (Class<?> superClass : superClasses) {
-                            if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {
-                                isAssignable = true;
-                                break;
-                            }
-                        }
-                    }
-                    return isAssignable;
+                    return lookupForLauncherInClassHierarchy(superClasses);
                 } catch (ClassNotFoundException e) {
                     throw new MojoExecutionException("Class \"" + launcher + "\" not found");
                 }
@@ -346,6 +334,19 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         } else {
             return false;
         }
+    }
+
+    private boolean lookupForLauncherInClassHierarchy(List<Class<?>> superClasses) {
+        boolean isAssignable = false;
+        if (superClasses != null) {
+            for (Class<?> superClass : superClasses) {
+                if (IO_VERTX_CORE_LAUNCHER.equals(superClass.getName())) {
+                    isAssignable = true;
+                    break;
+                }
+            }
+        }
+        return isAssignable;
     }
 
     /**
@@ -429,7 +430,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * This method to load Vert.X application configurations.
      * This will use the pattern ${basedir}/src/main/conf/application.[json/yaml/yml]
      */
-    protected void scanAndLoadConfigs() throws MojoExecutionException {
+    void scanAndLoadConfigs() throws MojoExecutionException {
 
         Path confBaseDir = Paths.get(this.project.getBasedir().toString(), "src", "main", "conf");
 
@@ -476,7 +477,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @param classPathUrls - the classpath urls which will be used to build the {@link URLClassLoader}
      * @return an instance of {@link URLClassLoader}
      */
-    protected ClassLoader buildClassLoader(Collection<URL> classPathUrls) {
+    private ClassLoader buildClassLoader(Collection<URL> classPathUrls) {
         return new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]));
     }
 
@@ -488,7 +489,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @return @{link {@link List<URL>}} which will have all the dependencies, classes directory, resources directory etc.,
      * @throws MojoExecutionException any error that might occur while building collection like resolution errors
      */
-    protected List<URL> getClassPathUrls() throws MojoExecutionException {
+    private List<URL> getClassPathUrls() throws MojoExecutionException {
         List<URL> classPathUrls = new ArrayList<>();
 
         try {

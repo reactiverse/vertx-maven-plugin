@@ -82,7 +82,9 @@ public class RunningVerifier extends Verifier {
             invoker.setMavenHome(new File(defaultMavenHome));
             invoker.setWorkingDirectory(new File(getBasedir()));
             request.setOutputHandler(new PrintStreamHandler(log, true));
-
+            if (System.getProperty("mavenOpts") != null) {
+                request.setMavenOpts(System.getProperty("mavenOpts"));
+            }
             result = (MavenProcessInvocationResult) invoker.execute(request);
         } catch (Exception e) {
             throw new VerificationException(e);
