@@ -55,45 +55,18 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
     }
 
     @Override
-    public File doPackage(PackageConfig config) throws
-        PackagingException {
+    public File doPackage(PackageConfig config) throws PackagingException {
 
         Log logger = Objects.requireNonNull(config.getMojo().getLog());
         Archive archive = Objects.requireNonNull(config.getArchive());
 
         JavaArchive jar = ShrinkWrap.create(JavaArchive.class);
 
-        for (DependencySet ds : archive.getDependencySets()) {
-            ScopeFilter scopeFilter = ServiceUtils.newScopeFilter(ds.getScope());
-            ArtifactFilter filter = new ArtifactIncludeFilterTransformer().transform(scopeFilter);
-            Set<Artifact> artifacts = ServiceUtils.filterArtifacts(config.getArtifacts(),
-                ds.getIncludes(), ds.getExcludes(),
-                ds.isUseTransitiveDependencies(), logger, filter);
+        addDependencies(config, archive.getDependencySets(), jar);
 
-            // Add dependencies
-            for (Artifact artifact : artifacts) {
-                File file = artifact.getFile();
-                if (file.isFile()) {
-                    logger.debug("Adding Dependency :" + artifact);
-                    embedDependency(logger, ds, jar, file);
-                } else {
-                    logger.info("Cannot embed artifact " + artifact
-                        + " - the file does not exist");
-                }
-            }
-        }
+        addFileSets(config, archive, jar);
 
-        for (FileSet fs : archive.getFileSets()) {
-            embedFileSet(logger, config.getProject(), fs, jar);
-        }
-
-        // Add classes
-        if (archive.isIncludeClasses()) {
-            File classes = new File(config.getProject().getBuild().getOutputDirectory());
-            if (classes.isDirectory()) {
-                jar.addAsResource(classes, "/");
-            }
-        }
+        addProjectClasses(config, archive, jar);
 
         // File Items
         for (FileItem item : archive.getFiles()) {
@@ -125,8 +98,8 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             if (useTmpFile) {
                 boolean delete = jarFile.delete();
                 boolean renameTo = theCreatedFile.renameTo(jarFile);
-                config.getMojo().getLog().debug("Main jar file deleted: " + delete);
-                config.getMojo().getLog().debug("Main jar file replaced by temporary file: " + renameTo);
+                logger.debug("Main jar file deleted: " + delete);
+                logger.debug("Main jar file replaced by temporary file: " + renameTo);
             }
 
         } catch (Exception e) {
@@ -134,6 +107,44 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
 
         return jarFile;
+    }
+
+    private void addFileSets(PackageConfig config, Archive archive, JavaArchive jar) {
+        Log logger = config.getMojo().getLog();
+        for (FileSet fs : archive.getFileSets()) {
+            embedFileSet(logger, config.getProject(), fs, jar);
+        }
+    }
+
+    private void addProjectClasses(PackageConfig config, Archive archive, JavaArchive jar) {
+        if (archive.isIncludeClasses()) {
+            File classes = new File(config.getProject().getBuild().getOutputDirectory());
+            if (classes.isDirectory()) {
+                jar.addAsResource(classes, "/");
+            }
+        }
+    }
+
+    private void addDependencies(PackageConfig config, Collection<DependencySet> dependencies, JavaArchive jar) {
+        Log logger = config.getMojo().getLog();
+        for (DependencySet ds : dependencies) {
+            ScopeFilter scopeFilter = ServiceUtils.newScopeFilter(ds.getScope());
+            ArtifactFilter filter = new ArtifactIncludeFilterTransformer().transform(scopeFilter);
+            Set<Artifact> artifacts = ServiceUtils.filterArtifacts(config.getArtifacts(),
+                ds.getIncludes(), ds.getExcludes(),
+                ds.isUseTransitiveDependencies(), logger, filter);
+
+            for (Artifact artifact : artifacts) {
+                File file = artifact.getFile();
+                if (file.isFile()) {
+                    logger.debug("Adding Dependency :" + artifact);
+                    embedDependency(logger, ds, jar, file);
+                } else {
+                    logger.warn("Cannot embed artifact " + artifact
+                        + " - the file does not exist");
+                }
+            }
+        }
     }
 
     private void embedFile(PackageConfig config, JavaArchive jar, FileItem item) throws PackagingException {
@@ -190,11 +201,18 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir(directory);
+
+
         if (fs.getOutputDirectory() == null) {
             fs.setOutputDirectory("/");
-        } else if (!fs.getOutputDirectory().startsWith("/")) {
+        }
+        if (!fs.getOutputDirectory().startsWith("/")) {
             fs.setOutputDirectory("/" + fs.getOutputDirectory());
         }
+        if (!fs.getOutputDirectory().endsWith("/")) {
+            fs.setOutputDirectory(fs.getOutputDirectory() + "/");
+        }
+
         List<String> excludes = fs.getExcludes();
         if (fs.isUseDefaultExcludes()) {
             excludes.addAll(FileUtils.getDefaultExcludesAsList());
@@ -218,24 +236,8 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
     private boolean toExclude(DependencySet set, ArchivePath path) {
         String name = path.get();
 
-        // Check whether the file is explicitly includes
-        List<String> includes = set.getOptions().getIncludes();
-        if (includes != null && !includes.isEmpty()) {
-            boolean included = false;
-
-            // Check for each include pattern whether or not the path is explicitly included
-            for (String pattern : includes) {
-                if (SelectorUtils.match(pattern, name)) {
-                    included = true;
-                }
-            }
-
-            // If the path is not included, exclude the file
-            // otherwise apply the excludes pattern on it.
-            if (!included) {
-                return true;
-            }
-        }
+        // Check whether the file is explicitly included
+        if (isExplicitelyIncluded(set, name)) return true;
 
         if (set.getOptions().isUseDefaultExcludes()) {
             for (String pattern : DEFAULT_EXCLUDES) {
@@ -257,6 +259,27 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             }
         }
 
+        return false;
+    }
+
+    private boolean isExplicitelyIncluded(DependencySet set, String name) {
+        List<String> includes = set.getOptions().getIncludes();
+        if (includes != null && !includes.isEmpty()) {
+            boolean included = false;
+
+            // Check for each include pattern whether or not the path is explicitly included
+            for (String pattern : includes) {
+                if (SelectorUtils.match(pattern, name)) {
+                    included = true;
+                }
+            }
+
+            // If the path is not included, exclude the file
+            // otherwise apply the excludes pattern on it.
+            if (!included) {
+                return true;
+            }
+        }
         return false;
     }
 

@@ -1,18 +1,15 @@
 package io.reactiverse.vertx.maven.plugin;
 
-import java.util.Objects;
-import java.util.ServiceLoader;
-import java.util.stream.StreamSupport;
-
 import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,10 +17,9 @@ public class AbstractVertxMojoResolveArtifactTest {
 
 
     private TestMojo mojo;
-    private MavenProject project;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         mojo = new TestMojo();
     }
 
@@ -67,7 +63,7 @@ public class AbstractVertxMojoResolveArtifactTest {
     static class TestMojo extends AbstractVertxMojo {
 
         @Override
-        public void execute() throws MojoExecutionException, MojoFailureException {
+        public void execute() {
 
         }
 
