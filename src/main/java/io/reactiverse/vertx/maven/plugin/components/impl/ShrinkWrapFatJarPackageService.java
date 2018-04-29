@@ -239,7 +239,9 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         String name = path.get();
 
         // Check whether the file is explicitly included
-        if (isExplicitelyIncluded(set, name)) return true;
+        if (isExplicitelyIncluded(set, name)) {
+            return true;
+        }
 
         if (set.getOptions().isUseDefaultExcludes()) {
             for (String pattern : DEFAULT_EXCLUDES) {
@@ -278,9 +280,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
             // If the path is not included, exclude the file
             // otherwise apply the excludes pattern on it.
-            if (!included) {
-                return true;
-            }
+            return !included;
         }
         return false;
     }

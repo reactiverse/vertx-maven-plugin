@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys.SCM_TAG;
+import static io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys.SCM_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
@@ -40,7 +42,7 @@ public class SCMManifestCustomizerTest {
         SCMManifestCustomizer customizer = new SCMManifestCustomizer();
         PackageMojo mojo = mock(PackageMojo.class);
         Map<String, String> entries = customizer.getEntries(mojo, createProjectWithScm());
-        assertThat(entries).contains(entry("Scm-Tag","HEAD"), entry("Scm-Url", "https://github.com/openshiftio"));
+        assertThat(entries).contains(entry(SCM_TAG.header(),"HEAD"), entry(SCM_URL.header(), "https://github.com/openshiftio"));
     }
 
     private MavenProject createProjectWithScm() {

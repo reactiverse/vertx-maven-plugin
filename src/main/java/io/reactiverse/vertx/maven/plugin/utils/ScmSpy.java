@@ -68,12 +68,12 @@ public class ScmSpy {
      * from the Changelog available in the SCM repository
      * @param scmUrl - the SCM url to get the SCM connection
      * @param workingDir - the Working Copy or Directory of the SCM repo
-     * @return a {@link Map<String,String>} of values extracted form the changelog, with Keys from {@link ExtraManifestKeys}
+     * @return a {@link Map<ExtraManifestKeys,String>} of values extracted form the changelog, with Keys from {@link ExtraManifestKeys}
      * @throws IOException - any error that might occur while manipulating the SCM Changelog
      * @throws ScmException - other SCM related exceptions
      */
-    public Map<String, String> getChangeLog(String scmUrl, File workingDir) throws IOException, ScmException {
-        Map<String, String> changeLogMap = new HashMap<>();
+    public Map<ExtraManifestKeys, String> getChangeLog(String scmUrl, File workingDir) throws IOException, ScmException {
+        Map<ExtraManifestKeys, String> changeLogMap = new HashMap<>();
         ScmRepository scmRepository = scmManager.makeScmRepository(scmUrl);
         ChangeLogScmResult scmResult = scmManager.changeLog(new ChangeLogScmRequest(scmRepository,
             new ScmFileSet(workingDir, "*")));
@@ -82,11 +82,11 @@ public class ScmSpy {
             if (changeSetList != null && !changeSetList.isEmpty()) {
                 //get the latest changelog
                 ChangeSet changeSet = changeSetList.get(0);
-                changeLogMap.put(ExtraManifestKeys.scmType.name(), getScmType(scmUrl));
-                changeLogMap.put(ExtraManifestKeys.scmRevision.name(), changeSet.getRevision());
-                changeLogMap.put(ExtraManifestKeys.lastCommitTimestamp.name(),
+                changeLogMap.put(ExtraManifestKeys.SCM_TYPE, getScmType(scmUrl));
+                changeLogMap.put(ExtraManifestKeys.SCM_REVISION, changeSet.getRevision());
+                changeLogMap.put(ExtraManifestKeys.LAST_COMMIT_TIMESTAMP,
                     manifestTimestampFormat(changeSet.getDate()));
-                changeLogMap.put(ExtraManifestKeys.author.name(), changeSet.getAuthor());
+                changeLogMap.put(ExtraManifestKeys.SCM_AUTHOR, changeSet.getAuthor());
             }
         }
 

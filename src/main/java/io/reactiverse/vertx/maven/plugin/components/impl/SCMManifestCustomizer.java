@@ -48,27 +48,18 @@ public class SCMManifestCustomizer implements ManifestCustomizerService {
 
     private void addAttributeFromScmManager(PackageMojo mojo, Map<String, String> attributes, String connectionUrl, File baseDir) throws IOException, ScmException {
         ScmSpy scmSpy = new ScmSpy(mojo.getScmManager());
-        Map<String, String> scmChangeLogMap = scmSpy.getChangeLog(connectionUrl, baseDir);
-        if (!scmChangeLogMap.isEmpty()) {
-            attributes.put("Scm-Type",
-                scmChangeLogMap.get(ExtraManifestKeys.scmType.name()));
-            attributes.put("Scm-Revision",
-                scmChangeLogMap.get(ExtraManifestKeys.scmRevision.name()));
-            attributes.put("Last-Commit-Timestamp",
-                scmChangeLogMap.get(ExtraManifestKeys.lastCommitTimestamp.name()));
-            attributes.put("Author",
-                scmChangeLogMap.get(ExtraManifestKeys.author.name()));
-        }
+        Map<ExtraManifestKeys, String> scmChangeLogMap = scmSpy.getChangeLog(connectionUrl, baseDir);
+        scmChangeLogMap.forEach((key, value) -> attributes.put(key.header(), value));
     }
 
     private String addAttributesFromProject(Map<String, String> attributes, Scm scm) {
         String connectionUrl = scm.getConnection() == null ? scm.getDeveloperConnection() : scm.getConnection();
         if (scm.getUrl() != null) {
-            attributes.put("Scm-Url", scm.getUrl());
+            attributes.put(ExtraManifestKeys.SCM_URL.header(), scm.getUrl());
         }
 
         if (scm.getTag() != null) {
-            attributes.put("Scm-Tag", scm.getTag());
+            attributes.put(ExtraManifestKeys.SCM_TAG.header(), scm.getTag());
         }
         return connectionUrl;
     }

@@ -1,6 +1,7 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
+import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -28,14 +29,16 @@ public class ProjectManifestCustomizer implements ManifestCustomizerService {
         Map<String, String> attributes = new HashMap<>();
         Model model = project.getModel();
 
-        attributes.put("Project-Name",
+        attributes.put(ExtraManifestKeys.PROJECT_ARTIFACT_ID.header(), model.getArtifactId());
+        attributes.put(ExtraManifestKeys.PROJECT_GROUP_ID.header(), model.getGroupId());
+        attributes.put(ExtraManifestKeys.PROJECT_VERSION.header(), model.getVersion());
+        attributes.put(ExtraManifestKeys.PROJECT_NAME.header(),
             model.getName() == null ? model.getArtifactId() : model.getName());
-        attributes.put("Project-Group", model.getGroupId());
-        attributes.put("Project-Version", model.getVersion());
-        attributes.put("Build-Timestamp", manifestTimestampFormat(new Date()));
+
+        attributes.put(ExtraManifestKeys.BUILD_TIMESTAMP.header(), manifestTimestampFormat(new Date()));
 
         if (project.getUrl() != null) {
-            attributes.put("Project-Url", model.getUrl());
+            attributes.put(ExtraManifestKeys.PROJECT_URL.header(), project.getUrl());
         }
 
         // TODO get the filtered lists.
@@ -45,7 +48,7 @@ public class ProjectManifestCustomizer implements ManifestCustomizerService {
                 .filter(d -> "compile".equals(d.getScope()) || null == d.getScope())
                 .map(ProjectManifestCustomizer::asCoordinates)
                 .collect(Collectors.joining(" "));
-            attributes.put("Project-Dependencies", deps);
+            attributes.put(ExtraManifestKeys.PROJECT_DEPS.header(), deps);
         }
 
         return attributes;

@@ -17,10 +17,34 @@
 package io.reactiverse.vertx.maven.plugin.model;
 
 /**
- * the enumeration of keys that will be used when adding the extra information to the MANIFEST.MF
- * @author kameshs
+ * List of additional entries added to the manifest of the resulting artifacts
  */
 public enum ExtraManifestKeys {
-    lastCommitTimestamp, author, projectName, projectGroup, projectVersion, scmUrl, scmTag,
-    scmRevision, projectUrl, projectDependencies,scmType,buildTimestamp
+
+    LAST_COMMIT_TIMESTAMP ("SCM-Last-Commit-Timestamp"),
+    SCM_AUTHOR("SCM-Author"),
+    SCM_URL ("SCM-URL"),
+    SCM_TAG ("SCM-Tag"),
+    SCM_REVISION ("SCM-Revision"),
+    SCM_TYPE ("SCM-Type"),
+
+    PROJECT_ARTIFACT_ID ("Maven-ArtifactId"),
+    PROJECT_GROUP_ID ("Maven-ArtifactId"),
+    PROJECT_VERSION ("Maven-Version"),
+    PROJECT_NAME ("Project-Name"),
+    PROJECT_URL ("Project-URL"),
+
+    PROJECT_DEPS ("Project-Dependencies"),
+
+    BUILD_TIMESTAMP ("Build-Timestamp");
+
+    private final String header;
+
+    ExtraManifestKeys(String header) {
+        this.header  = header;
+    }
+
+    public String header() {
+        return header;
+    }
 }

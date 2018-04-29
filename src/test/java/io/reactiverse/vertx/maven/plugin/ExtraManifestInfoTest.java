@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import static io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -88,11 +89,11 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.isEmpty()).isFalse();
 
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
-        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
-        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("io.vertx:vertx-core:3.4.1");
-        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
-        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
+        assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("io.vertx:vertx-core:3.4.1");
+        assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
 
     }
 
@@ -125,12 +126,11 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.isEmpty()).isFalse();
 
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
-        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
-        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.4.1:vertx");
-        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
-        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
-
+        assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:3.4.1:vertx");
+        assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
     }
 
     public void testExtraManifestsWithSCMUrlAndTag() {
@@ -176,13 +176,13 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.isEmpty()).isFalse();
 
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
-        assertThat(attributes.getValue("Project-Name")).isEqualTo("vertx-demo");
-        assertThat(attributes.getValue("Build-Timestamp")).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue("Project-Dependencies")).isEqualTo("com.example:example:3.3.3:vertx");
-        assertThat(attributes.getValue("Project-Group")).isEqualTo("org.vertx.demo");
-        assertThat(attributes.getValue("Project-Version")).isEqualTo("1.0.0-SNAPSHOT");
-        assertThat(attributes.getValue("Scm-Url")).isEqualTo("https://github.com/reactiverse/vertx-maven-plugin");
-        assertThat(attributes.getValue("Scm-Tag")).isEqualTo("HEAD");
+        assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
+        assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:3.3.3:vertx");
+        assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
+        assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
+        assertThat(attributes.getValue(SCM_URL.header())).isEqualTo("https://github.com/reactiverse/vertx-maven-plugin");
+        assertThat(attributes.getValue(SCM_TAG.header())).isEqualTo("HEAD");
 
     }
 }

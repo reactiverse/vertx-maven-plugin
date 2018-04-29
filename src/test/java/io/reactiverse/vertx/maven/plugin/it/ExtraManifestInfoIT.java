@@ -16,6 +16,7 @@
 
 package io.reactiverse.vertx.maven.plugin.it;
 
+import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.reactiverse.vertx.maven.plugin.util.GitUtil;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -117,51 +118,49 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
         //Extract and Check Manifest for details
         assertThat(manifest).isNotNull();
 
-        //Just to verify how the manifest looks
-        manifest.write(System.out);
-
         //Check some manifest attributes
         String projectName = manifest.getMainAttributes().getValue(
-            "Project-Name");
+            ExtraManifestKeys.PROJECT_NAME.header());
         assertThat(projectName).isEqualTo("vertx-demo-start");
 
         String projectGroupId = manifest.getMainAttributes().getValue(
-            "Project-Group");
+            ExtraManifestKeys.PROJECT_GROUP_ID.header());
         assertThat(projectGroupId).isEqualTo("io.reactiverse.vmp.it");
 
         String projectVersion = manifest.getMainAttributes().getValue(
-            "Project-Version");
+            ExtraManifestKeys.PROJECT_VERSION.header());
         assertThat(projectVersion).isEqualTo("0.0.1.BUILD-SNAPSHOT");
 
         String projectDeps = manifest.getMainAttributes().getValue(
-            "Project-Dependencies");
+            ExtraManifestKeys.PROJECT_DEPS.header());
         assertThat(projectDeps).isNotNull();
+
 
         if ("git".equalsIgnoreCase(scm)) {
 
             String scmType = manifest.getMainAttributes().getValue(
-                "Scm-Type");
+                ExtraManifestKeys.SCM_TYPE.header());
             assertThat(scmType).isNotNull();
             assertThat(scmType).isEqualToIgnoringCase("Git");
 
             String scmRevision = manifest.getMainAttributes().getValue(
-                "Scm-Revision");
+                ExtraManifestKeys.SCM_REVISION.header());
             assertThat(scmRevision).isNotNull();
 
             Pattern pattern = Pattern.compile("^\\w*$");
             Matcher matcher = pattern.matcher(scmRevision);
             assertThat(matcher.matches()).isTrue();
+
             assertThat(projectDeps)
                 .isEqualToIgnoringWhitespace("io.vertx:vertx-core:3.4.2 io.vertx:vertx-web:3.4.2 io" +
                     ".vertx:vertx-jdbc-client:3.4.2");
-
         } else if ("svn".equalsIgnoreCase(scm)) {
             String scmType = manifest.getMainAttributes().getValue(
-                "Scm-Type");
+                ExtraManifestKeys.SCM_TYPE.header());
             assertThat(scmType).isNotNull();
             assertThat(scmType).isEqualToIgnoringCase("SVN");
             String revision = manifest.getMainAttributes().getValue(
-                "Scm-Revision");
+                ExtraManifestKeys.SCM_REVISION.header());
             assertThat(revision).isNotNull();
             assertThat(revision).isEqualTo("1381106");
             assertThat(projectDeps)
