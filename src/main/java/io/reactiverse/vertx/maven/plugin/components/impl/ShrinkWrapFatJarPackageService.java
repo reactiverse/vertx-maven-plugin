@@ -8,7 +8,6 @@ import io.reactiverse.vertx.maven.plugin.mojos.FileSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
@@ -31,6 +30,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
+ * Service packaging the fat jar using ShrinkWrap.
+ *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @Component(
@@ -73,9 +74,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             for (Artifact artifact : artifacts) {
                 File file = artifact.getFile();
                 if (file.isFile()) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Adding Dependency :" + artifact);
-                    }
+                    logger.debug("Adding Dependency :" + artifact);
                     embedDependency(logger, ds, jar, file);
                 } else {
                     logger.info("Cannot embed artifact " + artifact
@@ -104,7 +103,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         // Generate manifest
         try {
             generateManifest(jar, archive.getManifest());
-        } catch (IOException | MojoExecutionException e) {
+        } catch (IOException e) {
             throw new PackagingException(e);
         }
 
@@ -295,8 +294,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
     /**
      * Generate the manifest for the über jar.
      */
-    private void generateManifest(JavaArchive jar, Map<String, String> entries) throws IOException,
-        MojoExecutionException {
+    private void generateManifest(JavaArchive jar, Map<String, String> entries) throws IOException {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
