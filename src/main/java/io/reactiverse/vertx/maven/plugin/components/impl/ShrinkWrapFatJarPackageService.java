@@ -5,7 +5,6 @@ import io.reactiverse.vertx.maven.plugin.mojos.Archive;
 import io.reactiverse.vertx.maven.plugin.mojos.DependencySet;
 import io.reactiverse.vertx.maven.plugin.mojos.FileItem;
 import io.reactiverse.vertx.maven.plugin.mojos.FileSet;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
@@ -24,7 +23,10 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -292,9 +294,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
      * @param file the file, must not be {@code null}
      */
     private void embedDependency(Log log, DependencySet set, JavaArchive jar, File file) {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
+        try (FileInputStream fis = new FileInputStream(file)) {
             jar.as(ZipImporter.class).importFrom(fis, path -> {
                 if (jar.contains(path)) {
                     log.debug(path.get() + " already embedded in the jar");
@@ -307,10 +307,8 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
                     return false;
                 }
             });
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Unable to read the file " + file.getAbsolutePath(), e);
-        } finally {
-            IOUtils.closeQuietly(fis);
         }
     }
 
