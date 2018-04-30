@@ -75,7 +75,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     /**
      *
      */
-    protected static final String DEFAULT_CONF_DIR = "/src/main/conf";
+    protected static final String DEFAULT_CONF_DIR = "src/main/conf";
 
     /**
      * vert.x java-opt argument

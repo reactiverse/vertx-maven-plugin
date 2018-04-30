@@ -17,6 +17,7 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -225,11 +226,29 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         argsList.add(vertxCommand);
 
-        //Since Verticles will be deployed from custom launchers we dont pass this as argument
+        //Since Verticles will be deployed from custom launchers we don't pass this as argument
         if (verticle != null && !VERTX_COMMAND_STOP.equals(vertxCommand)) {
             argsList.add(verticle);
         }
 
+        handleRedeploy(argsList);
+
+        if (!VERTX_COMMAND_STOP.equals(vertxCommand)) {
+            String argLauncherClass = VERTX_ARG_LAUNCHER_CLASS +
+                "=\"" +
+                launcher +
+                "\"";
+            argsList.add(argLauncherClass);
+
+            if (config != null && config.exists() && config.isFile()) {
+                getLog().info("Using configuration from file: " + config.toString());
+                argsList.add(VERTX_ARG_CONF);
+                argsList.add(config.toString());
+            }
+        }
+    }
+
+    private void handleRedeploy(List<String> argsList) {
         if (redeploy && !(VERTX_COMMAND_START.equals(vertxCommand)
             || VERTX_COMMAND_STOP.equals(vertxCommand))) {
             getLog().info("Vert.x application redeploy enabled");
@@ -246,20 +265,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             if (jvmArgs != null && !jvmArgs.isEmpty()) {
                 String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
                 argsList.add(VERTX_ARG_JAVA_OPT + "=" + javaOpts);
-            }
-        }
-
-        if (!VERTX_COMMAND_STOP.equals(vertxCommand)) {
-            String argLauncherClass = VERTX_ARG_LAUNCHER_CLASS +
-                "=\"" +
-                launcher +
-                "\"";
-            argsList.add(argLauncherClass);
-
-            if (config != null && config.exists() && config.isFile()) {
-                getLog().info("Using configuration from file: " + config.toString());
-                argsList.add(VERTX_ARG_CONF);
-                argsList.add(config.toString());
             }
         }
     }
@@ -302,10 +307,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @param argsList the list of arguments
      */
     private void addRunExtraArgs(List<String> argsList) {
-        if ("run".equals(vertxCommand)) {
-            if (optionalRunExtraArgs != null && !optionalRunExtraArgs.isEmpty()) {
-                argsList.addAll(optionalRunExtraArgs);
-            }
+        if ("run".equals(vertxCommand) && optionalRunExtraArgs != null && !optionalRunExtraArgs.isEmpty()) {
+            argsList.addAll(optionalRunExtraArgs);
         }
     }
 
@@ -328,6 +331,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                     List<Class<?>> superClasses = ClassUtils.getAllSuperclasses(customLauncher);
                     return lookupForLauncherInClassHierarchy(superClasses);
                 } catch (ClassNotFoundException e) {
+                    getLog().error("Unable to load the class " + launcher, e);
                     throw new MojoExecutionException("Class \"" + launcher + "\" not found");
                 }
             }
@@ -336,7 +340,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
     }
 
-    private boolean lookupForLauncherInClassHierarchy(List<Class<?>> superClasses) {
+    private static boolean lookupForLauncherInClassHierarchy(List<Class<?>> superClasses) {
         boolean isAssignable = false;
         if (superClasses != null) {
             for (Class<?> superClass : superClasses) {
@@ -431,40 +435,33 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * This will use the pattern ${basedir}/src/main/conf/application.[json/yaml/yml]
      */
     void scanAndLoadConfigs() throws MojoExecutionException {
-
-        Path confBaseDir = Paths.get(this.project.getBasedir().toString(), "src", "main", "conf");
-
-        if (Files.exists(confBaseDir) && Files.isDirectory(confBaseDir)) {
-
+        File confBaseDir = new File(project.getBasedir(), "src/main/conf");
+        if (confBaseDir.isDirectory()) {
             DirectoryScanner directoryScanner = new DirectoryScanner();
-            directoryScanner.setBasedir(this.project.getBasedir() + DEFAULT_CONF_DIR);
+            directoryScanner.setBasedir(confBaseDir);
             directoryScanner.setIncludes(WILDCARD_CONFIG_FILES);
             directoryScanner.scan();
 
             String[] configFiles = directoryScanner.getIncludedFiles();
 
             if (configFiles != null && configFiles.length != 0) {
-                String configFile = configFiles[0];
-                Path confPath = Paths.get(confBaseDir.toFile().toString(), configFile);
-                //Check if its JSON
-                if (isJson(configFile)) {
-                    config = confPath.toFile();
-                } else if (isYaml(configFile)) {
+                String fileName = configFiles[0];
+                this.config = new File(confBaseDir, fileName);
+                 if (isYaml(fileName)) {
                     //Check if its YAML or YML
-                    Path jsonConfDir = Paths.get(this.projectBuildDir, "conf");
-                    jsonConfDir.toFile().mkdirs();
-                    Path jsonConfPath = Paths.get(jsonConfDir.toString(), VERTX_CONFIG_FILE_JSON);
+                    File jsonConfDir = new File(this.projectBuildDir, "conf");
+                    boolean created = jsonConfDir.mkdirs();
+                    getLog().debug("Config directory " + jsonConfDir.getAbsolutePath() + " created: " + created);
+                    File convertedJsonFile = new File(jsonConfDir, VERTX_CONFIG_FILE_JSON);
                     try {
-                        Files.deleteIfExists(jsonConfPath);
-                        if (Files.createFile(jsonConfPath).toFile().exists()) {
-                            ConfigConverterUtil.convertYamlToJson(confPath, jsonConfPath);
-                            config = jsonConfPath.toFile();
-                        }
+                        ConfigConverterUtil.convertYamlToJson(config, convertedJsonFile);
+                        getLog().info(config.getName() + " converted to " + convertedJsonFile.getAbsolutePath());
+                        this.config = convertedJsonFile;
                     } catch (IOException e) {
-                        throw new MojoExecutionException("Error loading configuration file:" + confPath.toString(), e);
+                        throw new MojoExecutionException("Error loading configuration file:" + config.getAbsolutePath(), e);
                     } catch (Exception e) {
                         throw new MojoExecutionException("Error loading and converting configuration file:"
-                            + confPath.toString(), e);
+                            + config.getAbsolutePath(), e);
                     }
                 }
             }
@@ -478,7 +475,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      * @return an instance of {@link URLClassLoader}
      */
     private ClassLoader buildClassLoader(Collection<URL> classPathUrls) {
-        return new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]));
+        return new URLClassLoader(classPathUrls.toArray(new URL[0]));
     }
 
     /**
@@ -515,17 +512,6 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             throw new MojoExecutionException("Unable to run:", e);
         }
         return classPathUrls;
-    }
-
-
-    /**
-     * Method to check if the file is JSON file
-     *
-     * @param configFile - the config file to be checked
-     * @return if its json file e.g. application.json
-     */
-    private boolean isJson(String configFile) {
-        return configFile != null && configFile.endsWith(".json");
     }
 
     /**

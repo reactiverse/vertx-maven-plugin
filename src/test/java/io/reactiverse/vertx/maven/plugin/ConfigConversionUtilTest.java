@@ -18,34 +18,31 @@
 package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.utils.ConfigConverterUtil;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author kameshs
  */
-@SuppressWarnings("unchecked")
 public class ConfigConversionUtilTest {
 
     @Test
     public void convertSimpleYamlToJson() throws Exception {
-        Path yamlFile = Paths.get(this.getClass().getResource("/testconfig.yaml").toURI());
-        Path jsonFilePath = Files.createTempFile("testconfig", ".json");
-        assertNotNull(yamlFile);
-        assertTrue(yamlFile.toFile().isFile());
-        assertTrue(yamlFile.toFile().exists());
+        File yamlFile = new File("src/test/resources/testconfig.yaml");
+        File jsonFilePath = File.createTempFile("testconfig", ".json");
+        assertTrue(yamlFile.isFile());
         ConfigConverterUtil.convertYamlToJson(yamlFile, jsonFilePath);
         assertNotNull(jsonFilePath);
-        String jsonDoc = new String(Files.readAllBytes(jsonFilePath));
+        String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
         assertNotNull(jsonDoc);
         JSONObject jsonMap = new JSONObject(jsonDoc);
         assertNotNull(jsonMap);
@@ -55,20 +52,18 @@ public class ConfigConversionUtilTest {
 
     @Test
     public void convertArrayYamlToJson() throws Exception {
-        Path yamlFile = Paths.get(this.getClass().getResource("/testconfig2.yaml").toURI());
-        Path jsonFilePath = Files.createTempFile("testconfig2", ".json");
-        assertNotNull(yamlFile);
-        assertTrue(yamlFile.toFile().isFile());
-        assertTrue(yamlFile.toFile().exists());
+        File yamlFile = new File("src/test/resources/testconfig2.yaml");
+        File jsonFilePath = File.createTempFile("testconfig2", ".json");
+        assertTrue(yamlFile.isFile());
         ConfigConverterUtil.convertYamlToJson(yamlFile, jsonFilePath);
         assertNotNull(jsonFilePath);
-        String jsonDoc = new String(Files.readAllBytes(jsonFilePath));
+        String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
         assertNotNull(jsonDoc);
         JSONObject jsonMap = new JSONObject(jsonDoc);
         assertNotNull(jsonMap);
         assertNotNull(jsonMap.get("names"));
         JSONArray names = jsonMap.getJSONArray("names");
-        assertTrue(names.length() == 4);
+        assertThat(names.length() == 4).isTrue();
         assertEquals(names.get(0), "kamesh");
 
     }

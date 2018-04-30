@@ -17,9 +17,11 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,13 +35,13 @@ import java.util.Map;
 public class ConfigConverterUtil {
 
     @SuppressWarnings("unchecked")
-    public static void convertYamlToJson(Path yamlFile, Path jsonFilePath) throws IOException {
-
-        String yamlDoc = new String(Files.readAllBytes(yamlFile));
+    public static void convertYamlToJson(File yamlFile, File jsonFilePath) throws IOException {
+        FileUtils.deleteQuietly(jsonFilePath);
+        String content = FileUtils.readFileToString(yamlFile, "UTF-8");
         Yaml yaml = new Yaml();
-        Map<Object, Object> map = (Map<Object, Object>) yaml.load(yamlDoc);
+        Map<Object, Object> map = (Map<Object, Object>) yaml.load(content);
         JSONObject jsonObject = new JSONObject(map);
-        Files.write(jsonFilePath, jsonObject.toString().getBytes());
+        FileUtils.write(jsonFilePath, jsonObject.toString(), "UTF-8");
     }
 
 }
