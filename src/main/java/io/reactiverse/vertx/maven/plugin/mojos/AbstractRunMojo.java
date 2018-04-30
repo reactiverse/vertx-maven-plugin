@@ -17,7 +17,6 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -29,9 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -431,11 +428,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     }
 
     /**
-     * This method to load Vert.X application configurations.
-     * This will use the pattern ${basedir}/src/main/conf/application.[json/yaml/yml]
+     * This method loads configuration files from `src/main/conf`.
+     * It uses the pattern {@code ${basedir}/src/main/conf/application.{json/yaml/yml}}. In case of YAML, the
+     * configuration is converted to JSON.
      */
     void scanAndLoadConfigs() throws MojoExecutionException {
-        File confBaseDir = new File(project.getBasedir(), "src/main/conf");
+        File confBaseDir = new File(project.getBasedir(), DEFAULT_CONF_DIR);
         if (confBaseDir.isDirectory()) {
             DirectoryScanner directoryScanner = new DirectoryScanner();
             directoryScanner.setBasedir(confBaseDir);
@@ -443,26 +441,29 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             directoryScanner.scan();
 
             String[] configFiles = directoryScanner.getIncludedFiles();
+            if (configFiles == null || configFiles.length == 0) {
+                // No configuration found
+                return;
+            }
+            // Else takes the first one
+            String fileName = configFiles[0];
+            this.config = new File(confBaseDir, fileName);
 
-            if (configFiles != null && configFiles.length != 0) {
-                String fileName = configFiles[0];
-                this.config = new File(confBaseDir, fileName);
-                 if (isYaml(fileName)) {
-                    //Check if its YAML or YML
-                    File jsonConfDir = new File(this.projectBuildDir, "conf");
-                    boolean created = jsonConfDir.mkdirs();
-                    getLog().debug("Config directory " + jsonConfDir.getAbsolutePath() + " created: " + created);
-                    File convertedJsonFile = new File(jsonConfDir, VERTX_CONFIG_FILE_JSON);
-                    try {
-                        ConfigConverterUtil.convertYamlToJson(config, convertedJsonFile);
-                        getLog().info(config.getName() + " converted to " + convertedJsonFile.getAbsolutePath());
-                        this.config = convertedJsonFile;
-                    } catch (IOException e) {
-                        throw new MojoExecutionException("Error loading configuration file:" + config.getAbsolutePath(), e);
-                    } catch (Exception e) {
-                        throw new MojoExecutionException("Error loading and converting configuration file:"
-                            + config.getAbsolutePath(), e);
-                    }
+            // If it's json nothing is required, if it's yaml we need to convert.
+
+            if (isYaml(fileName)) {
+                //Check if its YAML or YML
+                File jsonConfDir = new File(this.projectBuildDir, "conf");
+                boolean created = jsonConfDir.mkdirs();
+                getLog().debug("Config directory " + jsonConfDir.getAbsolutePath() + " created: " + created);
+                File convertedJsonFile = new File(jsonConfDir, VERTX_CONFIG_FILE_JSON);
+                try {
+                    ConfigConverterUtil.convertYamlToJson(config, convertedJsonFile);
+                    getLog().info(config.getName() + " converted to " + convertedJsonFile.getAbsolutePath());
+                    this.config = convertedJsonFile;
+                } catch (Exception e) {
+                    throw new MojoExecutionException("Error loading or converting the configuration file:"
+                        + config.getAbsolutePath(), e);
                 }
             }
         }
