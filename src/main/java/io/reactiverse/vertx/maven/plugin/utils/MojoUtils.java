@@ -201,7 +201,7 @@ public class MojoUtils {
      * @param goal
      * @return
      */
-    public static Optional<Xpp3Dom> buildConfiguration(MavenProject project, String artifactId, String goal) {
+    private static Optional<Xpp3Dom> buildConfiguration(MavenProject project, String artifactId, String goal) {
 
         Optional<Plugin> pluginOptional = project.getBuildPlugins().stream()
             .filter(plugin -> artifactId
@@ -224,15 +224,12 @@ public class MojoUtils {
             Optional<PluginExecution> executionOptional = plugin.getExecutions().stream()
                 .filter(e -> e.getGoals().contains(goal)).findFirst();
 
-            executionOptional
-                .ifPresent(pluginExecution -> Optional.ofNullable((Xpp3Dom) pluginExecution.getConfiguration()));
+            return executionOptional
+                .map(pluginExecution -> (Xpp3Dom) pluginExecution.getConfiguration());
 
         } else {
             return Optional.empty();
         }
-
-        //Global Configuration
-        return Optional.ofNullable((Xpp3Dom) plugin.getConfiguration());
     }
 
     private static void loadProperties() {

@@ -38,6 +38,7 @@ public class SetupTemplateUtils {
 
     static final Configuration cfg;
     static final Log logger = new SystemStreamLog();
+    public static final String JAVA_EXTENSION = ".java";
 
     static {
         cfg = new Configuration(Configuration.VERSION_2_3_23);
@@ -65,8 +66,8 @@ public class SetupTemplateUtils {
 
         String packageName = null;
         String className;
-        if (verticle.endsWith(".java")) {
-            verticle = verticle.substring(0, verticle.length() - ".java".length());
+        if (verticle.endsWith(JAVA_EXTENSION)) {
+            verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
         }
 
         if (verticle.contains(".")) {
@@ -86,7 +87,7 @@ public class SetupTemplateUtils {
             root = packageDir;
         }
 
-        File classFile = new File(root, className + ".java");
+        File classFile = new File(root, className + JAVA_EXTENSION);
         Map<String, String> context = new HashMap<>();
         context.put("className", className);
         if (packageName != null) {

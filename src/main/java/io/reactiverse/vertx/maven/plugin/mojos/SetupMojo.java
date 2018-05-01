@@ -23,7 +23,6 @@ import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependencies;
 import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependency;
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -49,6 +48,8 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 public class SetupMojo extends AbstractMojo {
 
     public static final String JAVA_EXTENSION = ".java";
+    public static final String VERTX_CORE_VERSION = "vertx-core-version";
+    public static final String VERTX_GROUP_ID = "io.vertx";
     private final String PLUGIN_GROUPID = "io.reactiverse";
     private final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
     private final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
@@ -107,7 +108,7 @@ public class SetupMojo extends AbstractMojo {
         model.getProperties().putIfAbsent("vertx-maven-plugin.version",
             MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
 
-        vertxVersion = vertxVersion == null ? MojoUtils.getVersion("vertx-core-version") : vertxVersion;
+        vertxVersion = vertxVersion == null ? MojoUtils.getVersion(VERTX_CORE_VERSION) : vertxVersion;
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
         if (!Strings.isNullOrEmpty(verticle)) {
@@ -128,12 +129,7 @@ public class SetupMojo extends AbstractMojo {
         Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${vertx-maven-plugin.version}");
 
         if (isParentPom(model)) {
-            if (model.getBuild().getPluginManagement() != null) {
-                if (model.getBuild().getPluginManagement().getPlugins() == null) {
-                    model.getBuild().getPluginManagement().setPlugins(new ArrayList<>());
-                }
-                model.getBuild().getPluginManagement().getPlugins().add(vertxMavenPlugin);
-            }
+            addPluginManagementSection(model, vertxMavenPlugin);
             //strip the vertxVersion off
             vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID);
         } else {
@@ -143,26 +139,37 @@ public class SetupMojo extends AbstractMojo {
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
         pluginExec.addGoal("package");
-        pluginExec.setId("vmp-init-package");
+        pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
 
         //Plugin Configuration
         vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
-        Build build = model.getBuild();
+        Build build = createBuildSectionIfRequired(model);
+        build.getPlugins().add(vertxMavenPlugin);
 
+        save(pomFile, model);
+    }
+
+    private Build createBuildSectionIfRequired(Model model) {
+        Build build = model.getBuild();
         if (build == null) {
             build = new Build();
             model.setBuild(build);
         }
-
         if (build.getPlugins() == null) {
             build.setPlugins(new ArrayList<>());
         }
+        return build;
+    }
 
-        build.getPlugins().add(vertxMavenPlugin);
-
-        save(pomFile, model);
+    private void addPluginManagementSection(Model model, Plugin vertxMavenPlugin) {
+        if (model.getBuild().getPluginManagement() != null) {
+            if (model.getBuild().getPluginManagement().getPlugins() == null) {
+                model.getBuild().getPluginManagement().setPlugins(new ArrayList<>());
+            }
+            model.getBuild().getPluginManagement().getPlugins().add(vertxMavenPlugin);
+        }
     }
 
     private File createPomFileFromUserInputs() throws MojoExecutionException {
@@ -189,7 +196,7 @@ public class SetupMojo extends AbstractMojo {
                 // Ask for maven version if not set
                 if (vertxVersion == null) {
                     vertxVersion = prompter.promptWithDefaultValue("Set the Vert.x version",
-                        MojoUtils.getVersion("vertx-core-version"));
+                        MojoUtils.getVersion(VERTX_CORE_VERSION));
                 }
 
                 if (verticle == null) {
@@ -207,7 +214,7 @@ public class SetupMojo extends AbstractMojo {
             context.put("mProjectGroupId", projectGroupId);
             context.put("mProjectArtifactId", projectArtifactId);
             context.put("mProjectVersion", projectVersion);
-            context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion("vertx-core-version"));
+            context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion(VERTX_CORE_VERSION));
 
             context.put("vertxVerticle", verticle);
             context.put("vmpVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
@@ -328,15 +335,16 @@ public class SetupMojo extends AbstractMojo {
      * @param model - the {@code {@link Model}}
      */
     private void addVertxDependencies(Model model) {
+        String groupId = VERTX_GROUP_ID;
+        String artifactId = "vertx-core";
         if (model.getDependencies() != null) {
-
-            if (!MojoUtils.hasDependency(project, "io.vertx", "vertx-core")) {
+            if (!MojoUtils.hasDependency(project, groupId, artifactId)) {
                 model.getDependencies().add(
-                    dependency("io.vertx", "vertx-core", null));
+                    dependency(groupId, artifactId, null));
             }
         } else {
             model.setDependencies(new ArrayList<>());
-            model.getDependencies().add(dependency("io.vertx", "vertx-core", null));
+            model.getDependencies().add(dependency(groupId, artifactId, null));
         }
     }
 
@@ -347,12 +355,12 @@ public class SetupMojo extends AbstractMojo {
      * @param model - the {@code {@link Model}}
      */
     private void addVertxBom(Model model) {
-        Dependency vertxBom = dependency("io.vertx", "vertx-stack-depchain", "${vertx.version}");
+        Dependency vertxBom = dependency(VERTX_GROUP_ID, "vertx-stack-depchain", "${vertx.version}");
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 
         if (model.getDependencyManagement() != null) {
-            if (!MojoUtils.hasDependency(project, "io.vertx", "vertx-stack-depchain")) {
+            if (!MojoUtils.hasDependency(project, VERTX_GROUP_ID, "vertx-stack-depchain")) {
                 model.getDependencyManagement().addDependency(vertxBom);
             }
         } else {

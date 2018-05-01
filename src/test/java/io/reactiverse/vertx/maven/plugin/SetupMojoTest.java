@@ -66,7 +66,7 @@ public class SetupMojoTest {
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
         pluginExec.addGoal("package");
-        pluginExec.setId("vmp-init-package");
+        pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
 
         vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
@@ -123,7 +123,7 @@ public class SetupMojoTest {
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
         pluginExec.addGoal("package");
-        pluginExec.setId("vmp-init-package");
+        pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
 
         vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
@@ -185,7 +185,7 @@ public class SetupMojoTest {
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
         pluginExec.addGoal("package");
-        pluginExec.setId("vmp-init-package");
+        pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
 
         vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
