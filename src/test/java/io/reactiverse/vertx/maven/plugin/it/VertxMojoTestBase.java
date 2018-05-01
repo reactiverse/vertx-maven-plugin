@@ -50,7 +50,7 @@ public class VertxMojoTestBase {
             "@project.version@", VERSION);
     }
 
-    public  boolean isCoverage() {
+    boolean isCoverage() {
         return System.getProperty("coverage") != null;
     }
 
@@ -101,7 +101,7 @@ public class VertxMojoTestBase {
         return tc;
     }
 
-    static File initProject(String name, String output) {
+    public static File initProject(String name, String output) {
         File tc = new File("target/test-classes");
         if (!tc.isDirectory()) {
             boolean mkdirs = tc.mkdirs();

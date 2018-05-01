@@ -13,7 +13,7 @@
         <vertx.version>${vertxVersion}</vertx.version>
         <#if vertxVerticle??><vertx.verticle>${vertxVerticle}</vertx.verticle></#if>
         <!-- Maven plugins -->
-        <vertx-maven-plugin.version>${reactiverseVMPVersion}</vertx-maven-plugin.version>
+        <vertx-maven-plugin.version>${vmpVersion}</vertx-maven-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>

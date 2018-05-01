@@ -80,13 +80,13 @@ public class Verify {
 
         //Check if the properties have been set correctly
         Properties properties = model.getProperties();
-        assertThat(properties.containsKey("vertx.projectVersion")).isTrue();
-        assertThat(properties.getProperty("vertx.projectVersion"))
+        assertThat(properties.containsKey("vertx.version")).isTrue();
+        assertThat(properties.getProperty("vertx.version"))
             .isEqualTo(MojoUtils.getVersion("vertx-core-version"));
 
 
-        assertThat(properties.containsKey("reactiverse-vertx-maven-plugin.projectVersion")).isTrue();
-        assertThat(properties.getProperty("reactiverse-vertx-maven-plugin.projectVersion"))
+        assertThat(properties.containsKey("vertx-maven-plugin.version")).isTrue();
+        assertThat(properties.getProperty("vertx-maven-plugin.version"))
             .isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         //Check if the dependencies has been set correctly
@@ -96,12 +96,12 @@ public class Verify {
 
         //Check Vert.x dependencies BOM
         Optional<Dependency> vertxDeps = dependencyManagement.getDependencies().stream()
-            .filter(d -> d.getArtifactId().equals("vertx-dependencies")
+            .filter(d -> d.getArtifactId().equals("vertx-stack-depchain")
                 && d.getGroupId().equals("io.vertx"))
             .findFirst();
 
         assertThat(vertxDeps.isPresent()).isTrue();
-        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.projectVersion}");
+        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.version}");
 
         //Check Vert.x core dependency
         Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
@@ -128,7 +128,7 @@ public class Verify {
         Properties projectProps = project.getProperties();
         Assert.assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.projectVersion"),"3.4.0");
+        assertEquals(projectProps.getProperty("vertx.version"),"3.4.0");
     }
 
     public static String read(InputStream input) throws IOException {

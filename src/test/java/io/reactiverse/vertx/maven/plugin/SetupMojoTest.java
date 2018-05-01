@@ -289,7 +289,7 @@ public class SetupMojoTest {
         tplContext.put("mProjectVersion", "1.0-SNAPSHOT");
         tplContext.put("vertxVersion", vertxVersion);
         tplContext.put("vertxVerticle", "com.example.vertx.MainVerticle");
-        tplContext.put("reactiverseVMPVersion", MojoUtils.getVersion("vertx-maven-plugin-version"));
+        tplContext.put("vmpVersion", MojoUtils.getVersion("vertx-maven-plugin-version"));
         SetupTemplateUtils.createPom(tplContext, pomFile);
 
         assertThat(pomFile).isFile();
