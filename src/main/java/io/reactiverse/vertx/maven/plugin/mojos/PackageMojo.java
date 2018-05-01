@@ -79,39 +79,38 @@ public class PackageMojo extends AbstractVertxMojo {
     @Parameter(alias = "skipScmMetadata", property = "vertx.skipScmMetadata", defaultValue = "false")
     protected boolean skipScmMetadata;
 
+    private static final String JAR_EXTENSION = ".jar";
+
     public static String computeOutputName(MavenProject project, String classifier) {
         String finalName = project.getBuild().getFinalName();
         if (finalName != null) {
-            if (finalName.endsWith(".jar")) {
-                finalName = finalName.substring(0, finalName.length() - 4);
+            if (finalName.endsWith(JAR_EXTENSION)) {
+                finalName = finalName.substring(0, finalName.length() - JAR_EXTENSION.length());
             }
             if (classifier != null && !classifier.isEmpty()) {
                 finalName += "-" + classifier;
             }
-            finalName += ".jar";
+            finalName += JAR_EXTENSION;
             return finalName;
         } else {
             finalName = project.getArtifactId() + "-" + project.getVersion();
             if (classifier != null && !classifier.isEmpty()) {
                 finalName += "-" + classifier;
             }
-            finalName += ".jar";
+            finalName += JAR_EXTENSION;
             return finalName;
         }
     }
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         if (skip) {
             getLog().info("vertx:package skipped by configuration");
             return;
         }
 
-        // Fix empty classifier.
-        if (classifier != null && classifier.trim().isEmpty()) {
-            getLog().debug("The classifier is empty, it won't be used");
-            classifier = null;
-        }
+        fixEmptyClassifier();
+
 
         if (classifier == null && !attach) {
             throw new MojoExecutionException("Cannot disable attachment of the created archive when it's the main " +
@@ -121,13 +120,7 @@ public class PackageMojo extends AbstractVertxMojo {
         //TODO Archive should be a parameter.
         Archive archive = ServiceUtils.getDefaultFatJar();
 
-        if (launcher != null && !launcher.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Class", launcher);
-        }
-
-        if (verticle != null && !verticle.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
-        }
+        extendManifest(archive);
 
         List<ManifestCustomizerService> customizers = getManifestCustomizers();
         customizers.forEach(customizer ->
@@ -154,6 +147,21 @@ public class PackageMojo extends AbstractVertxMojo {
             throw new MojoExecutionException("Unable to build the fat jar", e);
         }
 
+        attachIfNeeded(jar);
+
+    }
+
+    private void extendManifest(Archive archive) {
+        if (launcher != null && !launcher.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Class", launcher);
+        }
+
+        if (verticle != null && !verticle.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
+        }
+    }
+
+    private void attachIfNeeded(File jar) {
         if (jar.isFile() && classifier != null && attach) {
             ArtifactHandler handler = new DefaultArtifactHandler("jar");
             Artifact vertxJarArtifact = new DefaultArtifact(project.getGroupId(),
@@ -162,7 +170,14 @@ public class PackageMojo extends AbstractVertxMojo {
             vertxJarArtifact.setFile(jar);
             this.project.addAttachedArtifact(vertxJarArtifact);
         }
+    }
 
+    private void fixEmptyClassifier() {
+        // Fix empty classifier.
+        if (classifier != null && classifier.trim().isEmpty()) {
+            getLog().debug("The classifier is empty, it won't be used");
+            classifier = null;
+        }
     }
 
     private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
@@ -170,6 +185,7 @@ public class PackageMojo extends AbstractVertxMojo {
         try {
             customizers = container.lookupList(ManifestCustomizerService.class);
         } catch (ComponentLookupException e) {
+            getLog().debug("ManifestCustomerService lookup failed", e);
             throw new MojoExecutionException("Unable to retrieve the " +
                 ManifestCustomizerService.class.getName() + " components");
         }
