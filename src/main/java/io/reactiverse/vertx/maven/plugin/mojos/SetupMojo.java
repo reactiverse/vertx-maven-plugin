@@ -48,6 +48,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 @Mojo(name = "setup", requiresProject = false)
 public class SetupMojo extends AbstractMojo {
 
+    public static final String JAVA_EXTENSION = ".java";
     private final String PLUGIN_GROUPID = "io.reactiverse";
     private final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
     private final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
@@ -110,8 +111,8 @@ public class SetupMojo extends AbstractMojo {
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
         if (!Strings.isNullOrEmpty(verticle)) {
-            if (verticle.endsWith(".java")) {
-                verticle = verticle.substring(0, verticle.length() - ".java".length());
+            if (verticle.endsWith(JAVA_EXTENSION)) {
+                verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
             }
             model.getProperties().putIfAbsent("vertx.verticle", verticle);
         }
@@ -198,8 +199,8 @@ public class SetupMojo extends AbstractMojo {
                 }
             }
 
-            if (verticle != null && verticle.endsWith(".java")) {
-                verticle = verticle.substring(0, verticle.length() - ".java".length());
+            if (verticle != null && verticle.endsWith(JAVA_EXTENSION)) {
+                verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
             }
 
             Map<String, String> context = new HashMap<>();
@@ -234,16 +235,30 @@ public class SetupMojo extends AbstractMojo {
 
     private void save(File pomFile, Model model) throws MojoExecutionException {
         MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
-        FileWriter pomFileWriter = null;
-        try {
-            pomFileWriter = new FileWriter(pomFile);
+        try (FileWriter pomFileWriter = new FileWriter(pomFile)) {
             xpp3Writer.write(pomFileWriter, model);
-
             pomFileWriter.flush();
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write the pom.xml file", e);
-        } finally {
-            IOUtils.closeQuietly(pomFileWriter);
+        }
+    }
+
+    private Dependency parse(String dependency) {
+        Dependency res = new Dependency();
+        String[] segments = dependency.split(":");
+        if (segments.length >= 2) {
+            res.setGroupId(segments[0]);
+            res.setArtifactId(segments[1]);
+            if (segments.length >= 3 && !segments[2].isEmpty()) {
+                res.setVersion(segments[2]);
+            }
+            if (segments.length >= 4) {
+                res.setClassifier(segments[3]);
+            }
+            return res;
+        } else {
+            getLog().warn("Invalid dependency description '" + dependency + "'");
+            return null;
         }
     }
 
@@ -266,22 +281,11 @@ public class SetupMojo extends AbstractMojo {
             } else if (dependency.contains(":")) {
                 // Add it as a dependency
                 // groupId:artifactId:version:classifier
-                String[] segments = dependency.split(":");
-                if (segments.length >= 2) {
-                    Dependency d = new Dependency();
-                    d.setGroupId(segments[0]);
-                    d.setArtifactId(segments[1]);
-                    if (segments.length >= 3  && ! segments[2].isEmpty()) {
-                        d.setVersion(segments[2]);
-                    }
-                    if (segments.length >= 4) {
-                        d.setClassifier(segments[3]);
-                    }
-                    getLog().info("Adding dependency " + d.getManagementKey());
-                    model.addDependency(d);
+                Dependency parsed = parse(dependency);
+                if (parsed != null) {
+                    getLog().info("Adding dependency " + parsed.getManagementKey());
+                    model.addDependency(parsed);
                     updated = true;
-                } else {
-                    getLog().warn("Invalid dependency description '" + dependency + "'");
                 }
             } else {
                 getLog().warn("Cannot find a dependency matching '" + dependency + "'");
@@ -298,17 +302,18 @@ public class SetupMojo extends AbstractMojo {
         File resources = new File(root, "src/main/resources");
         File test = new File(root, "src/test/java");
 
+        String prefix = "Creation of ";
         if (!source.isDirectory()) {
             boolean res = source.mkdirs();
-            getLog().debug("Creation of " + source.getAbsolutePath() + " : " + res);
+            getLog().debug(prefix + source.getAbsolutePath() + " : " + res);
         }
         if (!resources.isDirectory()) {
             boolean res = resources.mkdirs();
-            getLog().debug("Creation of " + resources.getAbsolutePath() + " : " + res);
+            getLog().debug(prefix + resources.getAbsolutePath() + " : " + res);
         }
         if (!test.isDirectory()) {
             boolean res = test.mkdirs();
-            getLog().debug("Creation of " + test.getAbsolutePath() + " : " + res);
+            getLog().debug(prefix + test.getAbsolutePath() + " : " + res);
         }
     }
 
