@@ -23,7 +23,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -32,10 +31,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
+ * this mojo configures the redeploy system. It records all the Mojos that are executed in the lifecycle, so we can replay
+ * them later (upon changes).
+ *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @Mojo(name = "initialize",
@@ -57,7 +58,7 @@ public class InitializeMojo extends AbstractVertxMojo {
     private boolean stripJavaScriptDependencyVersion;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         if (skip) {
             getLog().info("vertx:initialize skipped by configuration");
             return;
@@ -83,23 +84,31 @@ public class InitializeMojo extends AbstractVertxMojo {
 
     private void unpackWebjars(Set<Artifact> dependencies) throws MojoExecutionException {
         for (Artifact artifact : dependencies) {
-            Optional<File> maybeFile = getArtifactFile(artifact);
-            if (artifact.getType().equalsIgnoreCase("jar")  && maybeFile.isPresent()) {
-                if (WebJars.isWebJar(getLog(), maybeFile.get())) {
-                    try {
-                        WebJars.extract(this, maybeFile.get(),
-                            createWebRootDirIfNeeded(), stripWebJarVersion);
-                    } catch (IOException e) {
-                        throw new MojoExecutionException("Unable to unpack '"
-                            + artifact.toString() + "'", e);
-                    }
-                }
+            File file = getArtifactFile(artifact)
+                .filter(File::isFile)
+                .orElseThrow(() ->
+                    new MojoExecutionException("Unable to copy WebJar dependency, "
+                        + artifact.getGroupId() + ":" + artifact.getArtifactId() + " has not been resolved"));
+            if (artifact.getType().equalsIgnoreCase("jar")) {
+                unpackWebJar(artifact, file);
+            }
+        }
+    }
+
+    private void unpackWebJar(Artifact artifact, File file) throws MojoExecutionException {
+        if (WebJars.isWebJar(getLog(), file)) {
+            try {
+                WebJars.extract(this, file,
+                    createWebRootDirIfNeeded(), stripWebJarVersion);
+            } catch (IOException e) {
+                throw new MojoExecutionException("Unable to unpack '"
+                    + artifact.toString() + "'", e);
             }
         }
     }
 
     private File createWebRootDirIfNeeded() {
-        if (! webRoot.isDirectory()) {
+        if (!webRoot.isDirectory()) {
             boolean created = webRoot.mkdirs();
             if (created) {
                 getLog().debug("Webroot directory created: " + webRoot.getAbsolutePath());
@@ -114,29 +123,32 @@ public class InitializeMojo extends AbstractVertxMojo {
     private void copyJSDependencies(Set<Artifact> dependencies) throws MojoExecutionException {
         for (Artifact artifact : dependencies) {
             if (artifact.getType().equalsIgnoreCase("js")) {
-                Optional<File> file = getArtifactFile(artifact);
-                if (file.isPresent()) {
-                    try {
-                        if (stripJavaScriptDependencyVersion) {
-                            String name = artifact.getArtifactId();
-                            if (artifact.getClassifier() != null) {
-                                name += "-" + artifact.getClassifier();
-                            }
-                            name += ".js";
-                            File output = new File(createWebRootDirIfNeeded(), name);
-                            FileUtils.copyFile(file.get(), output);
-                        } else {
-                            FileUtils.copyFileToDirectory(file.get(), createWebRootDirIfNeeded());
-                        }
-                    } catch (IOException e) {
-                        throw new MojoExecutionException("Unable to copy '"
-                            + artifact.toString() + "'", e);
-                    }
-                } else {
-                    getLog().warn("Skipped the copy of '"
-                        + artifact.toString() + "' - The artifact file does not exist");
-                }
+                File file = getArtifactFile(artifact)
+                    .filter(File::isFile)
+                    .orElseThrow(() ->
+                        new MojoExecutionException("Unable to copy JS dependencies, "
+                            + artifact.getGroupId() + ":" + artifact.getArtifactId() + " has not been resolved"));
+                copyJavascriptDependency(artifact, file);
             }
+        }
+    }
+
+    private void copyJavascriptDependency(Artifact artifact, File file) throws MojoExecutionException {
+        try {
+            if (stripJavaScriptDependencyVersion) {
+                String name = artifact.getArtifactId();
+                if (artifact.getClassifier() != null) {
+                    name += "-" + artifact.getClassifier();
+                }
+                name += ".js";
+                File output = new File(createWebRootDirIfNeeded(), name);
+                FileUtils.copyFile(file, output);
+            } else {
+                FileUtils.copyFileToDirectory(file, createWebRootDirIfNeeded());
+            }
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to copy '"
+                + artifact.toString() + "'", e);
         }
     }
 }
