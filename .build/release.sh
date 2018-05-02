@@ -32,9 +32,9 @@ fi
 
 # Update version in pom.xml file
 echo -e "${BLUE}Updating project version to: ${YELLOW} ${VERSION} ${NC}"
-mvn versions:set -DnewVersion=${VERSION} > bump-version-dev.log
+mvn versions:set -DnewVersion=${VERSION} >& bump-version-dev.log
 echo -e "${BLUE}Issuing a verification build${NC}"
-mvn clean install -DskipTests > fast-build.log
+mvn clean install -DskipTests >& fast-build.log
 
 echo -e "${BLUE}Committing changes${NC}"
 git commit -am "Releasing version ${VERSION}"
@@ -43,9 +43,9 @@ echo -e "${BLUE}Creating the tag ${YELLOW}${TAG}${NC}"
 git tag -a ${TAG} -m "Releasing ${TAG}"
 
 echo -e "${BLUE}Updating project version to: ${YELLOW}${NEXT_DEV_VERSION}${NC}"
-mvn versions:set -DnewVersion=${NEXT_DEV_VERSION} > bump-version-dev.log
+mvn versions:set -DnewVersion=${NEXT_DEV_VERSION} >& bump-version-dev.log
 
-mvn clean install -DskipTests > fast-build-dev.log
+mvn clean install -DskipTests >& fast-build-dev.log
 
 echo -e "${BLUE}Committing changes${NC}"
 git commit -am "Bumping version to ${NEXT_DEV_VERSION}"
