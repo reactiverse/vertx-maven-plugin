@@ -24,7 +24,6 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
@@ -65,7 +64,7 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (this.monitor != null) {
             try {
                 this.monitor.stop();
@@ -80,7 +79,7 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
      *
      * @param path the path to observe
      */
-    protected synchronized void buildObserver(Path path) {
+    private synchronized void buildObserver(Path path) {
 
         logger.info("Observing path:" + path.toString());
 
@@ -96,7 +95,7 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
     /**
      *
      */
-    protected synchronized void syncMonitor() {
+    private synchronized void syncMonitor() {
         observers.forEach((path, observer)
             -> this.monitor.getObservers().forEach(observer2 -> {
             Path path1 = Paths.get(observer2.getDirectory().toString());
@@ -122,31 +121,19 @@ public class IncrementalBuilder extends FileAlterationListenerAdaptor implements
 
     @Override
     public void onFileCreate(File file) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("File Created: " + file);
-        }
-
+        logger.debug("File Created: " + file);
         triggerBuild(file);
     }
 
     @Override
     public void onFileChange(File file) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("File Changed: " + file);
-        }
-
+        logger.debug("File Changed: " + file);
         triggerBuild(file);
     }
 
     @Override
     public void onFileDelete(File file) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("File Deleted: " + file);
-        }
-
+        logger.debug("File Deleted: " + file);
         triggerBuild(file);
     }
 
