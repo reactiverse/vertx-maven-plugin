@@ -18,7 +18,6 @@
 package io.reactiverse.vertx.maven.plugin.utils;
 
 import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
@@ -34,6 +33,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
@@ -42,16 +43,16 @@ public class WebJars {
     /**
      * A regex extracting the library name and version from Zip Entry names.
      */
-    public static final Pattern WEBJAR_REGEX = Pattern.compile(".*META-INF/resources/webjars/([^/]+)/([^/]+)/.*");
+    private static final Pattern WEBJAR_REGEX = Pattern.compile(".*META-INF/resources/webjars/([^/]+)/([^/]+)/.*");
     /**
      * The directory within jar file where webjar resources are located.
      */
-    public static final String WEBJAR_LOCATION = "META-INF/resources/webjars/";
+    private static final String WEBJAR_LOCATION = "META-INF/resources/webjars/";
 
     /**
      * A regex to extract the different part of the path of a file from a library included in a webjar.
      */
-    public static final Pattern WEBJAR_INTERNAL_PATH_REGEX = Pattern.compile("([^/]+)/([^/]+)/(.*)");
+    private static final Pattern WEBJAR_INTERNAL_PATH_REGEX = Pattern.compile("([^/]+)/([^/]+)/(.*)");
 
 
     /**
@@ -74,14 +75,7 @@ public class WebJars {
                     return false;
                 }
 
-                Enumeration<JarEntry> entries = jar.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = entries.nextElement();
-                    Matcher matcher = WEBJAR_REGEX.matcher(entry.getName());
-                    if (matcher.matches()) {
-                        found.add(matcher.group(1) + "-" + matcher.group(2));
-                    }
-                }
+                search(found, jar);
             } catch (IOException e) {
                 log.error("Cannot check if the file " + file.getName()
                     + " is a webjar, cannot open it", e);
@@ -98,42 +92,52 @@ public class WebJars {
         return false;
     }
 
+    private static void search(Set<String> found, JarFile jar) {
+        Enumeration<JarEntry> entries = jar.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            Matcher matcher = WEBJAR_REGEX.matcher(entry.getName());
+            if (matcher.matches()) {
+                found.add(matcher.group(1) + "-" + matcher.group(2));
+            }
+        }
+    }
+
     public static void extract(final AbstractVertxMojo mojo, File in, File out, boolean stripVersion) throws IOException {
-        ZipFile file = new ZipFile(in);
-        try {
+        try (ZipFile file = new ZipFile(in)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
             while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(WEBJAR_LOCATION) && !entry.isDirectory()) {
-                    // Compute destination.
-                    File output = new File(out,
-                        entry.getName().substring(WEBJAR_LOCATION.length()));
-                    if (stripVersion) {
-                        String path = entry.getName().substring(WEBJAR_LOCATION.length());
-                        Matcher matcher = WEBJAR_INTERNAL_PATH_REGEX.matcher(path);
-                        if (matcher.matches()) {
-                            output = new File(out, matcher.group(1) + "/" + matcher.group(3));
-                        } else {
-                            mojo.getLog().warn(path + " does not match the regex - did not strip the version for this" +
-                                " file");
-                        }
-                    }
-                    InputStream stream = null;
-                    try {
-                        stream = file.getInputStream(entry);
-                        output.getParentFile().mkdirs();
-                        org.apache.commons.io.FileUtils.copyInputStreamToFile(stream, output);
-                    } catch (IOException e) {
-                        mojo.getLog().error("Cannot unpack " + entry.getName() + " from "
-                            + file.getName(), e);
-                        throw e;
-                    } finally {
-                        IOUtils.closeQuietly(stream);
-                    }
-                }
+                unzipWebJarFile(mojo, out, stripVersion, file, entries);
             }
-        } finally {
-            IOUtils.closeQuietly(file);
         }
+    }
+
+    private static void unzipWebJarFile(AbstractVertxMojo mojo, File out, boolean stripVersion, ZipFile file, Enumeration<? extends ZipEntry> entries) throws IOException {
+        ZipEntry entry = entries.nextElement();
+        if (entry.getName().startsWith(WEBJAR_LOCATION) && !entry.isDirectory()) {
+            // Compute destination.
+            File output = getOutput(mojo.getLog(), out, stripVersion,
+                entry.getName().substring(WEBJAR_LOCATION.length()));
+            try (InputStream stream = file.getInputStream(entry)) {
+                boolean created = output.getParentFile().mkdirs();
+                mojo.getLog().debug(out.getParentFile().getAbsolutePath() + " created? " + created);
+                copyInputStreamToFile(stream, output);
+            } catch (IOException e) {
+                mojo.getLog().error("Cannot unpack " + entry.getName() + " from " + file.getName(), e);
+                throw e;
+            }
+        }
+    }
+
+    private static File getOutput(Log log, File out, boolean stripVersion, String path) {
+        if (stripVersion) {
+            Matcher matcher = WEBJAR_INTERNAL_PATH_REGEX.matcher(path);
+            if (matcher.matches()) {
+                return new File(out, matcher.group(1) + "/" + matcher.group(3));
+            } else {
+                log.warn(path + " does not match the regex - did not strip the version for this file");
+            }
+        }
+        return new File(out, path);
     }
 }

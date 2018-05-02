@@ -18,6 +18,7 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.MavenExecutionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -76,25 +77,13 @@ public class StartMojo extends AbstractRunMojo {
 
         vertxCommand = VERTX_COMMAND_START;
 
-        String vertxProcId = getAppId();
+        String applicationId = getAppId();
+
         scanAndLoadConfigs();
 
         List<String> argsList = new ArrayList<>();
 
-        try {
-
-            Path pidFilePath = Paths.get(workDirectory.toString(), VERTX_PID_FILE);
-
-            if (pidFilePath.toFile().exists() && pidFilePath.toFile().isFile()) {
-                Files.delete(pidFilePath);
-            }
-
-            Files.write(Paths.get(workDirectory.toString(), VERTX_PID_FILE), vertxProcId.getBytes());
-
-        } catch (IOException e) {
-            throw new MojoExecutionException("Unable to write process file to directory :"
-                + workDirectory.toString());
-        }
+        writePidFile(applicationId);
 
         boolean jarMode = VERTX_RUN_MODE_JAR.equals(runMode);
 
@@ -102,10 +91,7 @@ public class StartMojo extends AbstractRunMojo {
             String name = PackageMojo.computeOutputName(project, classifier);
             File fatjar = new File(project.getBuild().getDirectory(), name);
 
-            if (! fatjar.isFile()) {
-                getLog().warn("Unable to find the Vert.x application jar, triggering the build");
-                MavenExecutionUtils.execute("package", project, mavenSession, lifecycleExecutor, container);
-            }
+            buildJarIfRequired(fatjar);
 
             if (fatjar.isFile()  &&  isVertxLauncher(launcher)) {
                 argsList.add("-jar");
@@ -134,30 +120,57 @@ public class StartMojo extends AbstractRunMojo {
             argsList.add(verticle);
         }
 
-        if (config != null && config.exists() && config.isFile()) {
-            getLog().info("Using configuration from file: " + config.toString());
-            argsList.add(VERTX_ARG_CONF);
-            argsList.add(config.toString());
-        }
-
-
-        if (launcher != null  && ! isVertxLauncher(launcher)) {
-            argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
-            argsList.add(launcher);
-        }
+        appendConfigIfRequired(argsList);
+        appendLauncherIfRequired(argsList);
 
         argsList.add("-id");
-        argsList.add(vertxProcId);
+        argsList.add(applicationId);
 
+        appendSysProperties(argsList);
+
+        run(argsList);
+
+    }
+
+    private void writePidFile(String vertxProcId) throws MojoExecutionException {
+        try {
+            File pid = new File(workDirectory, VERTX_PID_FILE);
+            FileUtils.write(pid, vertxProcId, "UTF-8");
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to write process file to directory :"
+                + workDirectory.toString(), e);
+        }
+    }
+
+    private void buildJarIfRequired(File fatjar) {
+        if (! fatjar.isFile()) {
+            getLog().warn("Unable to find the Vert.x application jar, triggering the build");
+            MavenExecutionUtils.execute("package", project, mavenSession, lifecycleExecutor, container);
+        }
+    }
+
+    private void appendSysProperties(List<String> argsList) {
         if (jvmArgs != null && !jvmArgs.isEmpty()) {
             String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
             String argJavaOpts = VERTX_ARG_JAVA_OPT +
                 "=" + javaOpts;
             argsList.add(argJavaOpts);
         }
+    }
 
-        run(argsList);
+    private void appendLauncherIfRequired(List<String> argsList) throws MojoExecutionException {
+        if (launcher != null  && ! isVertxLauncher(launcher)) {
+            argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
+            argsList.add(launcher);
+        }
+    }
 
+    private void appendConfigIfRequired(List<String> argsList) {
+        if (config != null && config.exists() && config.isFile()) {
+            getLog().info("Using configuration from file: " + config.toString());
+            argsList.add(VERTX_ARG_CONF);
+            argsList.add(config.toString());
+        }
     }
 
     /**
