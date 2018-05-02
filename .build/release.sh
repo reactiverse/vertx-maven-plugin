@@ -8,8 +8,7 @@ BLUE='\033[0;34m'
 
 # Extract versions
 LAST_TAG=$(git tag -l --sort=-v:refname | head -n 1)
-NEW_VERSION=""
-NEW_TAG=""
+VERSION=""
 NEXT_DEV_VERSION=""
 TAG=""
 
@@ -21,7 +20,7 @@ then
     minor="${BASH_REMATCH[2]}"
     micro="${BASH_REMATCH[3]}"
     VERSION=${major}.${minor}.$(($micro +1))
-    TAG="v${NEW_VERSION}"
+    TAG="v${VERSION}"
     NEXT_DEV_VERSION="${major}.${minor}-SNAPSHOT"
     echo -e "${BLUE}Release version: ${YELLOW}${VERSION} ${NC}"
     echo -e "${BLUE}Next development version: ${YELLOW}${NEXT_DEV_VERSION} ${NC}"
@@ -52,5 +51,7 @@ git commit -am "Bumping version to ${NEXT_DEV_VERSION}"
 
 echo -e "${BLUE}Pushing changes${NC}"
 git push origin master --tags
+
+rm -Rf *.log pom.xml.versionsBackup
 
 
