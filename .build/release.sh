@@ -11,6 +11,8 @@ LAST_TAG=$(git tag -l --sort=-v:refname | head -n 1)
 NEW_VERSION=""
 NEW_TAG=""
 NEXT_DEV_VERSION=""
+TAG=""
+
 echo "Last tag: ${LAST_TAG}"
 regex="v([0-9]+).([0-9]+).([0-9]+)"
 if [[ ${LAST_TAG} =~ $regex ]]
