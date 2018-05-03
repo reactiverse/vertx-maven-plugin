@@ -3,7 +3,7 @@
 [cols="2,2,2"]
 
 | image:https://travis-ci.org/reactiverse/vertx-maven-plugin.svg?branch=master["Build Status", link="https://travis-ci.org/reactiverse/vertx-maven-plugin"]
-|image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg)["Maven Central", link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin)
+|image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg["Maven Central", link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin]
 |
 
 | image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=sqale_rating["Maintenance", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"] 
