@@ -1,11 +1,15 @@
 = Maven Plugin for Eclipse Vert.x
 
-//[cols="2,2"]
-//|===
-//|Circle CI (Linux / OS X)| AppVeyor (Windows)
-//|image:https://circleci.com/gh/reactiverse/vertx-maven-plugin.svg?style=shield["CircleCI", link="https://circleci.com/gh/reactiverse/vertx-maven-plugin"]
-//|image:https://ci.appveyor.com/api/projects/status/w68t5uccpfuy4176?svg=true["AppVeyor", link="https://ci.appveyor.com/project/kameshsampath/vertx-maven-plugin"]
-//|===
+[cols="2,2,2"]
+
+| image:https://travis-ci.org/reactiverse/vertx-maven-plugin.svg?branch=master["Build Status", link="https://travis-ci.org/reactiverse/vertx-maven-plugin"]
+|image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg)["Maven Central", link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin)
+|
+
+| image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=sqale_rating["Maintenance", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"] 
+| image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=reliability_rating["Reliability", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"] 
+| image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=coverage["Coverage", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"]
+|===
 
 This Maven plugin is a one-stop-shop for packaging, running, starting and stopping  http://vertx.io[vert.x] Java applications.  This plugin
 combines the goals of Maven Shade, Maven Exec into one, allowing the users to have a simplified pom.xml.
