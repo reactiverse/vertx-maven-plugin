@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * this mojo configures the redeploy system. It records all the Mojos that are executed in the lifecycle, so we can replay
@@ -44,9 +45,6 @@ import java.util.Set;
     requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class InitializeMojo extends AbstractVertxMojo {
-
-    @Parameter(defaultValue = "${session}", readonly = true)
-    private MavenSession session;
 
     @Parameter
     private File webRoot;
@@ -71,14 +69,17 @@ public class InitializeMojo extends AbstractVertxMojo {
         }
 
         Set<Artifact> dependencies = new LinkedHashSet<>();
-        dependencies.addAll(this.project.getDependencyArtifacts());
+        dependencies.addAll(this.project.getDependencyArtifacts().stream()
+            // Remove test dependencies
+            .filter(artifact -> ! "test".equalsIgnoreCase(artifact.getScope()))
+            .collect(Collectors.toList()));
         dependencies.addAll(this.project.getArtifacts());
 
         copyJSDependencies(dependencies);
         unpackWebjars(dependencies);
 
         // Start the spy
-        MavenExecutionRequest request = session.getRequest();
+        MavenExecutionRequest request = mavenSession.getRequest();
         MojoSpy.init(request);
     }
 
