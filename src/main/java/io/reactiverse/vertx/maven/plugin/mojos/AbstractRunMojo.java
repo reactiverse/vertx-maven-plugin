@@ -17,9 +17,9 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -131,6 +131,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             return;
         }
 
+        ensureVerticleOrLauncher();
+
         compileIfNeeded();
 
         List<String> argsList = new ArrayList<>();
@@ -169,6 +171,20 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
         addRunExtraArgs(argsList);
         run(argsList);
+    }
+
+    private void ensureVerticleOrLauncher() throws MojoExecutionException {
+        getLog().info("Checking that verticle or launcher is set: " + verticle + ", " + launcher);
+        if (StringUtils.isBlank(verticle) && StringUtils.isBlank(launcher)) {
+            throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) or" +
+                " the element `launcher` (`vertx.launcher` property) is required.");
+        }
+
+        if (launcher.equalsIgnoreCase(IO_VERTX_CORE_LAUNCHER) && StringUtils.isBlank(verticle)) {
+            throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is" +
+                " required if the element `launcher` (`vertx.launcher` property) is not set (or is `io.vertx.core" +
+                ".Launcher`)");
+        }
     }
 
     private void compileIfNeeded() {

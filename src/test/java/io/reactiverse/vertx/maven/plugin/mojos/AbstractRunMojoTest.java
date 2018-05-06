@@ -1,6 +1,7 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 
@@ -44,4 +45,38 @@ public class AbstractRunMojoTest {
         mojo.scanAndLoadConfigs();
         assertThat(mojo.config).doesNotExist();
     }
+
+    @Test(expected = MojoExecutionException.class)
+    public void testWithBlankVerticleAndLauncher() throws MojoFailureException, MojoExecutionException {
+        AbstractRunMojo mojo = new AbstractRunMojo();
+        mojo.project = new MavenProject();
+        mojo.projectBuildDir = "target/junk";
+        mojo.config = new File("src/test/resources/missing.yml");
+        mojo.launcher = "";
+        mojo.verticle = "";
+        mojo.execute();
+    }
+
+    @Test(expected = MojoExecutionException.class)
+    public void testWithNullVerticleAndLauncher() throws MojoFailureException, MojoExecutionException {
+        AbstractRunMojo mojo = new AbstractRunMojo();
+        mojo.project = new MavenProject();
+        mojo.projectBuildDir = "target/junk";
+        mojo.config = new File("src/test/resources/missing.yml");
+        mojo.launcher = null;
+        mojo.verticle = null;
+        mojo.execute();
+    }
+
+    @Test(expected = MojoExecutionException.class)
+    public void testWithDefaultLauncherButNotVerticle() throws MojoFailureException, MojoExecutionException {
+        AbstractRunMojo mojo = new AbstractRunMojo();
+        mojo.project = new MavenProject();
+        mojo.projectBuildDir = "target/junk";
+        mojo.config = new File("src/test/resources/missing.yml");
+        mojo.launcher = "io.vertx.core.Launcher";
+        mojo.verticle = null;
+        mojo.execute();
+    }
+
 }
