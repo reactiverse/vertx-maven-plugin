@@ -107,7 +107,7 @@
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <mojo-executor.version>2.2.0</mojo-executor.version>
-        <snakeyaml.version>1.17</snakeyaml.version>
+        <snakeyaml.version>1.21</snakeyaml.version>
         <org.json.version>20160212</org.json.version>
         <guava.version>19.0</guava.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
