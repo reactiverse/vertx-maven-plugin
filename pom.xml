@@ -91,7 +91,7 @@
         <!-- Plugin versions -->
         <maven-invoker-plugin.version>2.0.0</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
-        <maven-plugin-api.version>3.2.5</maven-plugin-api.version>
+        <maven-plugin-api.version>3.5.3</maven-plugin-api.version>
         <maven-resources-plugin.version>3.0.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>1.5.3</asciidoctor-maven-plugin.version>
