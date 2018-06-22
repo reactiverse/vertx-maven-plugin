@@ -41,7 +41,7 @@ public class DebugMojo extends RunMojo {
     boolean debugSuspend;
 
     @Parameter(property = "debug.port", defaultValue = "5005")
-    int debugPort;
+    String debugPort;
 
 
     @Override
