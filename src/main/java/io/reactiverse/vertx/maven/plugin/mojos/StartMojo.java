@@ -88,7 +88,7 @@ public class StartMojo extends AbstractRunMojo {
         boolean jarMode = VERTX_RUN_MODE_JAR.equals(runMode);
 
         if (jarMode) {
-            String name = PackageMojo.computeOutputName(project, classifier);
+            String name = PackageMojo.computeOutputName(computeArchive(), project, classifier);
             File fatjar = new File(project.getBuild().getDirectory(), name);
 
             buildJarIfRequired(fatjar);

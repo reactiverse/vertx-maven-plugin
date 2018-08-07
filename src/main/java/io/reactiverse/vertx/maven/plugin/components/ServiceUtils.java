@@ -2,12 +2,10 @@ package io.reactiverse.vertx.maven.plugin.components;
 
 import io.reactiverse.vertx.maven.plugin.mojos.Archive;
 import io.reactiverse.vertx.maven.plugin.mojos.DependencySet;
-import io.reactiverse.vertx.maven.plugin.mojos.FileSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
@@ -24,8 +22,8 @@ public class ServiceUtils {
         DependencySet all = new DependencySet();
         archive.addDependencySet(all);
         archive.setIncludeClasses(true);
-        archive.addDescriptorCombinationPattern("META-INF/services/*");
-        archive.addDescriptorCombinationPattern("META-INF/spring.*");
+        archive.addFileCombinationPattern("META-INF/services/*");
+        archive.addFileCombinationPattern("META-INF/spring.*");
         return archive;
     }
 
@@ -76,7 +74,7 @@ public class ServiceUtils {
         String provided = "provided";
         String compile = "compile";
         String system = "system";
-        
+
         if (Artifact.SCOPE_COMPILE.equals(scope)) {
             scopes.addAll(Arrays.asList(compile, provided, system));
         }

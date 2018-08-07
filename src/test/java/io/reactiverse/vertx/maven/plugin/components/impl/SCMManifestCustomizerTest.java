@@ -24,7 +24,7 @@ public class SCMManifestCustomizerTest {
     public void testWithSkippingTheScmMetadata() {
         SCMManifestCustomizer customizer = new SCMManifestCustomizer();
         PackageMojo mojo = mock(PackageMojo.class);
-        when(mojo.isSkipScmMetadata()).thenReturn(true);
+        when(mojo.skipScmMetadata()).thenReturn(true);
         Map<String, String> entries = customizer.getEntries(mojo, createProject());
         assertThat(entries).isEmpty();
     }

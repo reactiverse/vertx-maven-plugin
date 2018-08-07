@@ -21,7 +21,7 @@ public class Archive {
 
     private boolean includeClasses = true;
 
-    private List<String> descriptorCombinationPatterns = new ArrayList<>();
+    private List<String> fileCombinationPatterns = new ArrayList<>();
 
     /**
      * Adds a dependency set
@@ -167,25 +167,25 @@ public class Archive {
         return this;
     }
 
-    public Archive addDescriptorCombinationPattern(String pattern) {
-        this.descriptorCombinationPatterns.add(Objects.requireNonNull(pattern));
+    public Archive addFileCombinationPattern(String pattern) {
+        this.fileCombinationPatterns.add(Objects.requireNonNull(pattern));
         if (! pattern.startsWith("/")) {
-            this.descriptorCombinationPatterns.add("/" + pattern);
+            this.fileCombinationPatterns.add("/" + pattern);
         }
         return this;
     }
 
-    public Archive removeDescriptorCombinationPattern(String pattern) {
-        this.descriptorCombinationPatterns.remove(Objects.requireNonNull(pattern));
+    public Archive removeFileCombinationPattern(String pattern) {
+        this.fileCombinationPatterns.remove(Objects.requireNonNull(pattern));
         return this;
     }
 
-    public Archive setDescriptorCombinationPatterns(List<String> patterns) {
-        this.descriptorCombinationPatterns = Objects.requireNonNull(patterns);
+    public Archive setFileCombinationPatterns(List<String> patterns) {
+        Objects.requireNonNull(patterns).forEach(this::addFileCombinationPattern);
         return this;
     }
 
-    public List<String> getDescriptorCombinationPatterns() {
-        return descriptorCombinationPatterns;
+    public List<String> getFileCombinationPatterns() {
+        return fileCombinationPatterns;
     }
 }

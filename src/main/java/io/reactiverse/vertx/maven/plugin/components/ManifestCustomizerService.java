@@ -1,5 +1,6 @@
 package io.reactiverse.vertx.maven.plugin.components;
 
+import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.project.MavenProject;
 
@@ -19,5 +20,5 @@ public interface ManifestCustomizerService {
      * @param project the project
      * @return a non-null map with the entries
      */
-    Map<String, String> getEntries(PackageMojo mojo, MavenProject project);
+    Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project);
 }
