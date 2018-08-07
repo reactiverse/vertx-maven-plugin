@@ -56,16 +56,41 @@ public class Verify {
         vertxJarVerifier.verifyManifest();
     }
 
+    public static void verifyContains(File archive, String file) throws IOException {
+        JarFile jar = new JarFile(archive);
+        assertThat(jar.getJarEntry(file)).isNotNull();
+    }
+
+    public static void verifyNotContain(File archive, String file) throws IOException {
+        JarFile jar = new JarFile(archive);
+        assertThat(jar.getJarEntry(file)).isNull();
+    }
+
+    public static void verifyContainsInManifest(File archive, String key, String value) throws Exception {
+        Manifest manifest = new JarFile(archive).getManifest();
+        assertThat(manifest).isNotNull();
+        String v = manifest.getMainAttributes().getValue(key);
+        assertThat(v).isNotNull().isEqualTo(value);
+    }
+
     public static void verifyServiceRelocation(File jarFile) throws Exception {
         VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
         vertxJarVerifier.verifyServicesContent();
     }
 
-    public static void verifyOrderServiceContent(File jarFile,String orderdedContent) throws Exception {
+    public static void verifyOrderServiceContent(File jarFile, String content) throws Exception {
         VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
-        vertxJarVerifier.verifyOrderedServicesContent(orderdedContent);
+        vertxJarVerifier.verifyOrderedServicesContent(content);
+    }
+
+    public static void verifyContainWithContent(File jarFile, String path, String... lines) throws IOException {
+        JarFile jar = new JarFile(jarFile);
+        ZipEntry entry = jar.getEntry(path);
+        assertThat(entry).isNotNull();
+        String content = read(jar.getInputStream(entry));
+        assertThat(content).containsSequence(lines);
     }
 
     public static void verifySetup(File pomFile) throws Exception {
@@ -128,7 +153,7 @@ public class Verify {
         Properties projectProps = project.getProperties();
         Assert.assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"),"3.4.0");
+        assertEquals(projectProps.getProperty("vertx.version"), "3.4.0");
     }
 
     public static String read(InputStream input) throws IOException {
