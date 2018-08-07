@@ -314,7 +314,7 @@
         <dependency>
             <groupId>org.jvnet.winp</groupId>
             <artifactId>winp</artifactId>
-            <version>1.24</version>
+            <version>1.26</version>
             <scope>test</scope>
         </dependency>
 
