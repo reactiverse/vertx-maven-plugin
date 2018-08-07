@@ -49,20 +49,22 @@
                         </goals>
                         <configuration>
                             <archive>
-                                <dependencySet>
-                                   <excludes>
-                                       <exclude>*:commons-lang3</exclude>
-                                   </excludes>
-                                   <includes>
-                                       <include>*:log4j-core</include>
-                                       <include>*:vertx-core</include>
-                                   </includes>
-                                   <options>
+                                <dependencySets>
+                                    <set>
                                        <excludes>
-                                           <exclude>*.dtd</exclude>
+                                           <exclude>*:commons-lang3</exclude>
                                        </excludes>
-                                   </options>
-                                </dependencySet>
+                                       <includes>
+                                           <include>*:log4j-core</include>
+                                           <include>*:vertx-core</include>
+                                       </includes>
+                                       <options>
+                                           <excludes>
+                                               <exclude>*.dtd</exclude>
+                                           </excludes>
+                                       </options>
+                                    </set>
+                                </dependencySets>
                             </archive>
                         </configuration>
                     </execution>

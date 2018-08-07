@@ -256,7 +256,8 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
 
         if (set.getOptions().getExcludes() != null) {
-            for (String pattern : set.getExcludes()) {
+            for (String pattern : set.getOptions().getExcludes()) {
+                System.out.println("do we need to exclude " + name + " against pattern " + pattern);
                 if (SelectorUtils.match(pattern, name)) {
                     return true;
                 }
