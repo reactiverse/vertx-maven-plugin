@@ -49,7 +49,9 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <classifier>foo</classifier>
+                            <archive>
+                                <outputFileName>${project.artifactId}-foo.jar</outputFileName>
+                            </archive>
                         </configuration>
                     </execution>
                 </executions>
