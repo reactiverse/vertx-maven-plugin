@@ -79,13 +79,10 @@ public class GroovyExtensionCombiner {
         Properties properties = new Properties();
 
         if (content.length != 0) {
-            ByteArrayInputStream stream = new ByteArrayInputStream(content);
-            try {
+            try (ByteArrayInputStream stream = new ByteArrayInputStream(content)) {
                 properties.load(stream);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(stream);
             }
         }
         return properties;
