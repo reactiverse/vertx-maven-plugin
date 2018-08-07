@@ -49,33 +49,37 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
             return;
         }
 
-        List<String> patterns = config.getArchive().getDescriptorCombinationPatterns();
+        List<String> patterns = config.getArchive().getFileCombinationPatterns();
         if (patterns.isEmpty()) {
-            return;
+            return; // Should not happen, by default contains spring and services.
         }
 
         Log logger = Objects.requireNonNull(config.getMojo().getLog());
 
-        // TODO this should reuse the packaging configuration
-        DependencySet set = new DependencySet();
-        set.addInclude("*");
-        ScopeFilter scopeFilter = ServiceUtils.newScopeFilter("runtime");
-        ArtifactFilter filter = new ArtifactIncludeFilterTransformer().transform(scopeFilter);
-
-        try {
-            Set<Artifact> artifacts = ServiceUtils.filterArtifacts(config.getArtifacts(), set.getIncludes(),
-                Collections.emptyList(), true, logger, filter);
-
-            List<File> files = artifacts.stream().map(Artifact::getFile)
-                .filter(File::isFile)
-                .filter(f -> f.getName().endsWith(".jar"))
-                .collect(Collectors.toList());
-
-            combine(config.getProject(), patterns, logger, files);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to combine SPI files for " + config.getProject().getArtifactId(), e);
+        List<DependencySet> sets = config.getArchive().getDependencySets();
+        if (sets.isEmpty()) {
+            DependencySet set = new DependencySet();
+            set.addInclude("*");
+            sets.add(set);
         }
 
+        for (DependencySet ds : sets) {
+            ScopeFilter scopeFilter = ServiceUtils.newScopeFilter(ds.getScope());
+            ArtifactFilter filter = new ArtifactIncludeFilterTransformer().transform(scopeFilter);
+            Set<Artifact> artifacts = ServiceUtils.filterArtifacts(config.getArtifacts(),
+                ds.getIncludes(), ds.getExcludes(),
+                ds.isUseTransitiveDependencies(), logger, filter);
+            try {
+                List<File> files = artifacts.stream().map(Artifact::getFile)
+                    .filter(File::isFile)
+                    .filter(f -> f.getName().endsWith(".jar"))
+                    .collect(Collectors.toList());
+
+                combine(config.getProject(), patterns, logger, files);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to combine SPI files for " + config.getProject().getArtifactId(), e);
+            }
+        }
     }
 
     /**
@@ -91,10 +95,8 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         Map<String, List<List<String>>> deps = findDescriptorsFromDependencies(dependencies, patterns);
 
         // Keys are path relative to the archive root.
-        if (logger.isDebugEnabled()) {
-            logger.debug("Descriptors declared in the project: " + locals.keySet());
-            logger.debug("Descriptors declared in dependencies: " + deps.keySet());
-        }
+        logger.debug("Descriptors declared in the project: " + locals.keySet());
+        logger.debug("Descriptors declared in dependencies: " + deps.keySet());
 
         Set<String> descriptorsToMerge = new LinkedHashSet<>(locals.keySet());
         descriptorsToMerge.addAll(deps.keySet());
@@ -198,7 +200,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
                     String path = entry.getKey().get();
                     lines = read(asset, path);
 
-                    List<List<String>> items = map.computeIfAbsent(path, (k) -> new ArrayList<>());
+                    List<List<String>> items = map.computeIfAbsent(path, k -> new ArrayList<>());
                     items.add(lines);
                     map.put(path, items);
                 }

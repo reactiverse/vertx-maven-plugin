@@ -2,6 +2,7 @@ package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
+import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import io.reactiverse.vertx.maven.plugin.utils.ScmSpy;
 import org.apache.maven.model.Scm;
@@ -24,11 +25,12 @@ import java.util.Map;
 public class SCMManifestCustomizer implements ManifestCustomizerService {
 
     @Override
-    public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
+    public Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project) {
         Map<String, String> attributes = new HashMap<>();
 
         Scm scm = project.getScm();
-        if (mojo.isSkipScmMetadata() || scm == null) {
+        // TODO this should be in the archive.
+        if (mojo.skipScmMetadata() || scm == null) {
             return attributes;
         }
 
@@ -46,7 +48,7 @@ public class SCMManifestCustomizer implements ManifestCustomizerService {
         return attributes;
     }
 
-    private void addAttributeFromScmManager(PackageMojo mojo, Map<String, String> attributes, String connectionUrl, File baseDir) throws IOException, ScmException {
+    private void addAttributeFromScmManager(AbstractVertxMojo mojo, Map<String, String> attributes, String connectionUrl, File baseDir) throws IOException, ScmException {
         ScmSpy scmSpy = new ScmSpy(mojo.getScmManager());
         Map<ExtraManifestKeys, String> scmChangeLogMap = scmSpy.getChangeLog(connectionUrl, baseDir);
         scmChangeLogMap.forEach((key, value) -> attributes.put(key.header(), value));

@@ -2,6 +2,7 @@ package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
+import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class ProjectManifestCustomizer implements ManifestCustomizerService {
 
     @Override
-    public Map<String, String> getEntries(PackageMojo mojo, MavenProject project) {
+    public Map<String, String> getEntries(AbstractVertxMojo mojo, MavenProject project) {
         Map<String, String> attributes = new HashMap<>();
         Model model = project.getModel();
 
