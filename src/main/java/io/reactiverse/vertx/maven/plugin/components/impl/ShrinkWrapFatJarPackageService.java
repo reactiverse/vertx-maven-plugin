@@ -239,7 +239,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         String name = path.get();
 
         // Check whether the file is explicitly included
-        if (isExplicitelyIncluded(set, name)) {
+        if (isExplicitlyIncluded(set, name)) {
             return true;
         }
 
@@ -257,7 +257,6 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
 
         if (set.getOptions().getExcludes() != null) {
             for (String pattern : set.getOptions().getExcludes()) {
-                System.out.println("do we need to exclude " + name + " against pattern " + pattern);
                 if (SelectorUtils.match(pattern, name)) {
                     return true;
                 }
@@ -267,7 +266,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         return false;
     }
 
-    private boolean isExplicitelyIncluded(DependencySet set, String name) {
+    private boolean isExplicitlyIncluded(DependencySet set, String name) {
         List<String> includes = set.getOptions().getIncludes();
         if (includes != null && !includes.isEmpty()) {
             boolean included = false;

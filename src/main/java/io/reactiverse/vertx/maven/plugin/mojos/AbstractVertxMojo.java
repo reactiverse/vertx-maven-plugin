@@ -340,6 +340,10 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
             archive = ServiceUtils.getDefaultFatJar();
         }
 
+        if (archive.getDependencySets().isEmpty()) {
+            archive.addDependencySet(DependencySet.ALL);
+        }
+
         // Extend the manifest with launcher and verticle
         if (launcher != null && !launcher.trim().isEmpty()) {
             archive.getManifest().putIfAbsent("Main-Class", launcher);

@@ -19,8 +19,7 @@ public class ServiceUtils {
 
     public static Archive getDefaultFatJar() {
         Archive archive = new Archive();
-        DependencySet all = new DependencySet();
-        archive.addDependencySet(all);
+        archive.addDependencySet(DependencySet.ALL);
         archive.setIncludeClasses(true);
         archive.addFileCombinationPattern("META-INF/services/*");
         archive.addFileCombinationPattern("META-INF/spring.*");

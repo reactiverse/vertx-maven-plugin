@@ -8,6 +8,11 @@ import java.util.List;
 public class DependencySet {
 
     /**
+     * Includes all compile dependencies.
+     */
+    public static final DependencySet ALL = new DependencySet();
+
+    /**
      * Set of dependencies to includes.
      */
     private List<String> includes;
@@ -16,13 +21,6 @@ public class DependencySet {
      * Set of dependencies to excludes.
      */
     private List<String> excludes;
-
-    /**
-     * When specified as true, any include/exclude patterns which aren't used to filter an actual
-     * artifact during package creation will cause the build to fail with an error. This is meant
-     * to highlight obsolete inclusions or exclusions.
-     */
-    private boolean useStrictFiltering = false;
 
     /**
      * Sets the dependency scope for this {@link DependencySet}.
@@ -38,22 +36,12 @@ public class DependencySet {
 
     /**
      * Determines whether transitive dependencies will be included in the processing of the
-     * current dependency set. If true, includes/excludes/useTransitiveFiltering will apply
+     * current dependency set. If true, includes/excludes will apply
      * to transitive dependency artifacts in addition to the main project dependency artifacts.
      * If false, useTransitiveFiltering is meaningless, and includes/excludes only affect the
      * immediate dependencies of the project. By default, this value is true.
      */
     private boolean useTransitiveDependencies = true;
-
-    /**
-     * Determines whether the include/exclude patterns in this dependency set will be applied to
-     * the transitive path of a given artifact. If true, and the current artifact is a transitive
-     * dependency brought in by another artifact which matches an inclusion or exclusion pattern,
-     * then the current artifact has the same inclusion/exclusion logic applied to it as well. By
-     * default, this value is false. This means that includes/excludes only apply directly to the
-     * current artifact, and not to the transitive set of artifacts which brought it in.
-     */
-    private boolean useTransitiveFiltering = false;
 
     public DependencySet addExclude(String string) {
         getExcludes().add(string);
@@ -93,17 +81,6 @@ public class DependencySet {
     }
 
     /**
-     * Get when specified as true, any include/exclude patterns which aren't used to filter an actual
-     * artifact during package creation will cause the build to fail with an error. This is meant
-     * to highlight obsolete inclusions or exclusions.
-     *
-     * @return boolean whether or not strict filtering is enabled
-     */
-    public boolean isUseStrictFiltering() {
-        return this.useStrictFiltering;
-    }
-
-    /**
      * Get determines whether transitive dependencies will be included in the processing of
      * the current dependency set. If true, includes/excludes/useTransitiveFiltering
      * will apply to transitive dependency artifacts. If false, useTransitiveFiltering is
@@ -114,20 +91,6 @@ public class DependencySet {
      */
     public boolean isUseTransitiveDependencies() {
         return this.useTransitiveDependencies;
-    }
-
-    /**
-     * Get determines whether the include/exclude patterns in this dependency set will be applied to
-     * the transitive path of a given artifact. If true, and the current artifact is a transitive
-     * dependency brought in by another artifact which matches an inclusion or exclusion pattern,
-     * then the current artifact has the same inclusion/exclusion logic applied to it as well. By
-     * default, this value is false. This means that includes/excludes only apply directly to the
-     * current artifact, and not to the transitive set of artifacts which brought it in.
-     *
-     * @return whether or not transitive filtering is enabled
-     */
-    public boolean isUseTransitiveFiltering() {
-        return this.useTransitiveFiltering;
     }
 
     public DependencySet removeExclude(String string) {
@@ -185,19 +148,6 @@ public class DependencySet {
     }
 
     /**
-     * Set when specified as true, any include/exclude patterns which aren't used to filter an actual
-     * artifact during package creation will cause the build to fail with an error. This is meant
-     * to highlight obsolete inclusions or exclusions.
-     *
-     * @param useStrictFiltering whether or not strict filtering is enabled
-     * @return the current {@link DependencySetOptions}
-     */
-    public DependencySet setUseStrictFiltering(boolean useStrictFiltering) {
-        this.useStrictFiltering = useStrictFiltering;
-        return this;
-    }
-
-    /**
      * Set determines whether transitive dependencies will be included in the processing of
      * the current dependency set. If true, includes/excludes/useTransitiveFiltering
      * will apply to transitive dependency artifacts in addition to the main project
@@ -210,22 +160,6 @@ public class DependencySet {
      */
     public DependencySet setUseTransitiveDependencies(boolean useTransitiveDependencies) {
         this.useTransitiveDependencies = useTransitiveDependencies;
-        return this;
-    }
-
-    /**
-     * Set determines whether the include/exclude patterns in this dependency set will be applied to
-     * the transitive path of a given artifact. If true, and the current artifact is a transitive
-     * dependency brought in by another artifact which matches an inclusion or exclusion pattern,
-     * then the current artifact has the same inclusion/exclusion logic applied to it as well. By
-     * default, this value is false. This means that includes/excludes only apply directly to the
-     * current artifact, and not to the transitive set of artifacts which brought it in.
-     *
-     * @param useTransitiveFiltering whether or not transitive filtering is enabled
-     * @return the current {@link DependencySetOptions}
-     */
-    public DependencySet setUseTransitiveFiltering(boolean useTransitiveFiltering) {
-        this.useTransitiveFiltering = useTransitiveFiltering;
         return this;
     }
 
