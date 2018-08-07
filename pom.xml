@@ -21,7 +21,7 @@
 
     <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0.16</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>A Maven Plugin for Eclipse Vert.x</name>
