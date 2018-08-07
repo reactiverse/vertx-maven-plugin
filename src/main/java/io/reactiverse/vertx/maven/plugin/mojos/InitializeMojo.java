@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -21,7 +21,6 @@ import io.reactiverse.vertx.maven.plugin.utils.WebJars;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;

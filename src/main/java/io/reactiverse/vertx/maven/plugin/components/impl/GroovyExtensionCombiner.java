@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -18,19 +18,25 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import com.google.common.base.Joiner;
-import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class GroovyExtensionCombiner {
+class GroovyExtensionCombiner {
 
-    public static List<String> merge(String projectName, String projectVersion,
-                                     List<String> local, List<List<String>> deps) {
+    private GroovyExtensionCombiner() {
+        // avoid direct instantiation.
+    }
+
+    static List<String> merge(String projectName, String projectVersion,
+                              List<String> local, List<List<String>> deps) {
         List<String> extensionClassesList = new ArrayList<>();
         List<String> staticExtensionClassesList = new ArrayList<>();
 
@@ -54,10 +60,10 @@ public class GroovyExtensionCombiner {
         List<String> desc = new ArrayList<>();
         desc.add("moduleName=" + projectName);
         desc.add("moduleVersion=" + projectVersion);
-        if (extensionClassesList.size() > 0) {
+        if (! extensionClassesList.isEmpty()) {
             desc.add("extensionClasses=" + join(extensionClassesList));
         }
-        if (staticExtensionClassesList.size() > 0) {
+        if (! staticExtensionClassesList.isEmpty()) {
             desc.add("staticExtensionClasses=" + join(staticExtensionClassesList));
         }
 

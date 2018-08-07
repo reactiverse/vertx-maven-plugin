@@ -1,9 +1,24 @@
+/*
+ *
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *
+ *   Red Hat licenses this file to you under the Apache License, version
+ *   2.0 (the "License"); you may not use this file except in compliance
+ *   with the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *   implied.  See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.reactiverse.vertx.maven.plugin.mojos.AbstractVertxMojo;
-import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import io.reactiverse.vertx.maven.plugin.utils.ScmSpy;
 import org.apache.maven.model.Scm;
 import org.apache.maven.project.MavenProject;
@@ -48,13 +63,13 @@ public class SCMManifestCustomizer implements ManifestCustomizerService {
         return attributes;
     }
 
-    private void addAttributeFromScmManager(AbstractVertxMojo mojo, Map<String, String> attributes, String connectionUrl, File baseDir) throws IOException, ScmException {
+    private static void addAttributeFromScmManager(AbstractVertxMojo mojo, Map<String, String> attributes, String connectionUrl, File baseDir) throws IOException, ScmException {
         ScmSpy scmSpy = new ScmSpy(mojo.getScmManager());
         Map<ExtraManifestKeys, String> scmChangeLogMap = scmSpy.getChangeLog(connectionUrl, baseDir);
         scmChangeLogMap.forEach((key, value) -> attributes.put(key.header(), value));
     }
 
-    private String addAttributesFromProject(Map<String, String> attributes, Scm scm) {
+    private static String addAttributesFromProject(Map<String, String> attributes, Scm scm) {
         String connectionUrl = scm.getConnection() == null ? scm.getDeveloperConnection() : scm.getConnection();
         if (scm.getUrl() != null) {
             attributes.put(ExtraManifestKeys.SCM_URL.header(), scm.getUrl());

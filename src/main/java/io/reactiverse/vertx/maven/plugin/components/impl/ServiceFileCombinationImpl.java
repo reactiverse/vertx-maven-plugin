@@ -1,3 +1,19 @@
+/*
+ *
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *
+ *   Red Hat licenses this file to you under the Apache License, version
+ *   2.0 (the "License"); you may not use this file except in compliance
+ *   with the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *   implied.  See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.ServiceFileCombinationConfig;
@@ -26,8 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.google.common.io.Closeables.closeQuietly;
 
 /**
  * This component is used to perform Services relocation - typically moving came Service Providers found in
@@ -143,7 +157,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         }
     }
 
-    private List<String> computeOutput(List<String> local, Set<String> fromDeps) {
+    private static List<String> computeOutput(List<String> local, Set<String> fromDeps) {
         Set<String> lines = new LinkedHashSet<>();
         for (String line : local) {
             if (line.trim().equalsIgnoreCase("${COMBINE}")) {
@@ -157,7 +171,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         return new ArrayList<>(lines);
     }
 
-    private Map<String, List<String>> findLocalDescriptors(MavenProject project, List<String> patterns) {
+    private static Map<String, List<String>> findLocalDescriptors(MavenProject project, List<String> patterns) {
         Map<String, List<String>> map = new LinkedHashMap<>();
 
         File classes = new File(project.getBuild().getOutputDirectory());
@@ -186,7 +200,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         return map;
     }
 
-    private Map<String, List<List<String>>> findDescriptorsFromDependencies(List<File> deps, List<String> patterns) {
+    private static Map<String, List<List<String>>> findDescriptorsFromDependencies(List<File> deps, List<String> patterns) {
         Map<String, List<List<String>>> map = new LinkedHashMap<>();
 
         for (File file : deps) {
@@ -209,7 +223,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         return map;
     }
 
-    private List<String> read(Asset asset, String path) {
+    private static List<String> read(Asset asset, String path) {
         List<String> lines;
         try (InputStream input = asset.openStream()){
             lines = IOUtils.readLines(input, "UTF-8");
@@ -219,7 +233,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         return lines;
     }
 
-    private Map<ArchivePath, Node> getMatchingFilesFromJar(List<String> patterns, JavaArchive archive) {
+    private static Map<ArchivePath, Node> getMatchingFilesFromJar(List<String> patterns, JavaArchive archive) {
         return archive.getContent(path -> {
                     for (String pattern : patterns) {
                         if (SelectorUtils.match(pattern, path.get())) {
