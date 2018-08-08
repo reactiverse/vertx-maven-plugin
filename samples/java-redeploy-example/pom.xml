@@ -20,12 +20,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vertx.demo</groupId>
-    <artifactId>vertx-demo</artifactId>
+    <artifactId>java-redeploy-example</artifactId>
     <version>0.1-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.4.2</vertx.version>
+        <vertx.version>3.5.3</vertx.version>
         <vertx.verticle>org.vertx.demo.MainVerticle</vertx.verticle>
     </properties>
 
@@ -34,7 +34,7 @@
             <plugin>
                 <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.16</version>
                 <executions>
                     <execution>
                         <id>vmp</id>
@@ -84,7 +84,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.vertx</groupId>
-                <artifactId>vertx-dependencies</artifactId>
+                <artifactId>vertx-stack-depchain</artifactId>
                 <version>${vertx.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
