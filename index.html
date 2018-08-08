@@ -473,26 +473,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#vertx:examples">5. Example Configurations</a>
+<li><a href="#archive-configuration">5. Archive configuration</a>
 <ul class="sectlevel2">
-<li><a href="#package-goal-examples">5.1. vert.x:package Examples</a>
-<ul class="sectlevel3">
-<li><a href="#webjars-and-javascript-dependencies">5.1.1. Webjars and javascript dependencies</a></li>
-<li><a href="#using-full-names-for-webjars-and-javascript-dependencies">5.1.2. Using full names for webjars and javascript dependencies</a></li>
+<li><a href="#using-archive-configuration">5.1. Using archive configuration</a></li>
+<li><a href="#configuring-embedded-dependencies">5.2. Configuring embedded dependencies</a></li>
+<li><a href="#embedding-specific-file">5.3. Embedding specific file</a></li>
+<li><a href="#embedding-file-sets">5.4. Embedding file sets</a></li>
+<li><a href="#customizing-the-manifest">5.5. Customizing the manifest</a></li>
+<li><a href="#resource-combination">5.6. Resource combination</a></li>
 </ul>
 </li>
-<li><a href="#start-goal-examples">5.2. vert.x:start Examples</a>
-<ul class="sectlevel3">
-<li><a href="#start-with-java-opts">5.2.1. start goal with custom java options</a></li>
-<li><a href="#stopping-one-or-more-applications">5.2.2. stopping one or more applications</a></li>
-<li><a href="#run-with-extra-args">5.2.3. Adding some extra options to run command</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#how-does-the-redeploy-work">6. How does the redeploy work</a>
+<li><a href="#vertx:examples">6. Example Configurations</a>
 <ul class="sectlevel2">
-<li><a href="#references">6.1. References</a></li>
+<li><a href="#package-goal-examples">6.1. vert.x:package Examples</a>
+<ul class="sectlevel3">
+<li><a href="#webjars-and-javascript-dependencies">6.1.1. Webjars and javascript dependencies</a></li>
+<li><a href="#using-full-names-for-webjars-and-javascript-dependencies">6.1.2. Using full names for webjars and javascript dependencies</a></li>
+</ul>
+</li>
+<li><a href="#start-goal-examples">6.2. vert.x:start Examples</a>
+<ul class="sectlevel3">
+<li><a href="#start-with-java-opts">6.2.1. start goal with custom java options</a></li>
+<li><a href="#stopping-one-or-more-applications">6.2.2. stopping one or more applications</a></li>
+<li><a href="#run-with-extra-args">6.2.3. Adding some extra options to run command</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#how-does-the-redeploy-work">7. How does the redeploy work</a>
+<ul class="sectlevel2">
+<li><a href="#references">7.1. References</a></li>
 </ul>
 </li>
 </ul>
@@ -1362,15 +1372,284 @@ commons-io:commons-io:2.5 =&gt; Regular dependency
 io.vertx:vertx-template-engines:3.4.1:shaded =&gt; Dependency with classifier</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::inc/_archive-config.adoc[]</p>
-</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="vertx:examples">5. Example Configurations</h2>
+<h2 id="archive-configuration">5. Archive configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Vert.x Maven Plugin lets you configure the content of the created archive. Typically you can decide:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>which dependency needs to be embedded</p>
+</li>
+<li>
+<p>which files need to be included</p>
+</li>
+<li>
+<p>which resources need to be combined</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Besides, you can customize the <em>manifest</em>.</p>
+</div>
+<div class="paragraph">
+<p>By default, the plugin:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>embeds all <em>compile</em> dependencies</p>
+</li>
+<li>
+<p>includes all files from <code>target/classes</code> (compiled classes from <code>src/main/resources</code>, processed resources from
+`src/main/resources)</p>
+</li>
+<li>
+<p>combines resources from <code>META-INF/services</code> and <code>META-INF/spring.*</code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="using-archive-configuration">5.1. Using archive configuration</h3>
+<div class="paragraph">
+<p>In you plugin configuration add the <code>archive</code> item:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;plugins&gt;
+        ...
+        &lt;plugin&gt;
+            &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+            &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;${version}&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;vmp&lt;/id&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;initialize&lt;/goal&gt;
+                        &lt;goal&gt;package&lt;/goal&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+            &lt;configuration&gt;
+                &lt;archive&gt;
+                    &lt;!-- archive configuration goes here --&gt;
+                &lt;/archive&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+        ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-embedded-dependencies">5.2. Configuring embedded dependencies</h3>
+<div class="paragraph">
+<p>In the <code>archive</code> configuration, you can declare <em>dependency sets</em> which indicate which dependencies must be included and
+excluded. Also for each configure set, you can decide the file to include and exclude.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
+   &lt;archive&gt;
+       &lt;dependencySets&gt;
+           &lt;set&gt;
+              &lt;excludes&gt;
+                  &lt;exclude&gt;*:commons-lang3&lt;/exclude&gt;
+              &lt;/excludes&gt;
+              &lt;includes&gt;
+                  &lt;include&gt;*:log4j-core&lt;/include&gt;
+                  &lt;include&gt;*:vertx-core&lt;/include&gt;
+              &lt;/includes&gt;
+              &lt;options&gt;
+                  &lt;excludes&gt;
+                      &lt;exclude&gt;*.dtd&lt;/exclude&gt;
+                  &lt;/excludes&gt;
+              &lt;/options&gt;
+           &lt;/set&gt;
+       &lt;/dependencySets&gt;
+    &lt;/archive&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that when a dependency set is configured, no other dependency is embedded, disabling the default. When you
+configure the archive without a dependency set, the default behavior (embedding all <em>compile</em> dependencies) is used.</p>
+</div>
+<div class="paragraph">
+<p>On a dependency set you can configure:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>includes</code>: the set of dependencies to specifically include, if not set, include all dependencies not explicitly
+excluded</p>
+</li>
+<li>
+<p><code>excludes</code>: the set of dependencies to exclude</p>
+</li>
+<li>
+<p><code>scope</code>: the scope of the dependency to include, default to <code>runtime</code></p>
+</li>
+<li>
+<p><code>useTransitiveDependencies</code>: a boolean indicating if transitive dependencies from included dependencies must be
+also included in the jar</p>
+</li>
+<li>
+<p><code>option</code>: configure the files to include / exclude from this dependency set</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>option</code> attribute enable fine-grain tuning of the file to embed. In the example above, the <code>dtd</code> files are excluded.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="embedding-specific-file">5.3. Embedding specific file</h3>
+<div class="paragraph">
+<p>The archive can be configured with a set of <em>external</em> file to include. For instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
+   &lt;archive&gt;
+       &lt;files&gt;
+          &lt;file&gt;
+              &lt;source&gt;src/ext/hello.txt&lt;/source&gt;
+              &lt;outputDirectory&gt;misc&lt;/outputDirectory&gt;
+              &lt;destName&gt;lorem-ipsum.txt&lt;/destName&gt;
+          &lt;/file&gt;
+       &lt;/files&gt;
+    &lt;/archive&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each file contains:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>source</code> - the location of the file</p>
+</li>
+<li>
+<p>the <code>outputDirectory</code> - indicating where would be the file in the archive</p>
+</li>
+<li>
+<p>the <code>destName</code> - indicating the final name</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For instance, in the previous example, the file <code>src/ext/hello.txt</code> is embedded in the archive as <code>misc/lorem-ipsum.txt</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="embedding-file-sets">5.4. Embedding file sets</h3>
+<div class="paragraph">
+<p>While <code>files</code> allow embedding files individually, <code>fileSets</code> declare set of files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;archive&gt;
+    &lt;fileSets&gt;
+       &lt;fileSet&gt;
+           &lt;directory&gt;src/ext&lt;/directory&gt;
+           &lt;outputDirectory&gt;misc&lt;/outputDirectory&gt;
+           &lt;excludes&gt;
+               &lt;exclude&gt;h*.txt&lt;/exclude&gt;
+           &lt;/excludes&gt;
+       &lt;/fileSet&gt;
+    &lt;/fileSets&gt;
+&lt;/archive&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a <code>fileSet</code>, you can configure:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>directory</code> - the directory containing the files</p>
+</li>
+<li>
+<p>the <code>outputDirectory</code> - indicating where would be the file in the archive</p>
+</li>
+<li>
+<p><code>includes</code> and <code>excludes</code> pattern to choose which files you want to embed in the archive.</p>
+</li>
+<li>
+<p><code>useDefaultExcludes</code> - indicating if you want to use the default exclusion list (enabled by default)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-the-manifest">5.5. Customizing the manifest</h3>
+<div class="paragraph">
+<p>You can also add entries into the <code>MANIFEST.MF</code> of the created archive using the <code>manifest</code> entry:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;executions&gt;
+    &lt;execution&gt;
+        &lt;goals&gt;
+            &lt;goal&gt;package&lt;/goal&gt;
+        &lt;/goals&gt;
+        &lt;configuration&gt;
+            &lt;archive&gt;
+               &lt;manifest&gt;
+                   &lt;key&gt;value&lt;/key&gt;
+                   &lt;name&gt;${project.artifactId}&lt;/name&gt;
+               &lt;/manifest&gt;
+            &lt;/archive&gt;
+        &lt;/configuration&gt;
+    &lt;/execution&gt;
+&lt;/executions&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="resource-combination">5.6. Resource combination</h3>
+<div class="paragraph">
+<p>Resource combination is a process merging the content of files into a single file (using <em>append</em>). It is particularly
+useful when building an archive embedding dependencies containing the same files. For instance <code>META-INF/services/<strong></code> and
+<code>META-INF/spring</strong></code> files are combined by default. The <code>fileCombinationPatterns</code> attribute allows configuring which files
+needs to be combined:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml" data-lang="xml">&lt;archive&gt;
+    &lt;fileCombinationPatterns&gt;
+        &lt;pattern&gt;misc/extension.*&lt;/pattern&gt;
+        &lt;pattern&gt;META-INF/services/*&lt;/pattern&gt;
+    &lt;/fileCombinationPatterns&gt;
+&lt;/archive&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once set, the defaults are disabled, so you need to set <code>&lt;pattern&gt;META-INF/services/*&lt;/pattern&gt;</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="vertx:examples">6. Example Configurations</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The following sections shows example plugin snippets for the goals provided by the plugin.</p>
@@ -1388,7 +1667,7 @@ please update the plugin version as needed (latest is <strong>1.0.16</strong>).
 </table>
 </div>
 <div class="sect2">
-<h3 id="package-goal-examples">5.1. vert.x:package Examples</h3>
+<h3 id="package-goal-examples">6.1. vert.x:package Examples</h3>
 <div class="paragraph">
 <p>This is the default configuration. It builds the fat jar in the <em>package</em> phase, and support <code>.js</code>
  and webjars dependencies. <code>mvn compile vertx:run</code> enables the redeployment.</p>
@@ -1415,7 +1694,7 @@ please update the plugin version as needed (latest is <strong>1.0.16</strong>).
 </div>
 </div>
 <div class="sect3">
-<h4 id="webjars-and-javascript-dependencies">5.1.1. Webjars and javascript dependencies</h4>
+<h4 id="webjars-and-javascript-dependencies">6.1.1. Webjars and javascript dependencies</h4>
 <div class="paragraph">
 <p>When the <em>js</em> dependencies and the webjars are handled, it stripped the version by default. Let&#8217;s illustrate this
 with the following dependencies:</p>
@@ -1448,7 +1727,7 @@ plugin extracts the web resource to the <code>webroot</code> directory. In this 
 </div>
 </div>
 <div class="sect3">
-<h4 id="using-full-names-for-webjars-and-javascript-dependencies">5.1.2. Using full names for webjars and javascript dependencies</h4>
+<h4 id="using-full-names-for-webjars-and-javascript-dependencies">6.1.2. Using full names for webjars and javascript dependencies</h4>
 <div class="paragraph">
 <p>By default the plugin stripped the version. However this behavior can be disabled using:</p>
 </div>
@@ -1511,7 +1790,7 @@ unpacked in <code>${project.baseDir}/target/classes/webroot/jquery/3.1.1</code>.
 </div>
 </div>
 <div class="sect2">
-<h3 id="start-goal-examples">5.2. vert.x:start Examples</h3>
+<h3 id="start-goal-examples">6.2. vert.x:start Examples</h3>
 <div class="paragraph">
 <p>You can start your application in background using: <code>mvn clean package vertx:start</code>. The application is started in
 background. An id is automatically associated with the process. This id can be specified:</p>
@@ -1551,7 +1830,7 @@ background. An id is automatically associated with the process. This id can be s
 </div>
 </div>
 <div class="sect3">
-<h4 id="start-with-java-opts">5.2.1. start goal with custom java options</h4>
+<h4 id="start-with-java-opts">6.2.1. start goal with custom java options</h4>
 <div class="paragraph">
 <p>Because it&#8217;s a forked process, passing Java options needs to be done explicitly using a specific property:</p>
 </div>
@@ -1594,7 +1873,7 @@ background. An id is automatically associated with the process. This id can be s
 </div>
 </div>
 <div class="sect3">
-<h4 id="stopping-one-or-more-applications">5.2.2. stopping one or more applications</h4>
+<h4 id="stopping-one-or-more-applications">6.2.2. stopping one or more applications</h4>
 <div class="paragraph">
 <p>When you have configured to <a href="#start-with-app-id">[start-with-app-id]</a> or know the application ids, then you can add list
 of application ids as shown below to trigger stop of the those applications</p>
@@ -1632,7 +1911,7 @@ of application ids as shown below to trigger stop of the those applications</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="run-with-extra-args">5.2.3. Adding some extra options to run command</h4>
+<h4 id="run-with-extra-args">6.2.3. Adding some extra options to run command</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml" data-lang="xml"> &lt;plugin&gt;
@@ -1660,7 +1939,7 @@ of application ids as shown below to trigger stop of the those applications</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="how-does-the-redeploy-work">6. How does the redeploy work</h2>
+<h2 id="how-does-the-redeploy-work">7. How does the redeploy work</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>During the <em>initialize</em> phase, the plugin start observing the mojos (Maven plugins) that are executed. When the Vert.x application is launched, it watches for changed in <code>src/main</code>. When a file is changed (created, updated or deleted), it replays the executed mojos. It executes all the mojos from the <em>generate-sources</em> to the <em>process-classes</em> phases, using the same configuration are the initial (observed) one.</p>
@@ -1672,7 +1951,7 @@ of application ids as shown below to trigger stop of the those applications</p>
 <p>Such mechanism let you use any Maven plugin (executed in the right set of phase). The plugin is re-executed and then the Vert.x application is restarted.</p>
 </div>
 <div class="sect2">
-<h3 id="references">6.1. References</h3>
+<h3 id="references">7.1. References</h3>
 <div class="paragraph">
 <p><a href="http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html">Maven Properties</a></p>
 </div>
