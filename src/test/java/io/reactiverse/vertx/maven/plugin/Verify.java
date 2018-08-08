@@ -17,8 +17,6 @@
 
 package io.reactiverse.vertx.maven.plugin;
 
-//import io.restassured.RestAssured;
-
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -38,11 +36,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author kameshs
@@ -90,7 +85,7 @@ public class Verify {
         ZipEntry entry = jar.getEntry(path);
         assertThat(entry).isNotNull();
         String content = read(jar.getInputStream(entry));
-        assertThat(content).containsSequence(lines);
+        assertThat(content).containsSubsequence(lines);
     }
 
     public static void verifySetup(File pomFile) throws Exception {
@@ -137,11 +132,11 @@ public class Verify {
 
         //Check Redeploy Configuration
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
-        Assert.assertNotNull(vmp);
+        assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        Assert.assertNotNull(pluginConfig);
+        assertNotNull(pluginConfig);
         String redeploy = pluginConfig.getChild("redeploy").getValue();
-        Assert.assertNotNull(redeploy);
+        assertNotNull(redeploy);
         assertTrue(Boolean.valueOf(redeploy));
     }
 
@@ -151,12 +146,12 @@ public class Verify {
 
         MavenProject project = new MavenProject(model);
         Properties projectProps = project.getProperties();
-        Assert.assertNotNull(projectProps);
+        assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
         assertEquals(projectProps.getProperty("vertx.version"), "3.4.0");
     }
 
-    public static String read(InputStream input) throws IOException {
+    private static String read(InputStream input) throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             return buffer.lines().collect(Collectors.joining("\n"));
         }
