@@ -11,6 +11,8 @@ Also check the https://github.com/reactiverse/vertx-maven-plugin/tree/master/sam
 of a Java application.
 * https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/frontend-example[WebPack example] illustrates how to use WebPack with the redeployment mechanism
 * https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/kotlin-example[Kotlin example] illustrates how you can use Kotlin with the Vert.x Maven Plugin
+* https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/custom-launcher-example[Custom Launcher] shows how you can use your own `launcher` class
+* https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/custom-main-example[Custom Main] shows how you can use your own _main_ class
 
 [[package-goal-examples]]
 == vert.x:package Examples
