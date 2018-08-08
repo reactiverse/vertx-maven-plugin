@@ -1,3 +1,19 @@
+/*
+ *
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *
+ *   Red Hat licenses this file to you under the Apache License, version
+ *   2.0 (the "License"); you may not use this file except in compliance
+ *   with the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *   implied.  See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 
@@ -21,7 +37,7 @@ public class Archive {
 
     private boolean includeClasses = true;
 
-    private List<String> descriptorCombinationPatterns = new ArrayList<>();
+    private List<String> fileCombinationPatterns = new ArrayList<>();
 
     /**
      * Adds a dependency set
@@ -167,25 +183,25 @@ public class Archive {
         return this;
     }
 
-    public Archive addDescriptorCombinationPattern(String pattern) {
-        this.descriptorCombinationPatterns.add(Objects.requireNonNull(pattern));
+    public Archive addFileCombinationPattern(String pattern) {
+        this.fileCombinationPatterns.add(Objects.requireNonNull(pattern));
         if (! pattern.startsWith("/")) {
-            this.descriptorCombinationPatterns.add("/" + pattern);
+            this.fileCombinationPatterns.add("/" + pattern);
         }
         return this;
     }
 
-    public Archive removeDescriptorCombinationPattern(String pattern) {
-        this.descriptorCombinationPatterns.remove(Objects.requireNonNull(pattern));
+    public Archive removeFileCombinationPattern(String pattern) {
+        this.fileCombinationPatterns.remove(Objects.requireNonNull(pattern));
         return this;
     }
 
-    public Archive setDescriptorCombinationPatterns(List<String> patterns) {
-        this.descriptorCombinationPatterns = Objects.requireNonNull(patterns);
+    public Archive setFileCombinationPatterns(List<String> patterns) {
+        Objects.requireNonNull(patterns).forEach(this::addFileCombinationPattern);
         return this;
     }
 
-    public List<String> getDescriptorCombinationPatterns() {
-        return descriptorCombinationPatterns;
+    public List<String> getFileCombinationPatterns() {
+        return fileCombinationPatterns;
     }
 }

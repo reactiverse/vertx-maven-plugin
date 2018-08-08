@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -19,18 +19,16 @@ package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.components.*;
 import io.reactiverse.vertx.maven.plugin.model.CombinationStrategy;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
-import java.util.List;
 
 
 /**
@@ -76,12 +74,18 @@ public class PackageMojo extends AbstractVertxMojo {
     @Component
     protected ServiceFileCombiner combiner;
 
-    @Parameter(alias = "skipScmMetadata", property = "vertx.skipScmMetadata", defaultValue = "false")
-    protected boolean skipScmMetadata;
-
     private static final String JAR_EXTENSION = ".jar";
 
-    public static String computeOutputName(MavenProject project, String classifier) {
+    public static String computeOutputName(Archive archive, MavenProject project, String classifier) {
+
+        String output = archive.getOutputFileName();
+        if (!StringUtils.isBlank(output)) {
+            if (! output.endsWith(JAR_EXTENSION)) {
+                output += JAR_EXTENSION;
+            }
+            return output;
+        }
+
         String finalName = project.getBuild().getFinalName();
         if (finalName != null) {
             if (finalName.endsWith(JAR_EXTENSION)) {
@@ -112,25 +116,17 @@ public class PackageMojo extends AbstractVertxMojo {
         fixEmptyClassifier();
 
 
-        if (classifier == null && !attach) {
+        if (StringUtils.isBlank(classifier) && !attach) {
             throw new MojoExecutionException("Cannot disable attachment of the created archive when it's the main " +
                 "artifact");
         }
 
-        //TODO Archive should be a parameter.
-        Archive archive = ServiceUtils.getDefaultFatJar();
-
-        extendManifest(archive);
-
-        List<ManifestCustomizerService> customizers = getManifestCustomizers();
-        customizers.forEach(customizer ->
-            archive.getManifest().putAll(customizer.getEntries(this, project)));
-
+        Archive updatedArchive = computeArchive();
         // Manage SPI combination
         combiner.doCombine(new ServiceFileCombinationConfig()
             .setStrategy(serviceProviderCombination)
             .setProject(project)
-            .setArchive(archive)
+            .setArchive(updatedArchive)
             .setMojo(this)
             .setArtifacts(project.getArtifacts()));
 
@@ -140,25 +136,15 @@ public class PackageMojo extends AbstractVertxMojo {
                 new PackageConfig()
                     .setArtifacts(project.getArtifacts())
                     .setMojo(this)
-                    .setOutput(new File(projectBuildDir, computeOutputName(project, classifier)))
+                    .setOutput(new File(projectBuildDir, computeOutputName(archive, project, classifier)))
                     .setProject(project)
-                    .setArchive(archive));
+                    .setArchive(this.archive));
         } catch (PackagingException e) {
             throw new MojoExecutionException("Unable to build the fat jar", e);
         }
 
         attachIfNeeded(jar);
 
-    }
-
-    private void extendManifest(Archive archive) {
-        if (launcher != null && !launcher.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Class", launcher);
-        }
-
-        if (verticle != null && !verticle.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
-        }
     }
 
     private void attachIfNeeded(File jar) {
@@ -174,25 +160,9 @@ public class PackageMojo extends AbstractVertxMojo {
 
     private void fixEmptyClassifier() {
         // Fix empty classifier.
-        if (classifier != null && classifier.trim().isEmpty()) {
+        if (StringUtils.isBlank(classifier)) {
             getLog().debug("The classifier is empty, it won't be used");
             classifier = null;
         }
-    }
-
-    private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
-        List<ManifestCustomizerService> customizers;
-        try {
-            customizers = container.lookupList(ManifestCustomizerService.class);
-        } catch (ComponentLookupException e) {
-            getLog().debug("ManifestCustomerService lookup failed", e);
-            throw new MojoExecutionException("Unable to retrieve the " +
-                ManifestCustomizerService.class.getName() + " components");
-        }
-        return customizers;
-    }
-
-    public boolean isSkipScmMetadata() {
-        return skipScmMetadata;
     }
 }

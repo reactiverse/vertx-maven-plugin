@@ -1,0 +1,196 @@
+= Archive configuration
+
+The Vert.x Maven Plugin lets you configure the content of the created archive. Typically you can decide:
+
+* which dependency needs to be embedded
+* which files need to be included
+* which resources need to be combined
+
+Besides, you can customize the _manifest_.
+
+By default, the plugin:
+
+* embeds all _compile_ dependencies
+* includes all files from `target/classes` (compiled classes from `src/main/resources`, processed resources from
+`src/main/resources)
+* combines resources from `META-INF/services` and `META-INF/spring.*`
+
+
+== Using archive configuration
+
+In you plugin configuration add the `archive` item:
+
+[source,xml]
+----
+<project>
+  ...
+  <build>
+    <plugins>
+        ...
+        <plugin>
+            <groupId>io.reactiverse</groupId>
+            <artifactId>vertx-maven-plugin</artifactId>
+            <version>${version}</version>
+            <executions>
+                <execution>
+                    <id>vmp</id>
+                    <goals>
+                        <goal>initialize</goal>
+                        <goal>package</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <archive>
+                    <!-- archive configuration goes here -->
+                </archive>
+            </configuration>
+        </plugin>
+        ...
+    </plugins>
+  </build>
+  ...
+</project>
+----
+
+== Configuring embedded dependencies
+
+In the `archive` configuration, you can declare _dependency sets_ which indicate which dependencies must be included and
+excluded. Also for each configure set, you can decide the file to include and exclude.
+
+Here is an example:
+
+[source,xml]
+----
+<configuration>
+   <archive>
+       <dependencySets>
+           <set>
+              <excludes>
+                  <exclude>*:commons-lang3</exclude>
+              </excludes>
+              <includes>
+                  <include>*:log4j-core</include>
+                  <include>*:vertx-core</include>
+              </includes>
+              <options>
+                  <excludes>
+                      <exclude>*.dtd</exclude>
+                  </excludes>
+              </options>
+           </set>
+       </dependencySets>
+    </archive>
+</configuration>
+----
+
+Notice that when a dependency set is configured, no other dependency is embedded, disabling the default. When you
+configure the archive without a dependency set, the default behavior (embedding all _compile_ dependencies) is used.
+
+On a dependency set you can configure:
+
+* `includes`: the set of dependencies to specifically include, if not set, include all dependencies not explicitly
+excluded
+* `excludes`: the set of dependencies to exclude
+* `scope`: the scope of the dependency to include, default to `runtime`
+* `useTransitiveDependencies`: a boolean indicating if transitive dependencies from included dependencies must be
+also included in the jar
+* `option`: configure the files to include / exclude from this dependency set
+
+The `option` attribute enable fine-grain tuning of the file to embed. In the example above, the `dtd` files are excluded.
+
+== Embedding specific file
+
+The archive can be configured with a set of _external_ file to include. For instance:
+
+[source,xml]
+----
+<configuration>
+   <archive>
+       <files>
+          <file>
+              <source>src/ext/hello.txt</source>
+              <outputDirectory>misc</outputDirectory>
+              <destName>lorem-ipsum.txt</destName>
+          </file>
+       </files>
+    </archive>
+</configuration>
+----
+
+Each file contains:
+
+* the `source` - the location of the file
+* the `outputDirectory` - indicating where would be the file in the archive
+* the `destName` - indicating the final name
+
+For instance, in the previous example, the file `src/ext/hello.txt` is embedded in the archive as `misc/lorem-ipsum.txt`.
+
+== Embedding file sets
+
+While `files` allow embedding files individually, `fileSets` declare set of files:
+
+[source,xml]
+----
+<archive>
+    <fileSets>
+       <fileSet>
+           <directory>src/ext</directory>
+           <outputDirectory>misc</outputDirectory>
+           <excludes>
+               <exclude>h*.txt</exclude>
+           </excludes>
+       </fileSet>
+    </fileSets>
+</archive>
+----
+
+In a `fileSet`, you can configure:
+
+* the `directory` - the directory containing the files
+* the `outputDirectory` - indicating where would be the file in the archive
+* `includes` and `excludes` pattern to choose which files you want to embed in the archive.
+* `useDefaultExcludes` - indicating if you want to use the default exclusion list (enabled by default)
+
+== Customizing the manifest
+
+You can also add entries into the `MANIFEST.MF` of the created archive using the `manifest` entry:
+
+[source, xml]
+----
+<executions>
+    <execution>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <configuration>
+            <archive>
+               <manifest>
+                   <key>value</key>
+                   <name>${project.artifactId}</name>
+               </manifest>
+            </archive>
+        </configuration>
+    </execution>
+</executions>
+----
+
+== Resource combination
+
+Resource combination is a process merging the content of files into a single file (using _append_). It is particularly
+useful when building an archive embedding dependencies containing the same files. For instance `META-INF/services/*` and
+`META-INF/spring*` files are combined by default. The `fileCombinationPatterns` attribute allows configuring which files
+needs to be combined:
+
+[source, xml]
+----
+<archive>
+    <fileCombinationPatterns>
+        <pattern>misc/extension.*</pattern>
+        <pattern>META-INF/services/*</pattern>
+    </fileCombinationPatterns>
+</archive>
+----
+
+Once set, the defaults are disabled, so you need to set `<pattern>META-INF/services/*</pattern>`.
+

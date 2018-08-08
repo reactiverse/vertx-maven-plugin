@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -17,18 +17,22 @@
 
 package io.reactiverse.vertx.maven.plugin.mojos;
 
+import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
+import io.reactiverse.vertx.maven.plugin.components.ServiceUtils;
 import io.reactiverse.vertx.maven.plugin.utils.WebJars;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
@@ -182,6 +186,12 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     @Component
     protected ScmManager scmManager;
 
+    /**
+     * Configure the packaging content.
+     */
+    @Parameter
+    protected Archive archive;
+
     /* ==== Config ====  */
     // TODO-ROL: It would be awesome if this would not be required but, if not given,
     // the plugin tries to detect a single verticle. Maybe even decorated with a specific annotation ?
@@ -205,6 +215,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Parameter(property = "vertx.skip", defaultValue = "false")
     protected boolean skip;
+
+    @Parameter(alias = "skipScmMetadata", property = "vertx.skipScmMetadata", defaultValue = "false")
+    protected boolean skipScmMetadata;
 
     /**
      * The Plexus container.
@@ -320,5 +333,51 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     public ScmManager getScmManager() {
         return scmManager;
+    }
+
+    protected Archive computeArchive() throws MojoExecutionException {
+        if (archive == null) {
+            archive = ServiceUtils.getDefaultFatJar();
+        }
+
+        if (archive.getDependencySets().isEmpty()) {
+            archive.addDependencySet(DependencySet.ALL);
+        }
+
+        // Extend the manifest with launcher and verticle
+        if (launcher != null && !launcher.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Class", launcher);
+        }
+
+        if (verticle != null && !verticle.trim().isEmpty()) {
+            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
+        }
+
+        List<ManifestCustomizerService> customizers = getManifestCustomizers();
+        customizers.forEach(customizer ->
+            this.archive.getManifest().putAll(customizer.getEntries(this, project)));
+
+        if (archive.getFileCombinationPatterns().isEmpty()) {
+            archive.addFileCombinationPattern("META-INF/services/*");
+            archive.addFileCombinationPattern("META-INF/spring.*");
+        }
+
+        return this.archive;
+    }
+
+    private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
+        List<ManifestCustomizerService> customizers;
+        try {
+            customizers = container.lookupList(ManifestCustomizerService.class);
+        } catch (ComponentLookupException e) {
+            getLog().debug("ManifestCustomerService lookup failed", e);
+            throw new MojoExecutionException("Unable to retrieve the " +
+                ManifestCustomizerService.class.getName() + " components");
+        }
+        return customizers;
+    }
+
+    public boolean skipScmMetadata() {
+        return skipScmMetadata;
     }
 }

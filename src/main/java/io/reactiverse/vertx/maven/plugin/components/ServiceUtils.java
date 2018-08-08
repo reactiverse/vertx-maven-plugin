@@ -1,13 +1,27 @@
+/*
+ *
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *
+ *   Red Hat licenses this file to you under the Apache License, version
+ *   2.0 (the "License"); you may not use this file except in compliance
+ *   with the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *   implied.  See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
 package io.reactiverse.vertx.maven.plugin.components;
 
 import io.reactiverse.vertx.maven.plugin.mojos.Archive;
 import io.reactiverse.vertx.maven.plugin.mojos.DependencySet;
-import io.reactiverse.vertx.maven.plugin.mojos.FileSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.PatternIncludesArtifactFilter;
 import org.apache.maven.shared.artifact.filter.resolve.ScopeFilter;
@@ -19,13 +33,16 @@ import java.util.*;
  */
 public class ServiceUtils {
 
+    private ServiceUtils() {
+        // avoid direct instantiation.
+    }
+
     public static Archive getDefaultFatJar() {
         Archive archive = new Archive();
-        DependencySet all = new DependencySet();
-        archive.addDependencySet(all);
+        archive.addDependencySet(DependencySet.ALL);
         archive.setIncludeClasses(true);
-        archive.addDescriptorCombinationPattern("META-INF/services/*");
-        archive.addDescriptorCombinationPattern("META-INF/spring.*");
+        archive.addFileCombinationPattern("META-INF/services/*");
+        archive.addFileCombinationPattern("META-INF/spring.*");
         return archive;
     }
 
@@ -76,7 +93,7 @@ public class ServiceUtils {
         String provided = "provided";
         String compile = "compile";
         String system = "system";
-        
+
         if (Artifact.SCOPE_COMPILE.equals(scope)) {
             scopes.addAll(Arrays.asList(compile, provided, system));
         }
