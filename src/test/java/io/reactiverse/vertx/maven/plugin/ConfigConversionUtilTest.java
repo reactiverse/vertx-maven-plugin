@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -25,10 +25,8 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author kameshs
@@ -46,7 +44,7 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonDoc);
         JSONObject jsonMap = new JSONObject(jsonDoc);
         assertNotNull(jsonMap);
-        assertEquals(jsonMap.get("http.port"), 8080);
+        assertEquals(8080, jsonMap.get("http.port"));
 
     }
 
@@ -64,7 +62,7 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonMap.get("names"));
         JSONArray names = jsonMap.getJSONArray("names");
         assertThat(names.length() == 4).isTrue();
-        assertEquals(names.get(0), "kamesh");
+        assertEquals("kamesh", names.get(0));
 
     }
 

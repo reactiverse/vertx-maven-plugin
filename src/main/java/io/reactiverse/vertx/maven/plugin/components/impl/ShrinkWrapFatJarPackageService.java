@@ -1,3 +1,19 @@
+/*
+ *
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *
+ *   Red Hat licenses this file to you under the Apache License, version
+ *   2.0 (the "License"); you may not use this file except in compliance
+ *   with the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *   implied.  See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.*;
@@ -27,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -98,7 +115,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             jar.as(ZipExporter.class).exportTo(theCreatedFile);
 
             if (useTmpFile) {
-                boolean delete = jarFile.delete();
+                boolean delete = Files.deleteIfExists(jarFile.toPath());
                 boolean renameTo = theCreatedFile.renameTo(jarFile);
                 logger.debug("Main jar file deleted: " + delete);
                 logger.debug("Main jar file replaced by temporary file: " + renameTo);
@@ -118,7 +135,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
     }
 
-    private void addProjectClasses(PackageConfig config, Archive archive, JavaArchive jar) {
+    private static void addProjectClasses(PackageConfig config, Archive archive, JavaArchive jar) {
         if (archive.isIncludeClasses()) {
             File classes = new File(config.getProject().getBuild().getOutputDirectory());
             if (classes.isDirectory()) {
@@ -149,7 +166,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
     }
 
-    private void embedFile(PackageConfig config, JavaArchive jar, FileItem item) throws PackagingException {
+    private static void embedFile(PackageConfig config, JavaArchive jar, FileItem item) throws PackagingException {
         String path;
         if (item.getOutputDirectory() == null) {
             path = "/";
@@ -189,7 +206,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
     }
 
-    private void embedFileSet(Log log, MavenProject project, FileSet fs, JavaArchive jar) {
+    private static void embedFileSet(Log log, MavenProject project, FileSet fs, JavaArchive jar) {
         File directory = new File(fs.getDirectory());
         if (!directory.isAbsolute()) {
             directory = new File(project.getBasedir(), fs.getDirectory());
@@ -239,7 +256,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         String name = path.get();
 
         // Check whether the file is explicitly included
-        if (isExplicitelyIncluded(set, name)) {
+        if (isExplicitlyIncluded(set, name)) {
             return true;
         }
 
@@ -256,7 +273,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         }
 
         if (set.getOptions().getExcludes() != null) {
-            for (String pattern : set.getExcludes()) {
+            for (String pattern : set.getOptions().getExcludes()) {
                 if (SelectorUtils.match(pattern, name)) {
                     return true;
                 }
@@ -266,7 +283,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         return false;
     }
 
-    private boolean isExplicitelyIncluded(DependencySet set, String name) {
+    private static boolean isExplicitlyIncluded(DependencySet set, String name) {
         List<String> includes = set.getOptions().getIncludes();
         if (includes != null && !includes.isEmpty()) {
             boolean included = false;
@@ -315,7 +332,7 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
     /**
      * Generate the manifest for the über jar.
      */
-    private void generateManifest(JavaArchive jar, Map<String, String> entries) throws IOException {
+    private static void generateManifest(JavaArchive jar, Map<String, String> entries) throws IOException {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");

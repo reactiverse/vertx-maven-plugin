@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -41,7 +41,7 @@ public class DebugMojo extends RunMojo {
     boolean debugSuspend;
 
     @Parameter(property = "debug.port", defaultValue = "5005")
-    int debugPort;
+    String debugPort;
 
 
     @Override

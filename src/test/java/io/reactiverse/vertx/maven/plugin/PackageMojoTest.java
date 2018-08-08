@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -17,6 +17,7 @@
 
 package io.reactiverse.vertx.maven.plugin;
 
+import io.reactiverse.vertx.maven.plugin.mojos.Archive;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
@@ -39,33 +40,42 @@ public class PackageMojoTest {
         project.setVersion("1.0-SNAPSHOT");
         build.setFinalName("some-artifact-id-1.0-SNAPSHOT-GA");
 
-        // finale name set
-        String fn = PackageMojo.computeOutputName(project, null);
+        // output name set
+        String fn = PackageMojo.computeOutputName(new Archive().setOutputFileName("hello"), project, null);
+        assertThat(fn).isEqualTo("hello.jar");
+
+        // output name set with extension
+        fn = PackageMojo.computeOutputName(new Archive().setOutputFileName("hello.jar"), project, null);
+        assertThat(fn).isEqualTo("hello.jar");
+
+        // final name set
+        fn = PackageMojo.computeOutputName(new Archive(), project, null);
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT-GA.jar");
+
 
         // final name set with .jar
         build.setFinalName("some-artifact-id-1.0-SNAPSHOT-GA2.jar");
-        fn = PackageMojo.computeOutputName(project, null);
+        fn = PackageMojo.computeOutputName(new Archive(), project, null);
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT-GA2.jar");
 
         // same as 1 with classifier
         build.setFinalName("some-artifact-id-1.0-SNAPSHOT-GA");
-        fn = PackageMojo.computeOutputName(project, "fat");
+        fn = PackageMojo.computeOutputName(new Archive(), project, "fat");
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT-GA-fat.jar");
 
         // same as 2 with classifier
         build.setFinalName("some-artifact-id-1.0-SNAPSHOT-GA2.jar");
-        fn = PackageMojo.computeOutputName(project, "fat");
+        fn = PackageMojo.computeOutputName(new Archive(), project, "fat");
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT-GA2-fat.jar");
 
         // no final name
         build.setFinalName(null);
-        fn = PackageMojo.computeOutputName(project, "");
+        fn = PackageMojo.computeOutputName(new Archive(), project, "");
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT.jar");
 
         // no final name with classifier
         build.setFinalName(null);
-        fn = PackageMojo.computeOutputName(project, "fat");
+        fn = PackageMojo.computeOutputName(new Archive(), project, "fat");
         assertThat(fn).isEqualTo("some-artifact-id-1.0-SNAPSHOT-fat.jar");
     }
 }

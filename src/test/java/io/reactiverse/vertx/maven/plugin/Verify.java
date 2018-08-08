@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) 2016-2017 Red Hat, Inc.
+ *   Copyright (c) 2016-2018 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -16,8 +16,6 @@
  */
 
 package io.reactiverse.vertx.maven.plugin;
-
-//import io.restassured.RestAssured;
 
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.model.Dependency;
@@ -38,11 +36,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author kameshs
@@ -56,16 +51,41 @@ public class Verify {
         vertxJarVerifier.verifyManifest();
     }
 
+    public static void verifyContains(File archive, String file) throws IOException {
+        JarFile jar = new JarFile(archive);
+        assertThat(jar.getJarEntry(file)).isNotNull();
+    }
+
+    public static void verifyNotContain(File archive, String file) throws IOException {
+        JarFile jar = new JarFile(archive);
+        assertThat(jar.getJarEntry(file)).isNull();
+    }
+
+    public static void verifyContainsInManifest(File archive, String key, String value) throws Exception {
+        Manifest manifest = new JarFile(archive).getManifest();
+        assertThat(manifest).isNotNull();
+        String v = manifest.getMainAttributes().getValue(key);
+        assertThat(v).isNotNull().isEqualTo(value);
+    }
+
     public static void verifyServiceRelocation(File jarFile) throws Exception {
         VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
         vertxJarVerifier.verifyServicesContent();
     }
 
-    public static void verifyOrderServiceContent(File jarFile,String orderdedContent) throws Exception {
+    public static void verifyOrderServiceContent(File jarFile, String content) throws Exception {
         VertxJarServicesVerifier vertxJarVerifier = new VertxJarServicesVerifier(jarFile);
         vertxJarVerifier.verifyJarCreated();
-        vertxJarVerifier.verifyOrderedServicesContent(orderdedContent);
+        vertxJarVerifier.verifyOrderedServicesContent(content);
+    }
+
+    public static void verifyContainWithContent(File jarFile, String path, String... lines) throws IOException {
+        JarFile jar = new JarFile(jarFile);
+        ZipEntry entry = jar.getEntry(path);
+        assertThat(entry).isNotNull();
+        String content = read(jar.getInputStream(entry));
+        assertThat(content).containsSubsequence(lines);
     }
 
     public static void verifySetup(File pomFile) throws Exception {
@@ -112,11 +132,11 @@ public class Verify {
 
         //Check Redeploy Configuration
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
-        Assert.assertNotNull(vmp);
+        assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        Assert.assertNotNull(pluginConfig);
+        assertNotNull(pluginConfig);
         String redeploy = pluginConfig.getChild("redeploy").getValue();
-        Assert.assertNotNull(redeploy);
+        assertNotNull(redeploy);
         assertTrue(Boolean.valueOf(redeploy));
     }
 
@@ -126,12 +146,12 @@ public class Verify {
 
         MavenProject project = new MavenProject(model);
         Properties projectProps = project.getProperties();
-        Assert.assertNotNull(projectProps);
+        assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"),"3.4.0");
+        assertEquals(projectProps.getProperty("vertx.version"), "3.4.0");
     }
 
-    public static String read(InputStream input) throws IOException {
+    private static String read(InputStream input) throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             return buffer.lines().collect(Collectors.joining("\n"));
         }
