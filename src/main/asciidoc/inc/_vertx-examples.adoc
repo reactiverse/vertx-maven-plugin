@@ -5,6 +5,13 @@ The following sections shows example plugin snippets for the goals provided by t
 
 NOTE: please update the plugin version as needed (latest is **{version}**).
 
+Also check the https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/[samples] directory to see other examples:
+
+* https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/java-redeploy-example[Simple Java application] illustrates the redeployment and packaging
+of a Java application.
+* https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/frontend-example[WebPack example] illustrates how to use WebPack with the redeployment mechanism
+* https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/kotlin-example[Kotlin example] illustrates how you can use Kotlin with the Vert.x Maven Plugin
+
 [[package-goal-examples]]
 == vert.x:package Examples
 

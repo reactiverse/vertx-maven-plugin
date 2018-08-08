@@ -58,6 +58,11 @@ public class MavenExecutionUtils {
         ProjectDependencyGraph graph = new ProjectDependencyGraph() {
 
             @Override
+            public List<MavenProject> getAllProjects() {
+                return ImmutableList.of(project);
+            }
+
+            @Override
             public List<MavenProject> getSortedProjects() {
                 return ImmutableList.of(project);
             }
