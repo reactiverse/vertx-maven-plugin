@@ -101,25 +101,25 @@
 
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.0.24</plexus-utils.version>
-        <maven-aether-provider.version>3.2.5</maven-aether-provider.version>
+        <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <mojo-executor.version>2.2.0</mojo-executor.version>
+        <mojo-executor.version>2.3.0</mojo-executor.version>
         <snakeyaml.version>1.21</snakeyaml.version>
-        <org.json.version>20160212</org.json.version>
+        <org.json.version>20180130</org.json.version>
         <guava.version>19.0</guava.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!-- Test dependency versions -->
-        <vertx-core.version>3.5.2</vertx-core.version>
-        <assertj-core.version>3.6.2</assertj-core.version>
-        <junit.version>4.8.2</junit.version>
+        <vertx-core.version>3.5.3</vertx-core.version>
+        <assertj-core.version>3.10.0</assertj-core.version>
+        <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <maven-scm-plugin.version>1.9.5</maven-scm-plugin.version>
-        <org.eclipse.jgit.version>4.4.1.201607150455-r</org.eclipse.jgit.version>
+        <maven-scm-plugin.version>1.10.0</maven-scm-plugin.version>
+        <org.eclipse.jgit.version>5.0.2.201807311906-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.1</jacoco.version>
 
 
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
+            <version>2.9.6</version>
         </dependency>
 
         <!-- Mojo Utils-->
@@ -249,7 +249,7 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
+            <version>2.3.28</version>
         </dependency>
 
         <dependency>
@@ -281,8 +281,8 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.18.3</version>
-            <!--<scope>test</scope>-->
+            <version>2.21.0</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -314,7 +314,7 @@
         <dependency>
             <groupId>org.jvnet.winp</groupId>
             <artifactId>winp</artifactId>
-            <version>1.24</version>
+            <version>1.27</version>
             <scope>test</scope>
         </dependency>
 
