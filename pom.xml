@@ -100,7 +100,7 @@
 
 
         <!-- Compile dependency versions -->
-        <plexus-utils.version>3.0.24</plexus-utils.version>
+        <plexus-utils.version>3.1.0</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
