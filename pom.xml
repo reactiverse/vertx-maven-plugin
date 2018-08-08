@@ -91,7 +91,8 @@
         <!-- Plugin versions -->
         <maven-invoker-plugin.version>3.1.0</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.5.2</maven-plugin-plugin.version>
-        <maven-plugin-api.version>3.2.5</maven-plugin-api.version>
+        <maven-plugin-api.version>3.5.3</maven-plugin-api.version>
+
         <maven-resources-plugin.version>3.0.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
@@ -100,9 +101,9 @@
 
 
         <!-- Compile dependency versions -->
-        <plexus-utils.version>3.0.24</plexus-utils.version>
+        <plexus-utils.version>3.1.0</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
-        <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.7</commons-lang3.version>
