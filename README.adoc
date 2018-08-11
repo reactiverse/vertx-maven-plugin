@@ -4,8 +4,8 @@ image:https://travis-ci.org/reactiverse/vertx-maven-plugin.svg?branch=master["Bu
 image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg["Maven Central", link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin]
 
 
-image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=sqale_rating["Maintenance", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"] 
-image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=reliability_rating["Reliability", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"] 
+image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=sqale_rating["Maintenance", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"]
+image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=reliability_rating["Reliability", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"]
 image:https://sonarcloud.io/api/project_badges/measure?project=io.reactiverse%3Avertx-maven-plugin&metric=coverage["Coverage", link="https://sonarcloud.io/dashboard?id=io.reactiverse%3Avertx-maven-plugin"]
 
 
@@ -60,3 +60,12 @@ we will try to address it as soon as possible
 
 We love contributions, if you wish to contribute a patch or feature, please open
 a issue in https://github.com/reactiverse/vertx-maven-plugin/issues and send in a PR.
+
+== Releasing
+
+```bash
+.build/release.sh
+.build/perform-release.sh
+```
+
+
