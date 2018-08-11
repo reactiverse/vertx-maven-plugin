@@ -30,6 +30,7 @@ cd gh-pages
 git add --ignore-errors *
 git commit -m "generated documentation"
 git push origin gh-pages
+rm -Rf gh-pages
 
 cd ../..  || exit
 
