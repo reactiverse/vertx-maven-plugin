@@ -98,7 +98,7 @@ public class StartMojo extends AbstractRunMojo {
                 argsList.add(fatjar.getAbsolutePath());
             } else if (fatjar.isFile()  && ! isVertxLauncher(launcher)) {
                 argsList.add("-cp");
-                argsList.add(fatjar.getAbsolutePath());
+                argsList.add("\"" + fatjar.getAbsolutePath() + "\"");
                 argsList.add(IO_VERTX_CORE_LAUNCHER);
             } else {
                 throw new MojoFailureException("Unable to find vertx application jar --> "

@@ -179,10 +179,10 @@ public class JavaProcessExecutor {
         try {
 
             StringBuilder classpath = new StringBuilder();
-
+            classpath.append("\"");
             for (URL ele : this.classPathUrls) {
                 classpath = classpath
-                    .append(classpath.length() > 0 ? File.pathSeparator : "")
+                    .append(classpath.length() > 1 ? File.pathSeparator : "")
                     .append(new File(ele.toURI()));
             }
 
@@ -192,7 +192,7 @@ public class JavaProcessExecutor {
                 classpath.append(File.pathSeparator);
                 classpath.append(oldClasspath);
             }
-
+            classpath.append("\"");
             argsList.add(0, "-cp");
             argsList.add(1, classpath.toString());
 

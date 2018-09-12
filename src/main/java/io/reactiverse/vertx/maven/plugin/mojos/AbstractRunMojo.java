@@ -204,11 +204,13 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     void addClasspath(List<String> args) throws MojoExecutionException {
         try {
             StringBuilder classpath = new StringBuilder();
+            classpath.append("\"");
             for (URL ele : getClassPathUrls()) {
                 classpath = classpath
-                    .append(classpath.length() > 0 ? File.pathSeparator : "")
+                    .append(classpath.length() > 1 ? File.pathSeparator : "")
                     .append(new File(ele.toURI()));
             }
+            classpath.append("\"");
             getLog().debug("Classpath for forked process: " + classpath);
             args.add("-cp");
             args.add(classpath.toString());
