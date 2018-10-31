@@ -245,6 +245,15 @@
         "artifactId": "vertx-dropwizard-metrics"
     },
     {
+        "name": "Vert.x Metrics using MicroMeter",
+        "labels": [
+            "prometheus",
+            "micrometer"
+        ],
+        "groupId": "io.vertx",
+        "artifactId": "vertx-micrometer-metrics"
+    },
+    {
         "name": "Vert.x Metrics using Hawkular",
         "labels": [
             "hawkular"
