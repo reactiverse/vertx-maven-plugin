@@ -75,7 +75,7 @@ public class SetupMojoTest {
 
         model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
 
-        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        Dependency vertxBom = dependency("io.vertx", "vertx-stack-depchain", "${vertx.version}");
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 
@@ -134,7 +134,7 @@ public class SetupMojoTest {
 
         model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
 
-        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        Dependency vertxBom = dependency("io.vertx", "vertx-stack-depchain", "${vertx.version}");
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 
@@ -197,7 +197,7 @@ public class SetupMojoTest {
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
 
-        Dependency vertxBom = dependency("io.vertx", "vertx-dependencies", "${vertx.version}");
+        Dependency vertxBom = dependency("io.vertx", "vertx-stack-depchain", "${vertx.version}");
         vertxBom.setType("pom");
         vertxBom.setScope("import");
 
@@ -236,7 +236,7 @@ public class SetupMojoTest {
         if (model.getDependencyManagement() != null) {
             Optional<Dependency> vertxCore =
                 model.getDependencyManagement().getDependencies().stream()
-                    .filter(dependency -> dependency.getArtifactId().equals("vertx-dependencies")).findFirst();
+                    .filter(dependency -> dependency.getArtifactId().equals("vertx-stack-depchain")).findFirst();
             model.getDependencyManagement().addDependency(vertxBom);
         } else {
             DependencyManagement depsMgmt = new DependencyManagement();
@@ -322,7 +322,7 @@ public class SetupMojoTest {
         assertThat(dependencyManagement.getDependencies()).isNotEmpty();
         Dependency vertxBom = project.getDependencyManagement().getDependencies().get(0);
         assertThat(vertxBom.getGroupId()).isEqualTo("io.vertx");
-        assertThat(vertxBom.getArtifactId()).isEqualTo("vertx-dependencies");
+        assertThat(vertxBom.getArtifactId()).isEqualTo("vertx-stack-depchain");
         assertThat(vertxBom.getVersion()).isEqualTo("${vertx.version}");
         assertThat(vertxBom.getType()).isEqualTo("pom");
         assertThat(vertxBom.getScope()).isEqualTo("import");

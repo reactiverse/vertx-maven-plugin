@@ -19,7 +19,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.vertx</groupId>
-                <artifactId>vertx-dependencies</artifactId>
+                <artifactId>vertx-stack-depchain</artifactId>
                 <version>${r"${vertx.version}"}</version>
                 <type>pom</type>
                 <scope>import</scope>
