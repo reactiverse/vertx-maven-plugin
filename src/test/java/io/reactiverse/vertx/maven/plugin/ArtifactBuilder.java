@@ -75,7 +75,8 @@ public class ArtifactBuilder {
             artifact.setFile(file);
         } else {
             // Generate content
-            File file = File.createTempFile("vmp-test-" + group + "-" + artifact + "-" + version, "." + type);
+            String prefix = "vmp-test-" + group + "-" + artifact.getArtifactId() + "-" + version;
+            File file = File.createTempFile(prefix, "." + type);
             FileUtils.write(file, "// " + UUID.randomUUID().toString(), "UTF-8");
             artifact.setFile(file);
         }
