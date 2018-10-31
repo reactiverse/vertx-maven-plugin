@@ -17,6 +17,9 @@ buildNumber.properties
 .settings/
 .classpath
 
+# Shell script logs
+*.log
+
 ### Java template
 *.class
 
