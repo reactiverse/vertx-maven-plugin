@@ -106,22 +106,22 @@
         <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
-        <commons-lang3.version>3.7</commons-lang3.version>
+        <commons-lang3.version>3.8</commons-lang3.version>
         <mojo-executor.version>2.3.0</mojo-executor.version>
-        <snakeyaml.version>1.21</snakeyaml.version>
-        <org.json.version>20180130</org.json.version>
+        <snakeyaml.version>1.23</snakeyaml.version>
+        <org.json.version>20180813</org.json.version>
         <guava.version>23.0</guava.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>3.5.3</vertx-core.version>
-        <assertj-core.version>3.10.0</assertj-core.version>
+        <assertj-core.version>3.11.1</assertj-core.version>
         <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
         <maven-scm-plugin.version>1.10.0</maven-scm-plugin.version>
-        <org.eclipse.jgit.version>5.0.2.201807311906-r</org.eclipse.jgit.version>
-        <jacoco.version>0.8.1</jacoco.version>
+        <org.eclipse.jgit.version>5.1.0.201809111528-r</org.eclipse.jgit.version>
+        <jacoco.version>0.8.2</jacoco.version>
 
 
         <skipTests>false</skipTests>
@@ -188,7 +188,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.6</version>
+            <version>2.9.7</version>
         </dependency>
 
         <!-- Mojo Utils-->
@@ -282,7 +282,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.21.0</version>
+            <version>2.22.0</version>
             <scope>test</scope>
         </dependency>
 
