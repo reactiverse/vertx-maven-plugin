@@ -121,7 +121,7 @@
         <awaitility.version>1.7.0</awaitility.version>
         <maven-scm-plugin.version>1.10.0</maven-scm-plugin.version>
         <org.eclipse.jgit.version>5.1.0.201809111528-r</org.eclipse.jgit.version>
-        <jacoco.version>0.8.1</jacoco.version>
+        <jacoco.version>0.8.2</jacoco.version>
 
 
         <skipTests>false</skipTests>
