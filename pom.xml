@@ -119,7 +119,7 @@
         <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <maven-scm-plugin.version>1.10.0</maven-scm-plugin.version>
+        <maven-scm-plugin.version>1.11.1</maven-scm-plugin.version>
         <org.eclipse.jgit.version>5.1.0.201809111528-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.2</jacoco.version>
 
