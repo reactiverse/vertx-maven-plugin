@@ -90,20 +90,20 @@
 
         <!-- Plugin versions -->
         <maven-invoker-plugin.version>3.1.0</maven-invoker-plugin.version>
-        <maven-plugin-plugin.version>3.5.2</maven-plugin-plugin.version>
+        <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
         <maven-plugin-api.version>3.5.4</maven-plugin-api.version>
 
         <maven-resources-plugin.version>3.0.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>1.5.3</asciidoctor-maven-plugin.version>
-        <asciidoctorj.version>1.5.4</asciidoctorj.version>
+        <asciidoctorj.version>1.5.8.1</asciidoctorj.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
 
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.1.0</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
-        <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.8</commons-lang3.version>
@@ -119,7 +119,7 @@
         <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <maven-scm-plugin.version>1.10.0</maven-scm-plugin.version>
+        <maven-scm-plugin.version>1.11.1</maven-scm-plugin.version>
         <org.eclipse.jgit.version>5.1.3.201810200350-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.2</jacoco.version>
 
