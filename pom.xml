@@ -114,7 +114,7 @@
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!-- Test dependency versions -->
-        <vertx-core.version>3.5.4</vertx-core.version>
+        <vertx-core.version>3.6.0</vertx-core.version>
         <assertj-core.version>3.11.1</assertj-core.version>
         <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
