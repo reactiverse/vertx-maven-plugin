@@ -19,6 +19,7 @@ package io.reactiverse.vertx.maven.plugin.utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.toolchain.Toolchain;
 import org.codehaus.plexus.util.cli.Arg;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamPumper;
@@ -32,6 +33,7 @@ import java.util.*;
  */
 public class JavaProcessExecutor {
 
+    private final Toolchain toolchain;
     private List<String> argsList = new ArrayList<>();
 
     private Log logger;
@@ -42,8 +44,13 @@ public class JavaProcessExecutor {
 
     protected List<String> jvmArgs;
 
-    private final File java = findJava();
+    private final File java;
     private Collection<URL> classPathUrls;
+
+    public JavaProcessExecutor(Toolchain toolchain) {
+        this.toolchain = toolchain;
+        this.java = findJava();
+    }
 
     public Process execute() throws Exception {
         Commandline commandLine = buildCommandLine();
@@ -207,6 +214,10 @@ public class JavaProcessExecutor {
      * @return - the {@link File} representing the Java executable path
      */
     private File findJava() {
+        if (toolchain != null) {
+            String javaHome = toolchain.findTool("java");
+            return new File(javaHome);
+        }
         String javaHome = System.getProperty("java.home");
         File found;
         if (javaHome == null) {

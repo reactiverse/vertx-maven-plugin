@@ -12,7 +12,7 @@ public class JavaExecutorTest {
 
     @Test
     public void testInitialization() {
-        JavaProcessExecutor executor = new JavaProcessExecutor();
+        JavaProcessExecutor executor = new JavaProcessExecutor(null);
         assertThat(executor).isNotNull();
     }
 

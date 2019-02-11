@@ -24,7 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
@@ -43,6 +46,8 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
 
     /* ==== Maven related ==== */
+    @Component
+    private ToolchainManager toolchainManager;
 
     /**
      * The maven project classes directory, defaults to target/classes
@@ -380,7 +385,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      */
 
     protected void run(List<String> argsList) throws MojoExecutionException {
-        JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
+        JavaProcessExecutor vertxExecutor = new JavaProcessExecutor(getToolchain())
             .withJvmOpts(redeploy ? Collections.emptyList() : jvmArgs)
             .withArgs(argsList)
             .withClassPath(getClassPathUrls())
@@ -568,6 +573,10 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      */
     private boolean isYaml(String configFile) {
         return configFile != null && (configFile.endsWith(".yaml") || configFile.endsWith(".yml"));
+    }
+
+    private Toolchain getToolchain() {
+        return toolchainManager == null ? null : toolchainManager.getToolchainFromBuildContext("jdk", mavenSession);
     }
 
     /**
