@@ -96,7 +96,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>1.5.7.1</asciidoctor-maven-plugin.version>
-        <asciidoctorj.version>1.6.0</asciidoctorj.version>
+        <asciidoctorj.version>1.6.2</asciidoctorj.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
 
@@ -115,7 +115,7 @@
 
         <!-- Test dependency versions -->
         <vertx-core.version>3.6.3</vertx-core.version>
-        <assertj-core.version>3.11.1</assertj-core.version>
+        <assertj-core.version>3.12.0</assertj-core.version>
         <junit.version>4.12</junit.version>
         <maven-verifier.version>1.6</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
