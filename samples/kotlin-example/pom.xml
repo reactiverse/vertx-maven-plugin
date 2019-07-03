@@ -31,7 +31,7 @@
         <kotlin.version>1.2.60</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
-        <vertx.version>3.5.4</vertx.version>
+        <vertx.version>3.7.1</vertx.version>
         <vertx.verticle>org.vertx.demo.MyKotlinVerticle</vertx.verticle>
     </properties>
 
@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
-                <version>1.0.16</version>
+                <version>1.0.18</version>
                 <executions>
                     <execution>
                         <id>vmp</id>

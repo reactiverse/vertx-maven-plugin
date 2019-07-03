@@ -25,7 +25,7 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.5.4</vertx.version>
+        <vertx.version>3.7.1</vertx.version>
         <vertx.verticle>io.vertx.demo.MyVerticle</vertx.verticle>
         <node_modules.path>${project.build.directory}/node_modules</node_modules.path>
     </properties>
@@ -78,7 +78,7 @@
             <plugin>
                 <groupId>io.reactiverse</groupId>
                 <artifactId>vertx-maven-plugin</artifactId>
-                <version>1.0.16</version>
+                <version>1.0.18</version>
                 <executions>
                     <execution>
                         <id>vmp</id>

@@ -2,8 +2,8 @@
   "name": "frontend-example",
   "version": "0.0.1",
   "dependencies": {
-    "webpack": "^4.16.5",
-    "webpack-cli": "^3.1.0"
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5"
   },
   "description": "An example of frontend application built with the Vert.x Maven Plugin",
   "main": "index.js",
