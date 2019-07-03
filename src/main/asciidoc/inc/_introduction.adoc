@@ -25,7 +25,7 @@ The plugin provides a set of goals such as:
 
 Generally, you will use the following configuration:
 
-[source,xml]
+[source,xml,subs=attributes+]
 ----
 <project>
   ...
@@ -35,7 +35,7 @@ Generally, you will use the following configuration:
         <plugin>
             <groupId>io.reactiverse</groupId>
             <artifactId>vertx-maven-plugin</artifactId>
-            <version>${version}</version>
+            <version>{version}</version>
             <executions>
                 <execution>
                     <id>vmp</id>

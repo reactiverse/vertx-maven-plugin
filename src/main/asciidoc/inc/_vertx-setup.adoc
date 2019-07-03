@@ -16,7 +16,7 @@ from the plugin properties file vertx-maven-plugin.properties as the vert.x vers
 if you wish to override the vertx version, then you can run the same command as above with `-DvertxVersion=<your-vertx-version>`
 
 e.g.
-[source,subs=subs=attributes+]
+[source,subs=attributes+]
 ----
 mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion=3.4.0
 ----
