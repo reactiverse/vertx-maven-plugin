@@ -106,7 +106,7 @@
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
-        <commons-lang3.version>3.8.1</commons-lang3.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <mojo-executor.version>2.3.0</mojo-executor.version>
         <snakeyaml.version>1.24</snakeyaml.version>
         <org.json.version>20180813</org.json.version>
