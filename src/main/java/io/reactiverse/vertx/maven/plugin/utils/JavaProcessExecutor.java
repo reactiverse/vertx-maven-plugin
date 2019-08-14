@@ -40,6 +40,8 @@ public class JavaProcessExecutor {
 
     private File workingDirectory;
 
+    private Map<String, String> environment = new HashMap<>();
+
     protected List<String> jvmArgs;
 
     private final File java = findJava();
@@ -95,6 +97,8 @@ public class JavaProcessExecutor {
 
         cli.setExecutable(java.getAbsolutePath());
 
+        environment.forEach(cli::addEnvironment);
+
         cli.setWorkingDirectory(workingDirectory);
 
         addClasspath(this.argsList);
@@ -134,6 +138,11 @@ public class JavaProcessExecutor {
 
     public JavaProcessExecutor withWaitFor(boolean waitFor) {
         this.waitFor = waitFor;
+        return this;
+    }
+
+    public JavaProcessExecutor withEnvVar(String name, String value) {
+        environment.put(name, value);
         return this;
     }
 

@@ -41,6 +41,8 @@ import java.util.stream.Stream;
 
 public class AbstractRunMojo extends AbstractVertxMojo {
 
+    private static final String VERTXWEB_ENVIRONMENT = "VERTXWEB_ENVIRONMENT";
+
 
     /* ==== Maven related ==== */
 
@@ -78,6 +80,13 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         defaultValue = "1000")
     long redeployTerminationPeriod;
 
+    /**
+     * Sets the environment the Vert.x Web app is running in.
+     * <p>
+     * If not set and the {@code VERTXWEB_ENVIRONMENT} environment variable is absent, defaults to {@code dev}.
+     */
+    @Parameter(property = "vertxweb.environment")
+    String vertxWebEnvironment;
 
     /**
      * The default command to use when calling io.vertx.core.Launcher.
@@ -380,12 +389,17 @@ public class AbstractRunMojo extends AbstractVertxMojo {
      */
 
     protected void run(List<String> argsList) throws MojoExecutionException {
+        String webEnv = Optional.ofNullable(vertxWebEnvironment)
+            .orElse(Optional.ofNullable(System.getenv(VERTXWEB_ENVIRONMENT)).orElse("dev"));
+
         JavaProcessExecutor vertxExecutor = new JavaProcessExecutor()
             .withJvmOpts(redeploy ? Collections.emptyList() : jvmArgs)
+            .withEnvVar(VERTXWEB_ENVIRONMENT, webEnv)
             .withArgs(argsList)
             .withClassPath(getClassPathUrls())
             .withLogger(getLog())
             .withWaitFor(true);
+
         try {
 
 

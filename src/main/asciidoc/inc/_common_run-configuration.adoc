@@ -15,14 +15,22 @@ If a yaml file is configured then it will be converted to json by the plugin.  T
 be saved in `${project.outputDir}/conf` directory
 | vertx.config
 | `${basedir}/src/main/${project.artifactId}.json` or `${basedir}/src/main/${project.artifactId}.yaml` or `${basedir}/src/main/${project.artifactId}.yml`
+
 | redeploy
 | controls whether vertx redeploy is enabled
 |
 | false
+
 | workDirectory
 | The working directory of the running process of the application
 | vertx.directory
 | `${project.basedir}`
+
+| vertxWebEnvironment
+| The link:https://vertx.io/docs/vertx-web/java/#_development_mode[environment] the Vert.x Web app is running in.
+| vertxweb.environment
+| Default to either the `VERTXWEB_ENVIRONMENT` environment variable value or, if absent, to `dev`.
+
 |===
 
 NOTE: Right now the plugin supports only file based Vert.x configuration
