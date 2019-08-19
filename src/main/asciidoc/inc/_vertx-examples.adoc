@@ -66,9 +66,9 @@ The first dependency is a `js` dependency (`<type>js</type>`). The plugins resol
 to the `webroot` directory (the default is `${project.baseDir}/target/classes/webroot`). The output file name is:
 `vertx-web-client.js`.
 
-The second dependency is a webjar. A http://www.webjars.org/[webjar] is a jar file containing web resources. The
-plugin extracts the web resource to the `webroot` directory. In this example, it creates: `${project
-.baseDir}/target/classes/webroot/jquery/jquery.js` (and other includes resources).
+The second dependency is a webjar. A http://www.webjars.org/[webjar] is a jar file containing web resources.
+By default, the plugin extracts the web resource to the `webroot` directory.
+In this example, it creates: `${project.baseDir}/target/classes/webroot/jquery/jquery.js` (and other included resources).
 
 === Using full names for webjars and javascript dependencies
 
