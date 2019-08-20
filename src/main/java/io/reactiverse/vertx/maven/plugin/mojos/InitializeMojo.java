@@ -48,7 +48,7 @@ public class InitializeMojo extends AbstractVertxMojo {
     @Parameter
     private File webRoot;
 
-    @Parameter(defaultValue = "true")
+    @Parameter(defaultValue = "false")
     private boolean unpackWebJar;
 
     @Parameter(defaultValue = "true")

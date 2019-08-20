@@ -28,7 +28,7 @@ The initialize goal has the following parameters apart from the ones mentioned i
 | unpackWebJar
 | Whether or not webjars are unpacked to _webRoot_. If not unpacked, webjars can be https://www.webjars.org/documentation#vertx[served from the classpath].
 | &nbsp;
-| true
+| false
 
 | stripWebJarVersion
 | Whether or not the version is stripped when unpacking webjars
