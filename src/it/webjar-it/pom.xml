@@ -48,6 +48,9 @@
                             <goal>initialize</goal>
                             <goal>package</goal>
                         </goals>
+                        <configuration>
+                            <unpackWebJar>true</unpackWebJar>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

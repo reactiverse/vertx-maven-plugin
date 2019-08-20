@@ -50,6 +50,7 @@
                         </goals>
                         <configuration>
                             <webRoot>target/classes/assets</webRoot>
+                            <unpackWebJar>true</unpackWebJar>
                             <stripWebJarVersion>false</stripWebJarVersion>
                             <stripJavaScriptDependencyVersion>false</stripJavaScriptDependencyVersion>
                         </configuration>
