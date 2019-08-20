@@ -109,7 +109,7 @@
         <commons-lang3.version>3.9</commons-lang3.version>
         <mojo-executor.version>2.3.0</mojo-executor.version>
         <snakeyaml.version>1.25</snakeyaml.version>
-        <org.json.version>20180813</org.json.version>
+        <org.json.version>20190722</org.json.version>
         <guava.version>23.0</guava.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
