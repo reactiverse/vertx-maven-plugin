@@ -48,6 +48,9 @@ public class InitializeMojo extends AbstractVertxMojo {
     @Parameter
     private File webRoot;
 
+    @Parameter(defaultValue = "false")
+    private boolean unpackWebJar;
+
     @Parameter(defaultValue = "true")
     private boolean stripWebJarVersion;
 
@@ -75,7 +78,9 @@ public class InitializeMojo extends AbstractVertxMojo {
         dependencies.addAll(this.project.getArtifacts());
 
         copyJSDependencies(dependencies);
-        unpackWebjars(dependencies);
+        if (unpackWebJar) {
+            unpackWebjars(dependencies);
+        }
 
         // Start the spy
         MavenExecutionRequest request = mavenSession.getRequest();
