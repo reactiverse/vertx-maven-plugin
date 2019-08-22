@@ -23,8 +23,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -34,14 +32,12 @@ import java.util.Map;
  */
 public class ConfigConverterUtil {
 
-    @SuppressWarnings("unchecked")
     public static void convertYamlToJson(File yamlFile, File jsonFilePath) throws IOException {
         FileUtils.deleteQuietly(jsonFilePath);
         String content = FileUtils.readFileToString(yamlFile, "UTF-8");
         Yaml yaml = new Yaml();
-        Map<Object, Object> map = (Map<Object, Object>) yaml.load(content);
+        Map<Object, Object> map = yaml.load(content);
         JSONObject jsonObject = new JSONObject(map);
         FileUtils.write(jsonFilePath, jsonObject.toString(), "UTF-8");
     }
-
 }

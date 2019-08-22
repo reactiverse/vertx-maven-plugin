@@ -38,6 +38,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 
 public class AbstractRunMojo extends AbstractVertxMojo {
 
@@ -103,8 +105,15 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     String vertxCommand = "run";
 
     /**
+     * This property will be passed as the -options option to vertx run. It defaults to file
+     * "src/main/config/options.json" (or ".yml" or ".yaml"), if it exists it will passed to the vertx run
+     */
+    @Parameter(alias = "options", property = "vertx.options")
+    File options;
+
+    /**
      * This property will be passed as the -config option to vertx run. It defaults to file
-     * "src/main/config/application.json", if it exists it will passed to the vertx run
+     * "src/main/config/application.json" (or ".yml" or ".yaml"), if it exists it will passed to the vertx run
      */
     @Parameter(alias = "config", property = "vertx.config")
     File config;
@@ -147,7 +156,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
         List<String> argsList = new ArrayList<>();
 
-        scanAndLoadConfigs();
+        options = scanAndLoad(VERTX_OPTIONS_FILE, options);
+        if (options != null) {
+            getLog().info("Using options file: " + options.getAbsolutePath());
+        }
+        config = scanAndLoad(VERTICLE_CONFIG_FILE, config);
         if (config != null) {
             getLog().info("Using configuration file: " + config.getAbsolutePath());
         }
@@ -267,6 +280,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 launcher +
                 "\"";
             argsList.add(argLauncherClass);
+
+            if (options != null && options.exists() && options.isFile()) {
+                getLog().info("Using options from file: " + options.toString());
+                argsList.add(VERTX_ARG_OPTIONS);
+                argsList.add(options.toString());
+            }
 
             if (config != null && config.exists() && config.isFile()) {
                 getLog().info("Using configuration from file: " + config.toString());
@@ -441,7 +460,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 // Include only mojo in [generate-source, process-classes]
                 .filter(exec -> MojoSpy.PHASES.contains(exec.getLifecyclePhase()))
                 .map(this::toTask)
-                .collect(Collectors.toList());
+                .collect(toList());
         }
         return list;
     }
@@ -463,68 +482,61 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         };
     }
 
-    private void lookForConfiguration() {
+    private File lookForConfiguration(String filename) {
         File confBaseDir = new File(project.getBasedir(), DEFAULT_CONF_DIR);
-        if (confBaseDir.isDirectory()) {
-            DirectoryScanner directoryScanner = new DirectoryScanner();
-            directoryScanner.setBasedir(confBaseDir);
-            directoryScanner.setIncludes(WILDCARD_CONFIG_FILES);
-            directoryScanner.scan();
-
-            String[] configFiles = directoryScanner.getIncludedFiles();
-            if (configFiles == null || configFiles.length == 0) {
-                // No configuration found
-                return;
-            }
-            // Else takes the first one
-            String fileName = configFiles[0];
-            this.config = new File(confBaseDir, fileName);
+        if (!confBaseDir.isDirectory()) {
+            return null;
         }
+        DirectoryScanner directoryScanner = new DirectoryScanner();
+        directoryScanner.setBasedir(confBaseDir);
+        String[] includes = Stream.concat(Stream.of(JSON_EXTENSION), YAML_EXTENSIONS.stream())
+            .map(ext -> filename + ext)
+            .toArray(String[]::new);
+        directoryScanner.setIncludes(includes);
+        directoryScanner.scan();
+        return Arrays.stream(directoryScanner.getIncludedFiles())
+            .map(found -> new File(confBaseDir, found))
+            .findFirst()
+            .orElse(null);
     }
 
     /**
      * This method loads configuration files from `src/main/conf`.
-     * It uses the pattern {@code ${basedir}/src/main/conf/application.{json/yaml/yml}}. In case of YAML, the
+     * It uses the pattern {@code ${basedir}/src/main/conf/{options/application}.{json/yaml/yml}}. In case of YAML, the
      * configuration is converted to JSON.
+     *
+     * Visible for testing
      */
-    void scanAndLoadConfigs() throws MojoExecutionException {
-        if (config == null) {
-            lookForConfiguration();
-            if (config == null) {
+    File scanAndLoad(String configName, File userProvided) throws MojoExecutionException {
+        File file;
+        if (userProvided != null) {
+            if (!userProvided.isFile()) {
+                getLog().error("Cannot load the configuration - file " + userProvided.getAbsolutePath() + " does not exist");
+                return userProvided;
+            }
+            file = userProvided;
+        } else {
+            file = lookForConfiguration(configName);
+            if (file == null) {
                 getLog().debug("No configuration found");
-                return;
+                return null;
             }
-
-            if (isYaml(config.getName())) {
-                convertYamlToJson();
-            }
-            return;
         }
-
-        if (!config.isFile()) {
-            getLog().error("Cannot load the configuration - file " + config.getAbsolutePath() + " does not exist");
-            return;
-        }
-
-        if (isYaml(config.getName())) {
-            convertYamlToJson();
-        }
+        return isYaml(file) ? convertYamlToJson(file) : file;
     }
 
-    private void convertYamlToJson() throws MojoExecutionException {
-        //Check if its YAML or YML
-        File jsonConfDir = new File(this.projectBuildDir, "conf");
+    private File convertYamlToJson(File yamlFile) throws MojoExecutionException {
+        File jsonConfDir = new File(projectBuildDir, "conf");
         boolean created = jsonConfDir.mkdirs();
         getLog().debug("Config directory " + jsonConfDir.getAbsolutePath() + " created: " + created);
-        String output = FilenameUtils.removeExtension(config.getName()) + ".json";
+        String output = FilenameUtils.removeExtension(yamlFile.getName()) + ".json";
         File convertedJsonFile = new File(jsonConfDir, output);
         try {
-            ConfigConverterUtil.convertYamlToJson(config, convertedJsonFile);
-            getLog().info(config.getName() + " converted to " + convertedJsonFile.getAbsolutePath());
-            this.config = convertedJsonFile;
+            ConfigConverterUtil.convertYamlToJson(yamlFile, convertedJsonFile);
+            getLog().info(yamlFile.getAbsolutePath() + " converted to " + convertedJsonFile.getAbsolutePath());
+            return convertedJsonFile;
         } catch (Exception e) {
-            throw new MojoExecutionException("Error loading or converting the configuration file:"
-                + config.getAbsolutePath(), e);
+            throw new MojoExecutionException("Error loading or converting the configuration file:" + yamlFile, e);
         }
     }
 
@@ -567,7 +579,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .collect(toList()));
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to run:", e);
         }
@@ -577,11 +589,12 @@ public class AbstractRunMojo extends AbstractVertxMojo {
     /**
      * Method to check if the file is YAML file
      *
-     * @param configFile - the config file to be checked
-     * @return if its YAML file e.g. application.yml or application.yml
+     * @param file - the file to be checked
+     *
+     * @return true if the file ends with {@code yml} or {@code yaml}
      */
-    private boolean isYaml(String configFile) {
-        return configFile != null && (configFile.endsWith(".yaml") || configFile.endsWith(".yml"));
+    private boolean isYaml(File file) {
+        return file != null && YAML_EXTENSIONS.stream().anyMatch(ext -> file.getName().endsWith(ext));
     }
 
     /**

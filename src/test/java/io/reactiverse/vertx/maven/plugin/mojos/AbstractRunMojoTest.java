@@ -14,16 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AbstractRunMojoTest {
 
-
     @Test
     public void testConversionToJson() throws MojoExecutionException {
         AbstractRunMojo mojo = new AbstractRunMojo();
         mojo.project = new MavenProject();
         mojo.projectBuildDir = "target/junk";
         mojo.config = new File("src/test/resources/testconfig.yaml");
-        mojo.scanAndLoadConfigs();
-        assertThat(mojo.config).isFile()
-            .hasName("testconfig.json");
+        mojo.config = mojo.scanAndLoad("testconfig", mojo.config);
+        assertThat(mojo.config).isFile().hasName("testconfig.json");
     }
 
     @Test
@@ -32,7 +30,7 @@ public class AbstractRunMojoTest {
         mojo.project = new MavenProject();
         mojo.projectBuildDir = "target/junk";
         mojo.config = new File("src/test/resources/missing.json");
-        mojo.scanAndLoadConfigs();
+        mojo.config = mojo.scanAndLoad("missing", mojo.config);
         assertThat(mojo.config).doesNotExist();
     }
 
@@ -42,7 +40,7 @@ public class AbstractRunMojoTest {
         mojo.project = new MavenProject();
         mojo.projectBuildDir = "target/junk";
         mojo.config = new File("src/test/resources/missing.yml");
-        mojo.scanAndLoadConfigs();
+        mojo.config = mojo.scanAndLoad("missing", mojo.config);
         assertThat(mojo.config).doesNotExist();
     }
 

@@ -47,10 +47,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,15 +60,31 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
 
     public static final String IO_VERTX_CORE_LAUNCHER = "io.vertx.core.Launcher";
-    /**
-     *
-     */
-    protected static final String[] WILDCARD_CONFIG_FILES = new String[]{"*.yml", "*.yaml", "*.json"};
-    /**
-     * vert.x configuration option
-     */
 
+    /**
+     * Vert.x options file name, without suffix (could be JSON or YAML file).
+     */
+    protected static final String VERTX_OPTIONS_FILE = "options";
+
+    /**
+     * Verticle configuration file name, without suffix (could be JSON or YAML file).
+     */
+    protected static final String VERTICLE_CONFIG_FILE = "application";
+
+    protected static final String JSON_EXTENSION = ".json";
+
+    protected static final List<String> YAML_EXTENSIONS = Arrays.asList(".yml", ".yaml");
+
+    /**
+     * Vert.x configuration option
+     */
+    protected static final String VERTX_ARG_OPTIONS = "-options";
+
+    /**
+     * Verticle configuration option
+     */
     protected static final String VERTX_ARG_CONF = "-conf";
+
     /**
      * vert.x launcher argument
      */
@@ -105,11 +118,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      * vert.x redeploy termination period
      */
     protected static final String VERTX_ARG_REDEPLOY_TERMINATION_PERIOD = "redeploy-termination-period=";
-
-    /**
-     *
-     */
-    protected static final String VERTX_CONFIG_FILE_JSON = "application.json";
 
     /**
      * vert.x command stop
