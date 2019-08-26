@@ -15,12 +15,17 @@ property. e.g. `-Dvertx.runArgs="--worker --instances=2"`. The system property t
 |vertx.runArgs
 |&nbsp;
 
+| options
+| The configuration file to use to configure Vert.x.
+This property is passed as the `-options` option to vertx run.
+| vertx.options
+| src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml
 
 | config
-| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
-run.
-| &nbsp;
-| src/main/config/application.json or src/main/config/application.yml
+| The configuration file to use to configure the application.
+This property is passed as the `-config` option to vertx run.
+| vertx.config
+| src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml
 
 | jvmArgs
 | The Java Options that will be used when starting the application, these are the values that are
@@ -82,11 +87,17 @@ defines all the applicable configurations for the goal.
 |===
 | Element | Description | Property| Default
 
+| options
+| The configuration file to use to configure Vert.x.
+This property is passed as the `-options` option to vertx run.
+| vertx.options
+| src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml
+
 | config
-| The configuration file to use to configure the application. This property is passed as the `-config` option to vertx
-run.
-| &nbsp;
-| src/main/config/application.json or src/main/config/application.yml
+| The configuration file to use to configure the application.
+This property is passed as the `-config` option to vertx run.
+| vertx.config
+| src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml
 
 | jvmArgs
 | The Java Options that will be used when starting the application, these are the values that are

@@ -9,12 +9,19 @@ These are the common configuration shared by the run based goals such as **<<ver
 |===
 | Element | Description | Property| Default
 
+| options
+| the application configuration file path that will be passed to the vertx launcher as `-options`.
+If a yaml file is configured then it will be converted to json by the plugin.
+The converted file will be saved in `${project.outputDir}/conf` directory.
+| vertx.options
+| `src/main/options.json` or `src/main/options.yaml` or `src/main/options.yml`
+
 | config
 | the application configuration file path that will be passed to the vertx launcher as `-conf`.
-If a yaml file is configured then it will be converted to json by the plugin.  The converted file will
-be saved in `${project.outputDir}/conf` directory
+If a yaml file is configured then it will be converted to json by the plugin.
+The converted file will be saved in `${project.outputDir}/conf` directory
 | vertx.config
-| `${basedir}/src/main/${project.artifactId}.json` or `${basedir}/src/main/${project.artifactId}.yaml` or `${basedir}/src/main/${project.artifactId}.yml`
+| src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml
 
 | redeploy
 | controls whether vertx redeploy is enabled

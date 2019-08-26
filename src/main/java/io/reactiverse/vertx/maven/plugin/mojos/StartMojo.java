@@ -27,9 +27,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -79,7 +76,8 @@ public class StartMojo extends AbstractRunMojo {
 
         String applicationId = getAppId();
 
-        scanAndLoadConfigs();
+        options = scanAndLoad(VERTX_OPTIONS_FILE, options);
+        config = scanAndLoad(VERTICLE_CONFIG_FILE, config);
 
         List<String> argsList = new ArrayList<>();
 
@@ -120,6 +118,7 @@ public class StartMojo extends AbstractRunMojo {
             argsList.add(verticle);
         }
 
+        appendOptionsIfRequired(argsList);
         appendConfigIfRequired(argsList);
         appendLauncherIfRequired(argsList);
 
@@ -162,6 +161,14 @@ public class StartMojo extends AbstractRunMojo {
         if (launcher != null  && ! isVertxLauncher(launcher)) {
             argsList.add(AbstractRunMojo.VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
+        }
+    }
+
+    private void appendOptionsIfRequired(List<String> argsList) {
+        if (options != null && options.exists() && options.isFile()) {
+            getLog().info("Using options from file: " + options.toString());
+            argsList.add(VERTX_ARG_OPTIONS);
+            argsList.add(options.toString());
         }
     }
 
