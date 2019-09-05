@@ -41,6 +41,7 @@ public class PackagingIT extends VertxMojoTestBase {
 
     private String PACKAGING_META_INF = "projects/packaging-meta-inf-it";
     private String PACKAGING_DUPLICATE = "projects/packaging-duplicate-it";
+    private String PACKAGING_ALTERNATIVE_OUTPUT = "projects/packaging-alternative-output-it";
 
     private Verifier verifier;
 
@@ -51,6 +52,20 @@ public class PackagingIT extends VertxMojoTestBase {
         installPluginToLocalRepository(verifier.getLocalRepository());
     }
 
+    @Test
+    public void testAlternativeOutputDir() throws IOException, VerificationException {
+        File testDir = initProject(PACKAGING_ALTERNATIVE_OUTPUT);
+        assertThat(testDir).isDirectory();
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+        runPackage(verifier);
+
+        assertThat(testDir).isNotNull();
+
+        File out = new File(testDir, "target/context/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
+        assertThat(out).isFile();
+    }
+    
     @Test
     public void testContentInTheJar() throws IOException, VerificationException {
         File testDir = initProject(PACKAGING_META_INF);

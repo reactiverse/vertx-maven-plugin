@@ -132,11 +132,14 @@ public class PackageMojo extends AbstractVertxMojo {
 
         File jar;
         try {
+            
+            File buildDir = new File(projectBuildDir);
+            buildDir.mkdirs();
             jar = packageService.doPackage(
                 new PackageConfig()
                     .setArtifacts(project.getArtifacts())
                     .setMojo(this)
-                    .setOutput(new File(projectBuildDir, computeOutputName(archive, project, classifier)))
+                    .setOutput(new File(buildDir, computeOutputName(archive, project, classifier)))
                     .setProject(project)
                     .setArchive(this.archive));
         } catch (PackagingException e) {
