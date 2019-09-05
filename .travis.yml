@@ -16,7 +16,7 @@ env:
 
 script:
    - mvn clean install
- # - mvn clean install sonar:sonar -Pcoverage  -Dsonar.host.url=https://sonarcloud.io/
+ # - mvn clean install sonar:sonar -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/
 
 after_success:
 #    - bash <(curl -s https://codecov.io/bash)

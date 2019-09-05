@@ -19,7 +19,7 @@ cd release-work
 echo -e "${BLUE}Switching to tag${NC}"
 git checkout ${LAST_TAG}
 echo -e "${BLUE}Running deployment${NC}"
-mvn deploy -Psonatype,release
+mvn deploy -DwithStaging -DwithSign
 
 echo -e "${BLUE}Build doc${NC}"
 mvn -Pdoc-html
