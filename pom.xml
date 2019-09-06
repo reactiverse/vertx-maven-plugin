@@ -122,6 +122,8 @@
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
         <org.eclipse.jgit.version>5.4.0.201906121030-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.4</jacoco.version>
+		<sonar-jacoco-listeners.version>5.14.0.18788</sonar-jacoco-listeners.version>
+		<sonar-maven.version>3.6.1.1688</sonar-maven.version>
 
 
         <skipTests>false</skipTests>
@@ -379,7 +381,6 @@
 	                <artifactId>maven-compiler-plugin</artifactId>
 	                <version>${maven-compiler-plugin.version}</version>
 	            </plugin>
-            
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
@@ -678,17 +679,27 @@
             	</property>
             </activation>
             <properties>
-                <jacocoArgLine><!-- filled by the jacoco plugin --></jacocoArgLine>
             </properties>
             <build>
             	<pluginManagement>
+            		
             		<plugins>
+						<plugin>
+							<groupId>org.sonarsource.scanner.maven</groupId>
+							<artifactId>sonar-maven-plugin</artifactId>
+							<version>${sonar-maven.version}</version>
+						</plugin>
 	                    <plugin>
 	                        <groupId>org.apache.maven.plugins</groupId>
 	                        <artifactId>maven-surefire-plugin</artifactId>
 	                        <version>${maven-failsafe-plugin.version}</version>
 	                        <configuration>
-	                            <argLine>@{jacocoArgLine} --illegal-access=permit</argLine>
+								<properties>
+									<property>
+										<name>listener</name>
+										<value>org.sonar.java.jacoco.JUnitListener</value>
+									</property>
+								</properties>
 	                        </configuration>
 	                    </plugin>
 		                <plugin>
@@ -696,14 +707,11 @@
 		                    <artifactId>maven-failsafe-plugin</artifactId>
 		                    <version>${maven-failsafe-plugin.version}</version>
                             <configuration>
-                                <argLine>@{jacocoArgLine}</argLine>
+                            	<argLine>-Xmx1024m ${jacoco.agent}</argLine>
                                 <systemPropertyVariables>
                                     <coverage>true</coverage>
                                     <!--suppress MavenModelInspection -->
                                     <maven.home>${maven.home}</maven.home>
-                                    <mavenOpts>
-                                        -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true
-                                    </mavenOpts>
                                 </systemPropertyVariables>
                             </configuration>
 		                </plugin>
@@ -712,13 +720,9 @@
 	                        <artifactId>maven-invoker-plugin</artifactId>
 	                        <version>${maven-invoker-plugin.version}</version>
 	                        <configuration>
-	                            <environmentVariables>
-	                                <MAVEN_OPTS>
-	                                    -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true
-	                                </MAVEN_OPTS>
-	                            </environmentVariables>
+	                        	<mavenOpts>${jacoco.agent}</mavenOpts>
 	                        </configuration>
-	                    </plugin>
+	                    </plugin>    	
             		</plugins>
             	</pluginManagement>
                 <plugins>
@@ -727,43 +731,53 @@
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.version}</version>
                         <executions>
-                            <execution>
-                                <id>prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                                <phase>generate-test-resources</phase>
-                                <configuration>
-                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
-                                    <propertyName>jacocoArgLine</propertyName>
-                                    <append>true</append>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>prepare-agent-integration</id>
-                                <goals>
-                                    <goal>prepare-agent-integration</goal>
-                                </goals>
-                                <phase>generate-test-resources</phase>
-                                <configuration>
-                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
-                                    <propertyName>jacocoArgLine</propertyName>
-                                    <append>true</append>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>report</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
+							<!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
+								to be passed to the JVM hosting the code being tested. -->
+							<execution>
+								<id>prepare-ut-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+								<phase>process-test-classes</phase>
+							</execution>
+							<execution>
+								<id>default-report</id>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<phase>verify</phase>
+							</execution>
+							<execution>
+								<!-- Prepares a variable, jacoco.agent.it.arg, that contains the 
+									info to be passed to the JVM hosting the code being tested. -->
+								<id>prepare-it-agent</id>
+								<goals>
+									<goal>prepare-agent-integration</goal>
+								</goals>
+								<phase>pre-integration-test</phase>
+								<configuration>
+									<propertyName>jacoco.agent</propertyName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>default-report-itest</id>
+								<goals>
+									<goal>report-integration</goal>
+								</goals>
+								<phase>verify</phase>
+							</execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
+   			<dependencies>
+				<dependency>
+					<groupId>org.sonarsource.java</groupId>
+					<artifactId>sonar-jacoco-listeners</artifactId>
+					<version>${sonar-jacoco-listeners.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
         </profile>
         <profile>
             <id>sonatype</id>
