@@ -134,7 +134,10 @@ public class PackageMojo extends AbstractVertxMojo {
         try {
             
             File buildDir = new File(projectBuildDir);
-            buildDir.mkdirs();
+            if (!buildDir.mkdirs()) {
+                getLog().error("An error has occurred while "
+                        + "creating the directory defined by projectBuildDir: " + projectBuildDir);
+            }
             jar = packageService.doPackage(
                 new PackageConfig()
                     .setArtifacts(project.getArtifacts())
