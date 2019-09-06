@@ -61,22 +61,9 @@
         </plugins>
     </build>
     <dependencies>
-
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.acme</groupId>
-            <artifactId>A</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.acme</groupId>
-            <artifactId>B</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
