@@ -679,6 +679,9 @@
                 </property>
             </activation>
             <properties>
+                <sonar.coverage.jacoco.xmlReportPaths>
+                    target/site/jacoco/jacoco.xml, target/site/jacoco-it/jacoco.xml
+                </sonar.coverage.jacoco.xmlReportPaths>
             </properties>
             <build>
                 <pluginManagement>
@@ -701,7 +704,7 @@
                             <artifactId>maven-failsafe-plugin</artifactId>
                             <version>${maven-failsafe-plugin.version}</version>
                             <configuration>
-                                <argLine>-Xmx1024m ${jacoco.agent}</argLine>
+                                <argLine>-Xmx1024m ${jacoco.ui.agent}</argLine>
                                 <systemPropertyVariables>
                                     <coverage>true</coverage>
                                     <!--suppress MavenModelInspection -->
@@ -714,7 +717,7 @@
                             <artifactId>maven-invoker-plugin</artifactId>
                             <version>${maven-invoker-plugin.version}</version>
                             <configuration>
-                            	<mavenOpts>${jacoco.agent}</mavenOpts>
+                            	<mavenOpts>${jacoco.ui.agent}</mavenOpts>
                             </configuration>
                         </plugin>
                     </plugins>
@@ -753,7 +756,7 @@
                                 </goals>
                                 <phase>pre-integration-test</phase>
                                 <configuration>
-                                    <propertyName>jacoco.agent</propertyName>
+                                    <propertyName>jacoco.ui.agent</propertyName>
                                 </configuration>
                             </execution>
                             <execution>
