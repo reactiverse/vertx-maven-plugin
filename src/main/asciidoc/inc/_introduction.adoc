@@ -99,7 +99,7 @@ To run the application vert.x application in foreground, execute the following m
 
 `mvn clean compile vertx:run`
 
-You can enable the _edeploy_ mode rebuilding and restarting the application upon file changes.
+You can enable the _redeploy_ mode rebuilding and restarting the application upon file changes.
 
 For more information on configuration options refer to  **<<vertx:run,vertx:run>>**
 
