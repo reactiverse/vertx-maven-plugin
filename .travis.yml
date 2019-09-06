@@ -15,7 +15,8 @@ env:
     - secure: "cuuJwGIi8aq3AWO9fIwj0zutQhv+YaTQN10+CpbaFHrhR+jmaqYzk17oNUPENH093Lh/3wnEqAMf2dQWpJoPIQD8bHe5YsHsoOVqbmUgTgBErBMQ+JjXYZ/ZjGLIY+PgGcdKw3JZDyIbVDkT6yT0LtBRKvz/ZoCnLNXhfvGAfUGQywx70KQH0NdLEI+TWCfRQ65nXBuNU6J56SyPoxkT+Y+r6noSmmnojnjMKaXjP3MaCbND8IQ6mn3sh2/ptMP6N/4TAaBYUv14fdUZINZlwCDEjeTkv1hwbIj7b+Er41T5wLpGGWY1KV6hN1uGhDK1ypZizEu9qoc+lhjMakMK0JElCYiDIP8IYRiX/qBazEXYFxF+SNx8Dpfldo7hprQ272Lcp6LHEidi0QeCU5rfa8Ze9IKyMjvijsQ1k2baHt5bWB3Sdc6wdh0whdDcJ3FICSSJB1+DmNkAQprNWJxQqICcPkZld+2nSsyPJXdTLdP2U4NwKfE/3448rkn1di0AaqmGdbP9pOgAEas/KJ79HKs+bCOm5GkV8uYhbxyKQWNRN+o6vUE5Rnp5Igc+fxBpCXppHMDOBxd+Oyivpg/tgg9Dos2ivjubf1SVFMKcVlSK6AE3Hr/gdsBRJEdsFE25aCQr0j/HmKKVnkiaFd5vdrfgcaeO60M7QGzHnk4nO18="
 
 script:
-   - mvn clean install sonar:sonar -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
+#   - mvn clean install sonar:sonar -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
+   - mvn clean install -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
 
 after_success:
 #    - bash <(curl -s https://codecov.io/bash)
