@@ -1,4 +1,7 @@
 <settings>
+    <pluginGroups>
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+    </pluginGroups>
   <servers>
     <server>
       <id>sonatype-nexus-snapshots</id>

@@ -20,14 +20,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.reactiverse.vmp.it</groupId>
-    <artifactId>vertx-demo-run</artifactId>
+    <artifactId>vertx-demo-start</artifactId>
     <version>0.0.1.BUILD-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.4.2</vertx.version>
-        <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
-        <vertx.launcher>org.vertx.demo.MyLauncher</vertx.launcher>
     </properties>
     <build>
         <plugins>
@@ -46,15 +44,19 @@
                 <version>@project.version@</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>vmp</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>initialize</goal>
+                            <goal>package</goal>
                         </goals>
-                        <configuration>
-                            <redeploy>true</redeploy>
-                        </configuration>
                     </execution>
                 </executions>
+
+                <configuration>
+					<projectBuildDir>${project.build.directory}/context</projectBuildDir>
+                    <verticle>demo.SimpleVerticle</verticle>
+                </configuration>
+
             </plugin>
         </plugins>
     </build>

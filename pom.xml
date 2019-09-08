@@ -103,7 +103,7 @@
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.2.1</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
-        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
@@ -122,6 +122,8 @@
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
         <org.eclipse.jgit.version>5.4.0.201906121030-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.4</jacoco.version>
+        <sonar-jacoco-listeners.version>5.14.0.18788</sonar-jacoco-listeners.version>
+        <sonar-maven.version>3.6.1.1688</sonar-maven.version>
 
 
         <skipTests>false</skipTests>
@@ -339,11 +341,6 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-metadata</artifactId>
                 <version>2.0.0</version>
@@ -375,74 +372,33 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>copy-asciidoc</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF/doc/vmp</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/asciidoc</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <detectLinks>true</detectLinks>
-                    <detectJavaApiLink>true</detectJavaApiLink>
-                    <show>private</show>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
-                </configuration>
-            </plugin>
         </plugins>
 
         <pluginManagement>
             <plugins>
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-compiler-plugin</artifactId>
+	                <version>${maven-compiler-plugin.version}</version>
+	            </plugin>
                 <plugin>
-                    <groupId>org.asciidoctor</groupId>
-                    <artifactId>asciidoctor-maven-plugin</artifactId>
-                    <version>${asciidoctor-maven-plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.asciidoctor</groupId>
-                            <artifactId>asciidoctorj</artifactId>
-                            <version>${asciidoctorj.version}</version>
-                        </dependency>
-                    </dependencies>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
                     <configuration>
-                        <sourceDirectory>src/main/asciidoc</sourceDirectory>
-                        <attributes>
-                            <icons>font</icons>
-                            <pagenums/>
-                            <version>${project.version}</version>
-                            <toc/>
-                            <idprefix/>
-                            <idseparator>-</idseparator>
-                        </attributes>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/IT*.java</exclude>
+                        </excludes>
                     </configuration>
                 </plugin>
             </plugins>
@@ -453,69 +409,130 @@
         <profile>
             <id>run-its</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>withIts</name>
+                </property>
             </activation>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>${maven-failsafe-plugin.version}</version>
+                            <configuration>
+                                <argLine>
+                                    --illegal-access=permit
+                                </argLine>
+                                <systemPropertyVariables>
+                                    <!--suppress MavenModelInspection -->
+                                    <maven.home>${maven.home}</maven.home>
+                                </systemPropertyVariables>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-invoker-plugin</artifactId>
+                            <version>${maven-invoker-plugin.version}</version>
+                            <configuration>
+                                <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                                <cloneClean>true</cloneClean>
+                                <settingsFile>src/it/settings.xml</settingsFile>
+                                <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                                <postBuildHookScript>verify</postBuildHookScript>
+                                <addTestClassPath>true</addTestClassPath>
+                                <skipInvocation>${skipTests}</skipInvocation>
+                                <streamLogs>true</streamLogs>
+                                <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>>integration-test</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
-                        <version>${maven-invoker-plugin.version}</version>
-                        <configuration>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <cloneClean>true</cloneClean>
-                            <settingsFile>src/it/settings.xml</settingsFile>
-                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                            <postBuildHookScript>verify</postBuildHookScript>
-                            <addTestClassPath>true</addTestClassPath>
-                            <skipInvocation>${skipTests}</skipInvocation>
-                            <streamLogs>true</streamLogs>
-                            <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>integration-tests</id>
                                 <goals>
                                     <goal>install</goal>
-                                    <goal>run</goal>
+                                    <goal>integration-test</goal>
                                 </goals>
                             </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${maven-failsafe-plugin.version}</version>
-                        <executions>
                             <execution>
+                                <id>verify</id>
                                 <goals>
-                                    <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <!--suppress MavenModelInspection -->
-                                <maven.home>${maven.home}</maven.home>
-                            </systemPropertyVariables>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-            <id>install</id>
+            <id>javadoc</id>
+            <activation>
+                <property>
+                    <name>withJavadoc</name>
+                </property>
+            </activation>
             <properties>
                 <skipTests>false</skipTests>
             </properties>
             <build>
-                <defaultGoal>clean install</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <detectLinks>true</detectLinks>
+                            <detectJavaApiLink>true</detectJavaApiLink>
+                            <show>private</show>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
+
         <profile>
             <id>site</id>
+            <activation>
+                <property>
+                    <name>withSite</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -559,27 +576,81 @@
         </profile>
         <profile>
             <id>doc-html</id>
+            <activation>
+                <property>
+                    <name>withDocs</name>
+                </property>
+            </activation>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoctor-maven-plugin</artifactId>
+                            <version>${asciidoctor-maven-plugin.version}</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.asciidoctor</groupId>
+                                    <artifactId>asciidoctorj</artifactId>
+                                    <version>${asciidoctorj.version}</version>
+                                </dependency>
+                            </dependencies>
+                            <configuration>
+                                <sourceDirectory>src/main/asciidoc</sourceDirectory>
+                                <attributes>
+                                    <icons>font</icons>
+                                    <pagenums/>
+                                    <version>${project.version}</version>
+                                    <idprefix/>
+                                    <idseparator>-</idseparator>
+                                    <toc>left</toc>
+                                </attributes>
+                                <backend>html</backend>
+                                <sourceHighlighter>highlightjs</sourceHighlighter>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${maven-resources-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-asciidoc</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/META-INF/doc/vmp</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/asciidoc</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>${asciidoctor-maven-plugin.version}</version>
-                        <configuration>
-                            <backend>html</backend>
-                            <sourceHighlighter>highlightjs</sourceHighlighter>
-                            <attributes>
-                                <toc>left</toc>
-                            </attributes>
-                        </configuration>
                     </plugin>
                 </plugins>
                 <defaultGoal>generate-resources asciidoctor:process-asciidoc</defaultGoal>
             </build>
         </profile>
-        <!-- "release" profiles used for deploying with reactiverse -->
+        
+        <!-- "sign" profiles used for deploying with reactiverse -->
         <profile>
-            <id>release</id>
+            <id>sign</id>
+            <activation>
+                <property>
+                    <name>withSign</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -599,116 +670,101 @@
                 </plugins>
             </build>
         </profile>
+        
         <profile>
             <id>coverage</id>
+            <activation>
+                <property>
+                    <name>withCoverage</name>
+                </property>
+            </activation>
             <properties>
-                <jacocoArgLine><!-- filled by the jacoco plugin --></jacocoArgLine>
+                <sonar.coverage.jacoco.xmlReportPaths>
+                    target/site/jacoco/jacoco.xml, target/site/jacoco-it/jacoco.xml
+                </sonar.coverage.jacoco.xmlReportPaths>
             </properties>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonarsource.scanner.maven</groupId>
+                            <artifactId>sonar-maven-plugin</artifactId>
+                            <version>${sonar-maven.version}</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-failsafe-plugin.version}</version>
+                            <configuration>
+                                <argLine>-Xmx1024m ${jacoco.agent}</argLine>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>${maven-failsafe-plugin.version}</version>
+                            <configuration>
+                                <argLine>-Xmx1024m ${jacoco.ui.agent}</argLine>
+                                <systemPropertyVariables>
+                                    <coverage>true</coverage>
+                                    <!--suppress MavenModelInspection -->
+                                    <maven.home>${maven.home}</maven.home>
+                                </systemPropertyVariables>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-invoker-plugin</artifactId>
+                            <version>${maven-invoker-plugin.version}</version>
+                            <configuration>
+                            	<mavenOpts>${jacoco.ui.agent}</mavenOpts>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.version}</version>
                         <executions>
+                            <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
+                                to be passed to the JVM hosting the code being tested. -->
                             <execution>
-                                <id>prepare-agent</id>
+                                <id>prepare-ut-agent</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
-                                <phase>generate-test-resources</phase>
                                 <configuration>
-                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
-                                    <propertyName>jacocoArgLine</propertyName>
-                                    <append>true</append>
+                                    <propertyName>jacoco.agent</propertyName>
                                 </configuration>
+                                <phase>process-test-classes</phase>
                             </execution>
-
                             <execution>
-                                <id>prepare-agent-integration</id>
-                                <goals>
-                                    <goal>prepare-agent-integration</goal>
-                                </goals>
-                                <phase>generate-test-resources</phase>
-                                <configuration>
-                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
-                                    <propertyName>jacocoArgLine</propertyName>
-                                    <append>true</append>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>report</id>
-                                <phase>verify</phase>
+                                <id>default-report</id>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
+                                <phase>verify</phase>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-failsafe-plugin.version}</version>
-                        <configuration>
-                            <argLine>@{jacocoArgLine}</argLine>
-                            <excludes>
-                                <exclude>**/IT*.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${maven-failsafe-plugin.version}</version>
-                        <executions>
                             <execution>
-                                <id>integration-tests</id>
+                                <!-- Prepares a variable, jacoco.agent.it.arg, that contains the 
+                                    info to be passed to the JVM hosting the code being tested. -->
+                                <id>prepare-it-agent</id>
                                 <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
+                                    <goal>prepare-agent-integration</goal>
                                 </goals>
+                                <phase>pre-integration-test</phase>
                                 <configuration>
-                                    <argLine>@{jacocoArgLine}</argLine>
-                                    <systemPropertyVariables>
-                                        <coverage>true</coverage>
-                                        <!--suppress MavenModelInspection -->
-                                        <maven.home>${maven.home}</maven.home>
-                                        <mavenOpts>
-                                            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true
-                                        </mavenOpts>
-                                    </systemPropertyVariables>
+                                    <propertyName>jacoco.ui.agent</propertyName>
                                 </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-invoker-plugin</artifactId>
-                        <version>${maven-invoker-plugin.version}</version>
-                        <configuration>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <cloneClean>true</cloneClean>
-                            <settingsFile>src/it/settings.xml</settingsFile>
-                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                            <postBuildHookScript>verify</postBuildHookScript>
-                            <addTestClassPath>true</addTestClassPath>
-                            <skipInvocation>${skipTests}</skipInvocation>
-                            <streamLogs>true</streamLogs>
-                            <invokerPropertiesFile>invoker.properties</invokerPropertiesFile>
-                            <environmentVariables>
-                                <MAVEN_OPTS>
-                                    -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec,append=true
-                                </MAVEN_OPTS>
-                            </environmentVariables>
-                        </configuration>
-                        <executions>
                             <execution>
-                                <id>integration-tests</id>
+                                <id>default-report-itest</id>
                                 <goals>
-                                    <goal>install</goal>
-                                    <goal>run</goal>
+                                    <goal>report-integration</goal>
                                 </goals>
+                                <phase>verify</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -717,13 +773,18 @@
         </profile>
         <profile>
             <id>sonatype</id>
+            <activation>
+                <property>
+                    <name>withStaging</name>
+                </property>
+            </activation>
             <distributionManagement>
                 <snapshotRepository>
                     <id>sonatype-nexus-snapshots</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
                 <repository>
-                    <id>sonatype-nexus-snapshots</id>
+                    <id>sonatype-nexus-staging</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
