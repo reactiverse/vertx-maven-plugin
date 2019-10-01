@@ -123,7 +123,7 @@
         <org.eclipse.jgit.version>5.4.0.201906121030-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.4</jacoco.version>
         <sonar-jacoco-listeners.version>5.14.0.18788</sonar-jacoco-listeners.version>
-        <sonar-maven.version>3.6.1.1688</sonar-maven.version>
+        <sonar-maven.version>3.7.0.1746</sonar-maven.version>
 
 
         <skipTests>false</skipTests>
