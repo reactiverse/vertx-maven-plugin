@@ -443,8 +443,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Vert.x Maven Plugin</h1>
 <div class="details">
 <span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier</span><br>
-<span id="revnumber">version 1.0.20,</span>
-<span id="revdate">2019-07-03</span>
+<span id="revnumber">version 1.0.21,</span>
+<span id="revdate">2019-10-14</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Vert.x Maven Plugin</div>
@@ -559,7 +559,7 @@ provide an opinionated way to build Vert.x application:</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The last version of the Vert.x Maven Plugin is <strong>1.0.20</strong>.</p>
+<p>The last version of the Vert.x Maven Plugin is <strong>1.0.21</strong>.</p>
 </div>
 <div class="sect2">
 <h3 id="using-the-plugin">1.1. Using the plugin</h3>
@@ -598,7 +598,7 @@ provide an opinionated way to build Vert.x application:</p>
         &lt;plugin&gt;
             &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
             &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;1.0.20&lt;/version&gt;
+            &lt;version&gt;1.0.21&lt;/version&gt;
             &lt;executions&gt;
                 &lt;execution&gt;
                     &lt;id&gt;vmp&lt;/id&gt;
@@ -684,7 +684,7 @@ application will be run in as forked process with additional configurations base
 <p><code>mvn clean compile vertx:run</code></p>
 </div>
 <div class="paragraph">
-<p>You can enable the <em>edeploy</em> mode rebuilding and restarting the application upon file changes.</p>
+<p>You can enable the <em>redeploy</em> mode rebuilding and restarting the application upon file changes.</p>
 </div>
 <div class="paragraph">
 <p>For more information on configuration options refer to  <strong><a href="#vertx:run">vertx:run</a></strong></p>
@@ -790,12 +790,20 @@ using <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the application configuration file path that will be passed to the vertx launcher as <code>-options</code>.
+If a yaml file is configured then it will be converted to json by the plugin.
+The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>src/main/options.json</code> or <code>src/main/options.yaml</code> or <code>src/main/options.yml</code></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">the application configuration file path that will be passed to the vertx launcher as <code>-conf</code>.
-If a yaml file is configured then it will be converted to json by the plugin.  The converted file will
-be saved in <code>${project.outputDir}/conf</code> directory</p></td>
+If a yaml file is configured then it will be converted to json by the plugin.
+The converted file will be saved in <code>${project.outputDir}/conf</code> directory</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${basedir}/src/main/${project.artifactId}.json</code> or <code>${basedir}/src/main/${project.artifactId}.yaml</code> or <code>${basedir}/src/main/${project.artifactId}.yml</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">redeploy</p></td>
@@ -808,6 +816,12 @@ be saved in <code>${project.outputDir}/conf</code> directory</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The working directory of the running process of the application</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">vertx.directory</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.basedir}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertxWebEnvironment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <a href="https://vertx.io/docs/vertx-web/java/#_development_mode">environment</a> the Vert.x Web app is running in.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertxweb.environment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default to either the <code>VERTXWEB_ENVIRONMENT</code> environment variable value or, if absent, to <code>dev</code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -851,7 +865,7 @@ in the next sections.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:initialize"><strong>vertx:initialize</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <em>js</em> dependencies to <em>webroot</em>, unpack webjars to <em>webroot</em> and initialize the redeployment mode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <em>js</em> dependencies to <em>webroot</em>, unpack webjars to <em>webroot</em> (optional) and initialize the redeployment mode</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:package"><strong>vertx:package</strong></a></strong></p></td>
@@ -888,7 +902,7 @@ in the next sections.</p>
 <h4 id="example">4.1.1. Example</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -901,7 +915,7 @@ if you wish to override the vertx version, then you can run the same command as 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup -DvertxVersion=3.4.0</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup -DvertxVersion=3.4.0</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -913,7 +927,7 @@ set to <code>3.4.0</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup \
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
@@ -949,7 +963,7 @@ io.vertx:vertx-template-engines:3.4.1:shaded =&gt; Dependency with classifier</p
 <p>copy <em>js</em> dependencies to the <em>webroot</em> directory</p>
 </li>
 <li>
-<p>unpack <em>webjars</em> dependencies to the <em>webroot</em> directory</p>
+<p>unpack <em>webjars</em> dependencies to the <em>webroot</em> directory (optional)</p>
 </li>
 <li>
 <p>initialize the <em>recording</em> of the build used for the redeployment</p>
@@ -984,6 +998,12 @@ io.vertx:vertx-template-engines:3.4.1:shaded =&gt; Dependency with classifier</p
 <td class="tableblock halign-left valign-top"><p class="tableblock">The location where <em>js</em> dependencies and <em>webjars</em> are copied.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">${project.baseDir}/target/classes/webroot</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">unpackWebJar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not webjars are unpacked to <em>webRoot</em>. If not unpacked, webjars can be <a href="https://www.webjars.org/documentation#vertx">served from the classpath</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">stripWebJarVersion</p></td>
@@ -1106,11 +1126,18 @@ property. e.g. <code>-Dvertx.runArgs="--worker --instances=2"</code>. The system
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure Vert.x.
+This property is passed as the <code>-options</code> option to vertx run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application. This property is passed as the <code>-config</code> option to vertx
-run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application.
+This property is passed as the <code>-config</code> option to vertx run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
@@ -1198,11 +1225,18 @@ defines all the applicable configurations for the goal.</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure Vert.x.
+This property is passed as the <code>-options</code> option to vertx run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application. This property is passed as the <code>-config</code> option to vertx
-run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application.
+This property is passed as the <code>-config</code> option to vertx run.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
@@ -1343,7 +1377,7 @@ ignored by the goal,</p>
 <h4 id="example-2">4.8.1. Example</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1356,7 +1390,7 @@ if you wish to override the vertx version, then you can run the same command as 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup -DvertxVersion=3.4.0</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup -DvertxVersion=3.4.0</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1368,7 +1402,7 @@ set to <code>3.4.0</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.20:setup \
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:1.0.21:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
@@ -1680,7 +1714,7 @@ needs to be combined:</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-please update the plugin version as needed (latest is <strong>1.0.20</strong>).
+please update the plugin version as needed (latest is <strong>1.0.21</strong>).
 </td>
 </tr>
 </table>
@@ -1763,9 +1797,9 @@ to the <code>webroot</code> directory (the default is <code>${project.baseDir}/t
 <code>vertx-web-client.js</code>.</p>
 </div>
 <div class="paragraph">
-<p>The second dependency is a webjar. A <a href="http://www.webjars.org/">webjar</a> is a jar file containing web resources. The
-plugin extracts the web resource to the <code>webroot</code> directory. In this example, it creates: <code>${project
-.baseDir}/target/classes/webroot/jquery/jquery.js</code> (and other includes resources).</p>
+<p>The second dependency is a webjar. A <a href="http://www.webjars.org/">webjar</a> is a jar file containing web resources.
+By default, the plugin extracts the web resource to the <code>webroot</code> directory.
+In this example, it creates: <code>${project.baseDir}/target/classes/webroot/jquery/jquery.js</code> (and other included resources).</p>
 </div>
 </div>
 <div class="sect3">
@@ -2003,8 +2037,8 @@ of application ids as shown below to trigger stop of the those applications</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.20<br>
-Last updated 2019-07-03 13:45:22 +0200
+Version 1.0.21<br>
+Last updated 2019-10-14 10:28:18 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
