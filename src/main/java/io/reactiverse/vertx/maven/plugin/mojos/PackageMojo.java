@@ -132,9 +132,9 @@ public class PackageMojo extends AbstractVertxMojo {
 
         File jar;
         try {
-            
+
             File buildDir = new File(projectBuildDir);
-            if (!buildDir.mkdirs()) {
+            if (!buildDir.isDirectory() && !buildDir.mkdirs()) {
                 getLog().error("An error has occurred while "
                         + "creating the directory defined by projectBuildDir: " + projectBuildDir);
             }
