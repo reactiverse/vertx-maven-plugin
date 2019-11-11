@@ -36,7 +36,7 @@
     </properties>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <!--    <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>-->
         <plugins>
             <plugin>
                 <groupId>io.reactiverse</groupId>
