@@ -14,7 +14,6 @@ import java.io.FileReader;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -243,7 +242,9 @@ public class RedeployIT extends VertxMojoTestBase {
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
 
-        final String redeployingLogRegex = "^(\\[INFO])\\s*INFO: Redeploying!";
+        final String redeployingLogRegex = "^Stopping vert.x application '"
+            + "\\p{Alnum}{8}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{12}"
+            + "-redeploy'$";
         Pattern pattern = Pattern.compile(redeployingLogRegex);
 
         File buildLog = new File(testDir, "build-run.log");
@@ -254,8 +255,6 @@ public class RedeployIT extends VertxMojoTestBase {
         assertThat(lines.isEmpty()).isFalse();
         long redeployCount = lines.stream()
             .filter(s -> pattern.matcher(s).matches())
-            .map(pattern::matcher)
-            .filter(Matcher::find)
             .count();
         assertThat(redeployCount).isEqualTo(2);
     }

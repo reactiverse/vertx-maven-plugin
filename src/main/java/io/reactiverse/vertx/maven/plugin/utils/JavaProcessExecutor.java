@@ -64,7 +64,7 @@ public class JavaProcessExecutor {
             Runtime.getRuntime().addShutdownHook(watchdog);
 
             if (waitFor) {
-                redirectOutput(process, logger);
+                redirectOutput(process);
                 process.waitFor();
                 if (!process.isAlive()) {
                     Runtime.getRuntime().removeShutdownHook(watchdog);
@@ -164,11 +164,9 @@ public class JavaProcessExecutor {
         return this;
     }
 
-    private void redirectOutput(Process process, Log logger) {
-        StreamToLogConsumer logConsumer = logger::info;
-
-        StreamPumper outPumper = new StreamPumper(process.getInputStream(), logConsumer);
-        StreamPumper errPumper = new StreamPumper(process.getErrorStream(), logConsumer);
+    private void redirectOutput(Process process) {
+        StreamPumper outPumper = new StreamPumper(process.getInputStream(), System.out::println);
+        StreamPumper errPumper = new StreamPumper(process.getErrorStream(), System.err::println);
 
         outPumper.setPriority(Thread.MIN_PRIORITY + 1);
         errPumper.setPriority(Thread.MIN_PRIORITY + 1);
