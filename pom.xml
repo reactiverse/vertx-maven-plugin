@@ -127,7 +127,7 @@
 
 
         <skipTests>false</skipTests>
-        <jackson-databind.version>2.9.10.1</jackson-databind.version>
+        <jackson-databind.version>2.9.10.3</jackson-databind.version>
     </properties>
 
     <dependencyManagement>
