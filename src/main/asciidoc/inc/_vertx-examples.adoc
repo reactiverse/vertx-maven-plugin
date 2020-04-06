@@ -256,8 +256,14 @@ of application ids as shown below to trigger stop of the those applications
 
 = How does the redeploy work
 
-During the _initialize_ phase, the plugin start observing the mojos (Maven plugins) that are executed. When the Vert.x application is launched, it watches for changed in `src/main`. When a file is changed (created, updated or deleted), it replays the executed mojos. It executes all the mojos from the _generate-sources_ to the _process-classes_ phases, using the same configuration are the initial (observed) one.
+During the _initialize_ phase, the plugin starts observing the mojos (Maven plugins) that are executed.
+When the Vert.x application is launched, it watches for changes in `src/main`.
+When a file is changed (created, updated or deleted), it replays the executed mojos.
+It executes all the mojos from the _generate-sources_ to the _process-classes_ phases, using the same configuration as the initial (observed) one.
 
-When these mojos are executed, they may update files in `target/classes`. The Vert.x application has been launched to observes changed from this location and restart when change happens. The application is restarted completely, _i.e._ stopped and restarted.
+When these mojos are executed, they may update files in `target/classes`.
+The Vert.x application has been launched to observe changed files from this location and restart when changes happen.
+The application is restarted completely, _i.e._ stopped and restarted.
 
-Such mechanism let you use any Maven plugin (executed in the right set of phase). The plugin is re-executed and then the Vert.x application is restarted.
+Such mechanism lets you use any Maven plugin (executed in the right set of phase).
+The plugin is re-executed and then the Vert.x application is restarted.
