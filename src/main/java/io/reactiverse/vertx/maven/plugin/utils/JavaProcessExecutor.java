@@ -17,13 +17,16 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.Arg;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamPumper;
+import org.jvnet.winp.WinProcess;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 
@@ -55,11 +58,7 @@ public class JavaProcessExecutor {
             logger.debug("Executing command :" + commandLine);
             process = commandLine.execute();
             Process reference = process;
-            Thread watchdog = new Thread(() -> {
-                if (reference != null && reference.isAlive()) {
-                    reference.destroy();
-                }
-            });
+            Thread watchdog = new Thread(() -> destroy(reference));
 
             Runtime.getRuntime().addShutdownHook(watchdog);
 
@@ -74,19 +73,59 @@ public class JavaProcessExecutor {
             return process;
 
         } catch (InterruptedException e) {
-            if (process.isAlive()) {
-                process.destroy();
-            }
+            destroy(process);
             // We sure the interrupt flag is restored.
             Thread.currentThread().interrupt();
             return process;
         } catch (Exception e) {
-            if (process != null && process.isAlive()) {
-                process.destroy();
-            }
+            destroy(process);
             throw new Exception("Error running java command : " + e.getMessage(), e);
         }
 
+    }
+
+    private void destroy(Process process) {
+        if (process == null || !process.isAlive()) {
+            return;
+        }
+        if (!SystemUtils.IS_OS_WINDOWS) {
+            process.destroy();
+        } else {
+            // On Windows, destroying a cmd process does not destroy the children
+            // So we need to send a Ctrl-C signal
+            WinProcess winProcess = getWinProcess(process);
+            if (!winProcess.sendCtrlC()) {
+                logger.warn("Failed to send Ctrl-C signal");
+            }
+        }
+    }
+
+    private WinProcess getWinProcess(Process process) {
+        Method pidMethod = findPidMethod();
+        WinProcess winProcess;
+        if (pidMethod != null) {
+            // Java 9+
+            // To avoid reflection access warnings we get the pid with builtin method
+            int pid;
+            try {
+                pid = Math.toIntExact((long) pidMethod.invoke(process, new Object[]{}));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            winProcess = new WinProcess(pid);
+        } else {
+            winProcess = new WinProcess(process);
+        }
+        return winProcess;
+    }
+
+    private Method findPidMethod() {
+        for (Method method : Process.class.getMethods()) {
+            if ("pid".equals(method.getName()) && (method.getParameterCount() == 0)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     private Commandline buildCommandLine() throws Exception {
@@ -156,7 +195,7 @@ public class JavaProcessExecutor {
     }
 
     public JavaProcessExecutor withWorkDirectory(File directory) {
-        if (! directory.isDirectory()) {
+        if (!directory.isDirectory()) {
             throw new IllegalArgumentException("The working directory "
                 + directory.getAbsolutePath() + " is not a directory");
         }
@@ -223,7 +262,7 @@ public class JavaProcessExecutor {
             found = ExecUtils.find("java", bin);
         }
 
-        if (found == null || ! found.isFile()) {
+        if (found == null || !found.isFile()) {
             throw new IllegalStateException("Unable to find the java executable in JAVA_HOME or in the system path");
         }
         return found;
