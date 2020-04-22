@@ -25,7 +25,7 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamPumper;
 import org.jvnet.winp.WinProcess;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -63,7 +63,8 @@ public class JavaProcessExecutor {
             Runtime.getRuntime().addShutdownHook(watchdog);
 
             if (waitFor) {
-                redirectOutput(process);
+                redirect(process.getInputStream(), System.out);
+                redirect(process.getErrorStream(), System.err);
                 process.waitFor();
                 if (!process.isAlive()) {
                     Runtime.getRuntime().removeShutdownHook(watchdog);
@@ -203,15 +204,10 @@ public class JavaProcessExecutor {
         return this;
     }
 
-    private void redirectOutput(Process process) {
-        StreamPumper outPumper = new StreamPumper(process.getInputStream(), System.out::println);
-        StreamPumper errPumper = new StreamPumper(process.getErrorStream(), System.err::println);
-
-        outPumper.setPriority(Thread.MIN_PRIORITY + 1);
-        errPumper.setPriority(Thread.MIN_PRIORITY + 1);
-
-        outPumper.start();
-        errPumper.start();
+    private void redirect(InputStream in, PrintStream ps) {
+        StreamPumper pumper = new StreamPumper(in, new PrintWriter(new BufferedOutputStream(ps)));
+        pumper.setPriority(Thread.MIN_PRIORITY + 1);
+        pumper.start();
     }
 
 
