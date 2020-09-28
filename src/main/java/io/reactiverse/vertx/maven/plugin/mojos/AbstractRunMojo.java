@@ -21,6 +21,7 @@ import io.reactiverse.vertx.maven.plugin.utils.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -35,9 +36,9 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 
@@ -182,13 +183,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             addRedeployExtraArgs(argsList);
             argsList.add(VERTX_ARG_LAUNCHER_CLASS);
             argsList.add(launcher);
-
-            if (jvmArgs != null && !jvmArgs.isEmpty()) {
-                String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
-                String argJavaOpts = VERTX_ARG_JAVA_OPT +
-                    "=" + javaOpts;
-                argsList.add(argJavaOpts);
-            }
+            addJvmArgs(argsList);
         } else {
             argsList.add(launcher);
         }
@@ -309,10 +304,20 @@ public class AbstractRunMojo extends AbstractVertxMojo {
 
             addRedeployExtraArgs(argsList);
 
-            if (jvmArgs != null && !jvmArgs.isEmpty()) {
-                String javaOpts = jvmArgs.stream().collect(Collectors.joining(" "));
-                argsList.add(VERTX_ARG_JAVA_OPT + "=" + javaOpts);
+            addJvmArgs(argsList);
+        }
+    }
+
+    private void addJvmArgs(List<String> argsList) {
+        if (jvmArgs != null && !jvmArgs.isEmpty()) {
+            String javaOpts;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                javaOpts = jvmArgs.stream().collect(joining(" ", "\"", "\""));
+            } else {
+                javaOpts = String.join(" ", jvmArgs);
             }
+            String argJavaOpts = VERTX_ARG_JAVA_OPT + "=" + javaOpts;
+            argsList.add(argJavaOpts);
         }
     }
 
