@@ -13,3 +13,43 @@ The application is restarted completely, _i.e._ stopped and restarted.
 
 Such mechanism lets you use any Maven plugin (executed in the right set of phase).
 The plugin is re-executed and then the Vert.x application is restarted.
+
+=== Windows: command line is too long
+
+The Vert.x Maven Plugin runs your Vert.x application in a forked process.
+This process command line can grow quickly depending on:
+
+. the number of dependencies in the project,
+. the length of the path to JVM,
+. the length of the path to the Maven repository.
+
+On Windows, there is a maximum length for command lines.
+When this maximum is reached the Vert.x application fails to start.
+You will see an error such as:
+
+----
+Command line is too long
+----
+
+As a workaround, you can either:
+
+* move the JVM and Maven repository paths closer to the root of the Windows drive, or
+* use `subst` to associate the JVM and Maven repository paths with a drive letter.
+
+For example, you could associate the letter `X` with the JVM path and `Y` with the Maven repository path:
+
+[source,shell script]
+----
+subst X: "C:\Program Files\AdoptOpenJDK\jdk-11.0.8.10-hotspot"
+subst Y: "C:\Users\User\.m2\repository"
+----
+
+TIP: Virtual drives created with `subst` do not survive reboots.
+To make the setup somewhat persistent, put the `subst` commands in a batch file and add it to the https://support.microsoft.com/en-us/help/4558286/windows-10-add-an-app-to-run-automatically-at-startup[startup folder].
+
+Then:
+
+. set the `JAVA_HOME` environment variable to `X:`
+. open the Maven settings file and change the `localRepository` element value to `Y:`
+
+NOTE: Don't forget to open a new terminal so that the environment variable change is visible.
