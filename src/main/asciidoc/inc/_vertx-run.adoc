@@ -1,5 +1,5 @@
 [[vertx:run]]
-== *vertx:run*
+=== *vertx:run*
 This goal allows to run the Vert.x application as part of the maven build.
 The application is always run as a forked process.
 
@@ -73,14 +73,14 @@ mvn vertx:run
 
 If the sources are not compiled, the plugin executes `mvn compile` for you.
 
-**IMPORTANT**: `vertx:run` starts the application in a forked JVM.
+IMPORTANT: `vertx:run` starts the application in a forked JVM.
 
 [[vertx:debug]]
-== *vertx:debug*
-This goal allows to debug the Vert.x application. The application is started in a JVM with the debugging enabled. In
+=== *vertx:debug*
+This goal allows to debug the Vert.x application.The application is started in a JVM with the debugging enabled.In
 your IDE, you need to create a **remote** debug configuration to plug the debugger.
 
-The goal does not have any exclusive configuration,  **<<common:run-configurations,Common Run Configuration>>**
+The goal does not have any exclusive configuration, **<<common:run-configurations,Common Run Configuration>>**
 defines all the applicable configurations for the goal.
 
 [cols="1,5,2,3"]
@@ -116,5 +116,5 @@ typically passed to vert.x applications using --java-opts.
 | false
 |===
 
-**IMPORTANT**: the redeploy mode and debug cannot be used together. When `vertx:debug` is launched, the redeployment
-mode is disabled.
+IMPORTANT: the redeploy mode and debug cannot be used together.
+When `vertx:debug` is launched, the redeployment mode is disabled.

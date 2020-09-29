@@ -1,5 +1,5 @@
 [[common:configurations]]
-= Common Configurations
+== Common Configurations
 
 All goals share the following configuration:
 

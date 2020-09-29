@@ -1,6 +1,5 @@
-
 [[vertx:initialize]]
-== *vertx:initialize*
+=== *vertx:initialize*
 
 This goals has several aims:
 
@@ -9,7 +8,7 @@ This goals has several aims:
 * initialize the _recording_ of the build used for the redeployment
 
 [[initialize-configuration]]
-=== Configuration
+==== Configuration
 
 The initialize goal has the following parameters apart from the ones mentioned in
  **<<common:configurations,Common Configuration>>**
@@ -43,7 +42,7 @@ The initialize goal has the following parameters apart from the ones mentioned i
 
 The `webroot` directory is generally used by the `StaticHandler` from Vert.x Web.
 
-=== Redeployment
+==== Redeployment
 
 The initialize goal is used to configure the redeployment used in `vertx:run`. It starts observing the executed
 plugins in your build to _replay_ them when a file changes.

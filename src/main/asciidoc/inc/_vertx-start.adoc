@@ -1,6 +1,5 @@
-
 [[vertx:start]]
-== *vertx:start*
+=== *vertx:start*
 This goal allows to start the Vert.x application as a background process from maven build. This goal triggers the vert.x
 `start` command, passing the configuration values as mentioned below.
 

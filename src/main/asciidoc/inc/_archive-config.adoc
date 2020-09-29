@@ -1,4 +1,4 @@
-= Archive configuration
+== Archive configuration
 
 The Vert.x Maven Plugin lets you configure the content of the created archive. Typically you can decide:
 
@@ -16,7 +16,7 @@ By default, the plugin:
 * combines resources from `META-INF/services` and `META-INF/spring.*`
 
 
-== Using archive configuration
+=== Using archive configuration
 
 In you plugin configuration add the `archive` item:
 
@@ -53,7 +53,7 @@ In you plugin configuration add the `archive` item:
 </project>
 ----
 
-== Configuring embedded dependencies
+=== Configuring embedded dependencies
 
 In the `archive` configuration, you can declare _dependency sets_ which indicate which dependencies must be included and
 excluded. Also for each configure set, you can decide the file to include and exclude.
@@ -99,7 +99,7 @@ also included in the jar
 
 The `option` attribute enable fine-grain tuning of the file to embed. In the example above, the `dtd` files are excluded.
 
-== Embedding specific file
+=== Embedding specific file
 
 The archive can be configured with a set of _external_ file to include. For instance:
 
@@ -126,7 +126,7 @@ Each file contains:
 
 For instance, in the previous example, the file `src/ext/hello.txt` is embedded in the archive as `misc/lorem-ipsum.txt`.
 
-== Embedding file sets
+=== Embedding file sets
 
 While `files` allow embedding files individually, `fileSets` declare set of files:
 
@@ -152,7 +152,7 @@ In a `fileSet`, you can configure:
 * `includes` and `excludes` pattern to choose which files you want to embed in the archive.
 * `useDefaultExcludes` - indicating if you want to use the default exclusion list (enabled by default)
 
-== Customizing the manifest
+=== Customizing the manifest
 
 You can also add entries into the `MANIFEST.MF` of the created archive using the `manifest` entry:
 
@@ -175,7 +175,7 @@ You can also add entries into the `MANIFEST.MF` of the created archive using the
 </executions>
 ----
 
-== Resource combination
+=== Resource combination
 
 Resource combination is a process merging the content of files into a single file (using _append_). It is particularly
 useful when building an archive embedding dependencies containing the same files. For instance `META-INF/services/*` and
@@ -193,4 +193,3 @@ needs to be combined:
 ----
 
 Once set, the defaults are disabled, so you need to set `<pattern>META-INF/services/*</pattern>`.
-

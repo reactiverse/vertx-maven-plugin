@@ -1,11 +1,10 @@
-
 [[vertx:package]]
-== *vertx:package*
+=== *vertx:package*
 
 This goal packages a Vert.x application as fat or über jar with its dependencies bundled as part of the jar.
 
 [[package-configuration]]
-=== Configuration
+==== Configuration
 
 The package goal has the following parameters apart from the ones mentioned in
  **<<common:configurations,Common Configuration>>**

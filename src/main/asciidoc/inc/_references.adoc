@@ -1,0 +1,3 @@
+== References
+
+http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html[Maven Properties]

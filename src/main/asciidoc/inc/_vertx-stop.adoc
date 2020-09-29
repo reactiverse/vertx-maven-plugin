@@ -1,6 +1,5 @@
-
 [[vertx:stop]]
-== *vertx:stop*
+=== *vertx:stop*
 This goal allows to stop the vert.x application running as background process from maven build. This goal triggers the vert.x
 `stop` command, passing the configuration values as mentioned below.
 

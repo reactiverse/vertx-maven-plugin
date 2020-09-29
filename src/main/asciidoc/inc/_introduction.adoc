@@ -1,5 +1,4 @@
-
-= Introduction
+== Introduction
 
 http://vertx.io/[Eclipse Vert.x] is a toolkit to build reactive and distributed systems on the top of the JVM. Vert.x
 applications can be  developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby...
@@ -13,7 +12,7 @@ provide an opinionated way to build Vert.x application:
 
 The last version of the Vert.x Maven Plugin is **{version}**.
 
-== Using the plugin
+=== Using the plugin
 
 The plugin provides a set of goals such as:
 
@@ -56,7 +55,7 @@ Generally, you will use the following configuration:
 </project>
 ----
 
-== Packaging
+=== Packaging
 
 This plugin packaged the Vert.x application as a fat or über jar. These jars are executable, and so can be launched
 using: `java -jar <my-app.jar>`.  The packaging process adds certain *MANIFEST.MF* entries that control how the
@@ -83,11 +82,11 @@ The package is generated using:  `mvn clean package`
 
 For more information on packaging refer to **<<vertx:package,vertx:package>>**
 
-== Running
+=== Running
 
 The plugin allows running vert.x applications in following ways:
 
-=== In foreground using **<<vertx:run,vertx:run>>**
+==== In foreground using **<<vertx:run,vertx:run>>**
 
 :description:
 
@@ -103,7 +102,7 @@ You can enable the _redeploy_ mode rebuilding and restarting the application upo
 
 For more information on configuration options refer to  **<<vertx:run,vertx:run>>**
 
-=== In background using **<<vertx:start,vertx:start>>**
+==== In background using **<<vertx:start,vertx:start>>**
 
 :description:
 

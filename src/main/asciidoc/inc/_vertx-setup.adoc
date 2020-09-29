@@ -1,10 +1,9 @@
-
 [[vertx:setup]]
-== *vertx:setup*
+=== *vertx:setup*
 
 This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is configured with a default configuration.
 
-=== Example
+==== Example
 
 [source,subs="attributes"]
 ----
@@ -48,4 +47,3 @@ io.vertx:vertxcodetrans => Inherit version from BOM
 commons-io:commons-io:2.5 => Regular dependency
 io.vertx:vertx-template-engines:3.4.1:shaded => Dependency with classifier
 ----
-

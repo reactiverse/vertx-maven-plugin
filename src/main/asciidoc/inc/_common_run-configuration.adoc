@@ -1,5 +1,5 @@
 [[common:run-configurations]]
-= Common Run Configurations
+== Common Run Configurations
 
 These are the common configuration shared by the run based goals such as **<<vertx:run,run>>**,
  **<<vertx:start,start>>** and  **<<vertx:stop,stop>>**.

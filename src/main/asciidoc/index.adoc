@@ -10,7 +10,7 @@ Kamesh Sampath, Roland Huß, Clement Escoffier;
 
 ifndef::ebook-format[:leveloffset: 1]
 
-(C) 2016-2019 The original authors.
+(C) 2016-2020 The original authors.
 
 ifdef::basebackend-html[toc::[]]
 
@@ -28,12 +28,11 @@ include::inc/_vertx-run.adoc[]
 include::inc/_vertx-start.adoc[]
 include::inc/_vertx-stop.adoc[]
 include::inc/_vertx-setup.adoc[]
-include::inc/_archive-config.adoc[]
 
+include::inc/_archive-config.adoc[]
 
 include::inc/_vertx-examples.adoc[]
 
+include::inc/_miscellaneous.adoc[]
 
-== References
-
-http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html[Maven Properties]
+include::inc/_references.adoc[]
