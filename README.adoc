@@ -1,6 +1,7 @@
 = Maven Plugin for Eclipse Vert.x
 
 image:https://travis-ci.org/reactiverse/vertx-maven-plugin.svg?branch=master["Build Status", link="https://travis-ci.org/reactiverse/vertx-maven-plugin"]
+image:https://github.com/reactiverse/vertx-maven-plugin/workflows/Windows%20Build/badge.svg["Windows Build Status", link="https://github.com/reactiverse/vertx-maven-plugin/actions"]
 image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg["Maven Central", link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin]
 
 
