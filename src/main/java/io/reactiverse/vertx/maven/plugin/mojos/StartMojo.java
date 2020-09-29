@@ -19,6 +19,7 @@ package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.MavenExecutionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -96,7 +97,7 @@ public class StartMojo extends AbstractRunMojo {
                 argsList.add(fatjar.getAbsolutePath());
             } else if (fatjar.isFile()  && ! isVertxLauncher(launcher)) {
                 argsList.add("-cp");
-                argsList.add(fatjar.getAbsolutePath());
+                argsList.add(SystemUtils.IS_OS_WINDOWS ? '"' + fatjar.getAbsolutePath() + '"':fatjar.getAbsolutePath());
                 argsList.add(IO_VERTX_CORE_LAUNCHER);
             } else {
                 throw new MojoFailureException("Unable to find vertx application jar --> "

@@ -223,9 +223,8 @@ public class JavaProcessExecutor {
             StringBuilder classpath = new StringBuilder();
 
             for (URL ele : this.classPathUrls) {
-                classpath = classpath
-                    .append(classpath.length() > 0 ? File.pathSeparator : "")
-                    .append(new File(ele.toURI()));
+                classpath.append(classpath.length() > 0 ? File.pathSeparator:"");
+                classpath.append(new File(ele.toURI()));
             }
 
             String oldClasspath = System.getProperty("java.class.path");
@@ -233,6 +232,10 @@ public class JavaProcessExecutor {
             if (oldClasspath != null) {
                 classpath.append(File.pathSeparator);
                 classpath.append(oldClasspath);
+            }
+
+            if (SystemUtils.IS_OS_WINDOWS) {
+                classpath.insert(0, '"').append('"');
             }
 
             argsList.add(0, "-cp");

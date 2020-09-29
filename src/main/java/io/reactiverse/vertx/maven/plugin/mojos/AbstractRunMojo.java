@@ -21,6 +21,7 @@ import io.reactiverse.vertx.maven.plugin.utils.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -227,9 +228,11 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         try {
             StringBuilder classpath = new StringBuilder();
             for (URL ele : getClassPathUrls()) {
-                classpath = classpath
-                    .append(classpath.length() > 0 ? File.pathSeparator : "")
-                    .append(new File(ele.toURI()));
+                classpath.append(classpath.length() > 0 ? File.pathSeparator:"");
+                classpath.append(new File(ele.toURI()));
+            }
+            if (SystemUtils.IS_OS_WINDOWS) {
+                classpath.insert(0, '"').append('"');
             }
             getLog().debug("Classpath for forked process: " + classpath);
             args.add("-cp");
