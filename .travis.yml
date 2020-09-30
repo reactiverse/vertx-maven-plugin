@@ -1,27 +1,38 @@
 language: java
-
-jdk:
-  - openjdk8
-
-addons:
-  sonarcloud:
-    organization: reactiverse-vertx-maven-plugin
-    token:
-      secure: "ZlhxyGANhTaCmJyvL8tqFL4o6lA7OZzY4X9HJlvqb0BQoUh3pFfqdx32VcdfICOL4UpQIrk3OkZm/4NLob4KHbTXDBjJrBwNuOocYNu2jtVnKrbRUmfFMkdVQy+CzT/mrz3NB31S93L275SD2C8tDCoKuSEJh6vUbBgNw41As3Uuuc7Vd5ZllM+EJ//KqfW0xGG+IEWMg6FT8jYWLfmic8ruYoJu0lEutpaKYd5nAZzZDrrWYVg2tD1VpdIpFocgXNfnER1+k+hhOjZ2/lrr8YKKTvC4+WjLwROVkQ6iinPsqxWBHKBkM1rBmYpG2Oy7d6sulg+yHPclwr1RZQ5pZMp806FVa08WZK9e2/sUNixmN6w3nONVXJaDIL2STiAyVpxTkA6N0b9+rb91+BfRwDOSrWtcYGmBq3lPn7Ljhm3Yx1CyQIUrolv0qQ2CittAO70BG2B2jnXjwiexjBqIcYtft2hXEHKgh78YnOcxZOCGZFm2PiDjmHZXb7ugByUc3jrLY4Ajwjba14HqvKK+D/ETYjC5lAthZC8gWMISUOQ7ULWZ46WqJeaROq2fCYFalS/vbIN/2iBORGDpEiZ9Txt92OAbrxJcylH03g3/PC6wRQFHIxvfkBLEMQLUbpTnz89YvpTOBcW5JcD92e71uLuujcyXWuG44tkUYfD0Qyo="
-
+install: true
+branches:
+    only:
+        - master
+cache:
+    directories:
+        - $HOME/.m2
+before_cache:
+    - rm -rf $HOME/.m2/repository/io/vertx
+    - rm -rf $HOME/.m2/repository/io/reactiverse
 env:
-  global:
-    - SONATYPE_USERNAME="clement.escoffier"
-    - secure: "cuuJwGIi8aq3AWO9fIwj0zutQhv+YaTQN10+CpbaFHrhR+jmaqYzk17oNUPENH093Lh/3wnEqAMf2dQWpJoPIQD8bHe5YsHsoOVqbmUgTgBErBMQ+JjXYZ/ZjGLIY+PgGcdKw3JZDyIbVDkT6yT0LtBRKvz/ZoCnLNXhfvGAfUGQywx70KQH0NdLEI+TWCfRQ65nXBuNU6J56SyPoxkT+Y+r6noSmmnojnjMKaXjP3MaCbND8IQ6mn3sh2/ptMP6N/4TAaBYUv14fdUZINZlwCDEjeTkv1hwbIj7b+Er41T5wLpGGWY1KV6hN1uGhDK1ypZizEu9qoc+lhjMakMK0JElCYiDIP8IYRiX/qBazEXYFxF+SNx8Dpfldo7hprQ272Lcp6LHEidi0QeCU5rfa8Ze9IKyMjvijsQ1k2baHt5bWB3Sdc6wdh0whdDcJ3FICSSJB1+DmNkAQprNWJxQqICcPkZld+2nSsyPJXdTLdP2U4NwKfE/3448rkn1di0AaqmGdbP9pOgAEas/KJ79HKs+bCOm5GkV8uYhbxyKQWNRN+o6vUE5Rnp5Igc+fxBpCXppHMDOBxd+Oyivpg/tgg9Dos2ivjubf1SVFMKcVlSK6AE3Hr/gdsBRJEdsFE25aCQr0j/HmKKVnkiaFd5vdrfgcaeO60M7QGzHnk4nO18="
-
-script:
-#   - mvn clean install sonar:sonar -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
-   - mvn clean install -DwithIts -DwithCoverage -DwithJavadoc -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
-
-after_success:
-#    - bash <(curl -s https://codecov.io/bash)
-    - .build/deploy-snapshot.sh
-
+    global:
+        - SONATYPE_USERNAME="clement.escoffier"
+        -   secure: "cuuJwGIi8aq3AWO9fIwj0zutQhv+YaTQN10+CpbaFHrhR+jmaqYzk17oNUPENH093Lh/3wnEqAMf2dQWpJoPIQD8bHe5YsHsoOVqbmUgTgBErBMQ+JjXYZ/ZjGLIY+PgGcdKw3JZDyIbVDkT6yT0LtBRKvz/ZoCnLNXhfvGAfUGQywx70KQH0NdLEI+TWCfRQ65nXBuNU6J56SyPoxkT+Y+r6noSmmnojnjMKaXjP3MaCbND8IQ6mn3sh2/ptMP6N/4TAaBYUv14fdUZINZlwCDEjeTkv1hwbIj7b+Er41T5wLpGGWY1KV6hN1uGhDK1ypZizEu9qoc+lhjMakMK0JElCYiDIP8IYRiX/qBazEXYFxF+SNx8Dpfldo7hprQ272Lcp6LHEidi0QeCU5rfa8Ze9IKyMjvijsQ1k2baHt5bWB3Sdc6wdh0whdDcJ3FICSSJB1+DmNkAQprNWJxQqICcPkZld+2nSsyPJXdTLdP2U4NwKfE/3448rkn1di0AaqmGdbP9pOgAEas/KJ79HKs+bCOm5GkV8uYhbxyKQWNRN+o6vUE5Rnp5Igc+fxBpCXppHMDOBxd+Oyivpg/tgg9Dos2ivjubf1SVFMKcVlSK6AE3Hr/gdsBRJEdsFE25aCQr0j/HmKKVnkiaFd5vdrfgcaeO60M7QGzHnk4nO18="
+addons:
+    sonarcloud:
+        organization: reactiverse-vertx-maven-plugin
+        token:
+            secure: "ZlhxyGANhTaCmJyvL8tqFL4o6lA7OZzY4X9HJlvqb0BQoUh3pFfqdx32VcdfICOL4UpQIrk3OkZm/4NLob4KHbTXDBjJrBwNuOocYNu2jtVnKrbRUmfFMkdVQy+CzT/mrz3NB31S93L275SD2C8tDCoKuSEJh6vUbBgNw41As3Uuuc7Vd5ZllM+EJ//KqfW0xGG+IEWMg6FT8jYWLfmic8ruYoJu0lEutpaKYd5nAZzZDrrWYVg2tD1VpdIpFocgXNfnER1+k+hhOjZ2/lrr8YKKTvC4+WjLwROVkQ6iinPsqxWBHKBkM1rBmYpG2Oy7d6sulg+yHPclwr1RZQ5pZMp806FVa08WZK9e2/sUNixmN6w3nONVXJaDIL2STiAyVpxTkA6N0b9+rb91+BfRwDOSrWtcYGmBq3lPn7Ljhm3Yx1CyQIUrolv0qQ2CittAO70BG2B2jnXjwiexjBqIcYtft2hXEHKgh78YnOcxZOCGZFm2PiDjmHZXb7ugByUc3jrLY4Ajwjba14HqvKK+D/ETYjC5lAthZC8gWMISUOQ7ULWZ46WqJeaROq2fCYFalS/vbIN/2iBORGDpEiZ9Txt92OAbrxJcylH03g3/PC6wRQFHIxvfkBLEMQLUbpTnz89YvpTOBcW5JcD92e71uLuujcyXWuG44tkUYfD0Qyo="
+jobs:
+    include:
+        -   stage: test
+            name: "OpenJDK 8"
+            jdk: openjdk8
+            script: mvn -B clean verify -DwithIts -DwithCoverage -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.projectKey=io.reactiverse:vertx-maven-plugin
+        -   if: type != pull_request
+            name: "OpenJDK 11"
+            jdk: openjdk11
+            script: mvn -B clean verify -DwithIts
+        -   stage: deploy
+            name: "Deploy to Sonatype's snapshots repository"
+            jdk: openjdk8
+            if: type != pull_request
+            script: bash .build/deploy-snapshot.sh
 notifications:
-  email:
-    - clement@apache.org
+    email:
+        - clement@apache.org
