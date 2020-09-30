@@ -65,7 +65,7 @@ public class PackagingIT extends VertxMojoTestBase {
         File out = new File(testDir, "target/context/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
         assertThat(out).isFile();
     }
-    
+
     @Test
     public void testContentInTheJar() throws IOException, VerificationException {
         File testDir = initProject(PACKAGING_META_INF);
@@ -166,7 +166,7 @@ public class PackagingIT extends VertxMojoTestBase {
         String content_b = IOUtils.toString(b.openStream(), "UTF-8");
         String content_c = IOUtils.toString(c.openStream(), "UTF-8");
 
-        assertThat(content_a).isEqualToIgnoringCase("A3\n");
+        assertThat(content_a).isEqualToIgnoringCase("A3" + System.lineSeparator());
         assertThat(content_b).isEqualToIgnoringCase("B1");
         assertThat(content_c).isEqualToIgnoringCase("C2");
     }
