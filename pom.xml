@@ -406,6 +406,26 @@
 
     <profiles>
         <profile>
+            <id>illegal-access</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>${maven-failsafe-plugin.version}</version>
+                            <configuration>
+                                <argLine>--illegal-access=permit</argLine>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
             <id>run-its</id>
             <activation>
                 <property>
@@ -420,9 +440,6 @@
                             <artifactId>maven-failsafe-plugin</artifactId>
                             <version>${maven-failsafe-plugin.version}</version>
                             <configuration>
-                                <argLine>
-                                    --illegal-access=permit
-                                </argLine>
                                 <systemPropertyVariables>
                                     <!--suppress MavenModelInspection -->
                                     <maven.home>${maven.home}</maven.home>
