@@ -86,7 +86,7 @@
         <repository>
             <id>bintray</id>
             <name>reactiverse-releases</name>
-            <url>https://api.bintray.com/maven/reactiverse/releases/neo4j-client/;publish=1;override=1</url>
+            <url>https://api.bintray.com/maven/reactiverse/releases/vertx-maven-plugin/;publish=1;override=1</url>
         </repository>
     </distributionManagement>
 
