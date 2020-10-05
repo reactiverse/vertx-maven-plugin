@@ -83,6 +83,11 @@
             <id>sonatype-nexus-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>bintray</id>
+            <name>reactiverse-releases</name>
+            <url>https://api.bintray.com/maven/reactiverse/releases/neo4j-client/;publish=1;override=1</url>
+        </repository>
     </distributionManagement>
 
     <properties>
@@ -104,6 +109,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>2.1.0</asciidoctor-maven-plugin.version>
         <asciidoctorj.version>2.4.1</asciidoctorj.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.3.0</plexus-utils.version>
@@ -375,6 +381,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                    <arguments>-DskipTests</arguments>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <developmentVersion>1.0-SNAPSHOT</developmentVersion>
+                </configuration>
             </plugin>
         </plugins>
 
@@ -757,6 +776,27 @@
                                     <goal>report-integration</goal>
                                 </goals>
                                 <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
