@@ -28,7 +28,7 @@ jobs:
             name: "Deploy to Sonatype's snapshots repository"
             jdk: openjdk8
             if: type != pull_request
-            script: bash .build/travis.deploy.artifacts.sh
+            script: bash .travis.deploy.artifacts.sh
 notifications:
     email:
         recipients:
