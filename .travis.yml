@@ -9,10 +9,6 @@ cache:
 before_cache:
     - rm -rf $HOME/.m2/repository/io/vertx
     - rm -rf $HOME/.m2/repository/io/reactiverse
-env:
-    global:
-        - SONATYPE_USERNAME="clement.escoffier"
-        - secure: "cuuJwGIi8aq3AWO9fIwj0zutQhv+YaTQN10+CpbaFHrhR+jmaqYzk17oNUPENH093Lh/3wnEqAMf2dQWpJoPIQD8bHe5YsHsoOVqbmUgTgBErBMQ+JjXYZ/ZjGLIY+PgGcdKw3JZDyIbVDkT6yT0LtBRKvz/ZoCnLNXhfvGAfUGQywx70KQH0NdLEI+TWCfRQ65nXBuNU6J56SyPoxkT+Y+r6noSmmnojnjMKaXjP3MaCbND8IQ6mn3sh2/ptMP6N/4TAaBYUv14fdUZINZlwCDEjeTkv1hwbIj7b+Er41T5wLpGGWY1KV6hN1uGhDK1ypZizEu9qoc+lhjMakMK0JElCYiDIP8IYRiX/qBazEXYFxF+SNx8Dpfldo7hprQ272Lcp6LHEidi0QeCU5rfa8Ze9IKyMjvijsQ1k2baHt5bWB3Sdc6wdh0whdDcJ3FICSSJB1+DmNkAQprNWJxQqICcPkZld+2nSsyPJXdTLdP2U4NwKfE/3448rkn1di0AaqmGdbP9pOgAEas/KJ79HKs+bCOm5GkV8uYhbxyKQWNRN+o6vUE5Rnp5Igc+fxBpCXppHMDOBxd+Oyivpg/tgg9Dos2ivjubf1SVFMKcVlSK6AE3Hr/gdsBRJEdsFE25aCQr0j/HmKKVnkiaFd5vdrfgcaeO60M7QGzHnk4nO18="
 addons:
     sonarcloud:
         organization: reactiverse-vertx-maven-plugin
@@ -32,7 +28,10 @@ jobs:
             name: "Deploy to Sonatype's snapshots repository"
             jdk: openjdk8
             if: type != pull_request
-            script: .build/deploy-snapshot.sh
+            script: bash .travis.deploy.artifacts.sh
 notifications:
     email:
-        - clement@apache.org
+        recipients:
+            -   secure: "u6+7M1q/NDvw4WF287KtaK+F9tiVkI5WDXMdM6ttGz9kfKB50gwQRtWz4XwUxolFzc6Gs/tB6XV6K5De0LskIGPNxDt59ucIWpIjCCA9Qdpqdx6bqQ8VqbCOfq+r0vi+zhp6LkUi+o9s0Ni9HDmEUCEHDWF4NSQlvanKwQRzcCpfi4NuNKGoKtvlarOx5omj6S90hRZZdefvbkxCGVe4Y6Ahubv7FiQ/Ji81DkP1cBl45LMYTcPnMu/UtxntKNDmJM0h3hh+uHY6W6Z4sAKdkm1PcVou79smTBBMtamojLWGDzT3rCmyS8Aoy4UxVunQqkVkCGTYALtZI4LWD8A5514iadTC2ULI5TsYuD0N9fIwHvGqa70+QtnDKNWFCZFkxPO8oVtlWsJJDIHJkj876+ULhKDGPSD+fOsV0aHdzxtZ2uK4qtMQmjhQRYdRqxuAZDSYJ46g4olcNn9WPN3loLNVuPVumEihpjxaP9VBKNhjR773d65IwMjm2jCWXCmIXoymxSK2T7GS6VofyeBaz8YR6DGkQA/MQe52BCabyve7eioTkJl4n+qb/yUsVY2q9dl5DsAYsC4l/WJ8SzmnffLqj93gRwpzIyuJtiKUef9HHzUASh+MZYHRHlIV0LzLpLSErMLwehxsYpuKzjdvb7qqjLoIgIc3bGBXTsZEYz4="
+        on_success: always
+        on_failure: always

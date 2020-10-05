@@ -97,8 +97,6 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>2.1.0</asciidoctor-maven-plugin.version>
         <asciidoctorj.version>2.4.1</asciidoctorj.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-
 
         <!-- Compile dependency versions -->
         <plexus-utils.version>3.3.0</plexus-utils.version>
@@ -658,35 +656,6 @@
                 <defaultGoal>generate-resources asciidoctor:process-asciidoc</defaultGoal>
             </build>
         </profile>
-
-        <!-- "sign" profiles used for deploying with reactiverse -->
-        <profile>
-            <id>sign</id>
-            <activation>
-                <property>
-                    <name>withSign</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven-gpg-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <profile>
             <id>coverage</id>
             <activation>
@@ -783,44 +752,6 @@
                                 <phase>verify</phase>
                             </execution>
                         </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>sonatype</id>
-            <activation>
-                <property>
-                    <name>withStaging</name>
-                </property>
-            </activation>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>sonatype-nexus-snapshots</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-
-            <properties>
-                <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-            </properties>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus-staging-maven-plugin.version}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>sonatype-nexus-snapshots</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
