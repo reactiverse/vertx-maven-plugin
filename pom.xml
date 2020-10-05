@@ -494,7 +494,7 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>>integration-test</id>
+                                <id>integration-test</id>
                                 <phase>integration-test</phase>
                                 <goals>
                                     <goal>integration-test</goal>
