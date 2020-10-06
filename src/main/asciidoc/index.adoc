@@ -1,5 +1,5 @@
 = Vert.x Maven Plugin
-Kamesh Sampath, Roland Huß, Clement Escoffier;
+Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont;
 :revnumber: {version}
 :revdate: {localdate}
 :toc: macro

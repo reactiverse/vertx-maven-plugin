@@ -60,6 +60,13 @@
                 <role>Contributor</role>
             </roles>
         </contributor>
+        <contributor>
+            <name>Thomas Segismont</name>
+            <email>protected</email>
+            <roles>
+                <role>Contributor</role>
+            </roles>
+        </contributor>
     </contributors>
 
     <licenses>
