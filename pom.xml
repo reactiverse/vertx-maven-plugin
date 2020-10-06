@@ -138,6 +138,7 @@
         <maven-verifier.version>1.7.2</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
+        <maven-scm-publish-plugin.version>3.0.0</maven-scm-publish-plugin.version>
         <org.eclipse.jgit.version>5.9.0.202009080501-r</org.eclipse.jgit.version>
         <jacoco.version>0.8.6</jacoco.version>
         <sonar-jacoco-listeners.version>5.14.0.18788</sonar-jacoco-listeners.version>
@@ -146,6 +147,9 @@
 
         <skipTests>false</skipTests>
         <jackson-databind.version>2.9.10.3</jackson-databind.version>
+
+        <doc.outputDirectory>${project.build.directory}/generated-docs</doc.outputDirectory>
+        <doc.goals>generate-resources asciidoctor:process-asciidoc</doc.goals>
     </properties>
 
     <dependencyManagement>
@@ -395,8 +399,8 @@
                 <version>2.5.3</version>
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
-                    <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy</goals>
+                    <releaseProfiles>release,doc-html</releaseProfiles>
+                    <goals>${doc.goals} deploy scm-publish:publish-scm</goals>
                     <arguments>-DskipTests</arguments>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                     <developmentVersion>1.0-SNAPSHOT</developmentVersion>
@@ -546,64 +550,35 @@
                 </property>
             </activation>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.asciidoctor</groupId>
-                            <artifactId>asciidoctor-maven-plugin</artifactId>
-                            <version>${asciidoctor-maven-plugin.version}</version>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.asciidoctor</groupId>
-                                    <artifactId>asciidoctorj</artifactId>
-                                    <version>${asciidoctorj.version}</version>
-                                </dependency>
-                            </dependencies>
-                            <configuration>
-                                <sourceDirectory>src/main/asciidoc</sourceDirectory>
-                                <attributes>
-                                    <icons>font</icons>
-                                    <pagenums />
-                                    <version>${project.version}</version>
-                                    <idprefix />
-                                    <idseparator>-</idseparator>
-                                    <toc>left</toc>
-                                </attributes>
-                                <backend>html</backend>
-                                <sourceHighlighter>highlightjs</sourceHighlighter>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>${maven-resources-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>copy-asciidoc</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}/META-INF/doc/vmp</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/asciidoc</directory>
-                                            <filtering>false</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>${asciidoctor-maven-plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj</artifactId>
+                                <version>${asciidoctorj.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <sourceDirectory>src/main/asciidoc</sourceDirectory>
+                            <attributes>
+                                <icons>font</icons>
+                                <pagenums/>
+                                <version>${project.version}</version>
+                                <idprefix/>
+                                <idseparator>-</idseparator>
+                                <toc>left</toc>
+                            </attributes>
+                            <backend>html</backend>
+                            <sourceHighlighter>highlightjs</sourceHighlighter>
+                            <outputDirectory>${doc.outputDirectory}</outputDirectory>
+                        </configuration>
                     </plugin>
                 </plugins>
-                <defaultGoal>generate-resources asciidoctor:process-asciidoc</defaultGoal>
+                <defaultGoal>${doc.goals}</defaultGoal>
             </build>
         </profile>
         <profile>
@@ -736,6 +711,18 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-publish-plugin</artifactId>
+                        <version>${maven-scm-publish-plugin.version}</version>
+                        <configuration>
+                            <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
+                            <scmBranch>gh-pages</scmBranch>
+                            <content>${doc.outputDirectory}</content>
+                            <include>index.html</include>
+                            <checkinComment>Release ${project.version}</checkinComment>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

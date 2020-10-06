@@ -65,8 +65,6 @@ a issue in https://github.com/reactiverse/vertx-maven-plugin/issues and send in 
 == Releasing
 
 ```bash
-.build/release.sh
-.build/perform-release.sh
+mvn release:clean release:prepare
+mvn release:perform
 ```
-
-
