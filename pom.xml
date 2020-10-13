@@ -146,7 +146,7 @@
 
 
         <skipTests>false</skipTests>
-        <jackson-databind.version>2.9.10.3</jackson-databind.version>
+        <jackson-databind.version>2.9.10.6</jackson-databind.version>
 
         <doc.outputDirectory>${project.build.directory}/generated-docs</doc.outputDirectory>
         <doc.goals>generate-resources asciidoctor:process-asciidoc</doc.goals>
