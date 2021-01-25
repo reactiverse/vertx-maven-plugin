@@ -132,7 +132,7 @@
 
         <!-- Test dependency versions -->
         <vertx-core.version>3.9.3</vertx-core.version>
-        <assertj-core.version>3.18.1</assertj-core.version>
+        <assertj-core.version>3.19.0</assertj-core.version>
         <junit.version>4.13.1</junit.version>
         <maven-verifier.version>1.7.2</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
