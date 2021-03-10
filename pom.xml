@@ -127,7 +127,7 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <mojo-executor.version>2.3.1</mojo-executor.version>
         <snakeyaml.version>1.28</snakeyaml.version>
-        <org.json.version>20201115</org.json.version>
+        <org.json.version>20210307</org.json.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
 
         <!-- Test dependency versions -->
