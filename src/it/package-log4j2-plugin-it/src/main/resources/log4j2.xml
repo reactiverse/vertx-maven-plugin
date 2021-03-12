@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="HelloConsoleLogger" target="SYSTEM_OUT">
+            <PatternLayout pattern="%hello - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="HelloConsoleLogger"/>
+        </Root>
+    </Loggers>
+</Configuration>
