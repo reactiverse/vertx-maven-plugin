@@ -177,10 +177,16 @@ You can also add entries into the `MANIFEST.MF` of the created archive using the
 
 === Resource combination
 
-Resource combination is a process merging the content of files into a single file (using _append_). It is particularly
-useful when building an archive embedding dependencies containing the same files. For instance `META-INF/services/*` and
-`META-INF/spring*` files are combined by default. The `fileCombinationPatterns` attribute allows configuring which files
-needs to be combined:
+Resource combination is the process of merging the content of some files into a single file.
+It is particularly useful when building an archive embedding dependencies which contain the same files.
+
+The files matching these patterns are combined by default:
+
+* `META-INF/services/*`
+* `META-INF/spring*`
+* `META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat`.
+
+The `fileCombinationPatterns` attribute allows configuring which files need to be combined:
 
 [source, xml]
 ----
@@ -188,8 +194,9 @@ needs to be combined:
     <fileCombinationPatterns>
         <pattern>misc/extension.*</pattern>
         <pattern>META-INF/services/*</pattern>
+        <pattern>META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat</pattern>
     </fileCombinationPatterns>
 </archive>
 ----
 
-Once set, the defaults are disabled, so you need to set `<pattern>META-INF/services/*</pattern>`.
+CAUTION: If you set the `fileCombinationPatterns` attribute, the defaults are ignored.
