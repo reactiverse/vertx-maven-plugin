@@ -19,9 +19,10 @@ package io.reactiverse.vertx.maven.plugin.components.impl;
 import io.reactiverse.vertx.maven.plugin.components.ServiceFileCombinationConfig;
 import io.reactiverse.vertx.maven.plugin.components.ServiceFileCombiner;
 import io.reactiverse.vertx.maven.plugin.components.ServiceUtils;
+import io.reactiverse.vertx.maven.plugin.components.impl.merge.MergeResult;
+import io.reactiverse.vertx.maven.plugin.components.impl.merge.MergingStrategy;
 import io.reactiverse.vertx.maven.plugin.model.CombinationStrategy;
 import io.reactiverse.vertx.maven.plugin.mojos.DependencySet;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.logging.Log;
@@ -35,11 +36,11 @@ import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -105,8 +106,8 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
      * @param dependencies the dependencies
      */
     private void combine(MavenProject project, List<String> patterns, Log logger, List<File> dependencies) {
-        Map<String, List<String>> locals = findLocalDescriptors(project, patterns);
-        Map<String, List<List<String>>> deps = findDescriptorsFromDependencies(dependencies, patterns);
+        Map<String, Asset> locals = findLocalDescriptors(project, patterns);
+        Map<String, List<Asset>> deps = findDescriptorsFromDependencies(dependencies, patterns);
 
         // Keys are path relative to the archive root.
         logger.debug("Descriptors declared in the project: " + locals.keySet());
@@ -115,9 +116,10 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         Set<String> descriptorsToMerge = new LinkedHashSet<>(locals.keySet());
         descriptorsToMerge.addAll(deps.keySet());
 
-        Map<String, List<String>> descriptors = new HashMap<>();
-        for (String spi : descriptorsToMerge) {
-            descriptors.put(spi, merge(project, spi, locals.get(spi), deps.get(spi)));
+        Map<String, MergeResult> descriptors = new HashMap<>();
+        for (String name : descriptorsToMerge) {
+            MergingStrategy strategy = MergingStrategy.forName(name);
+            descriptors.put(name, strategy.merge(project, locals.get(name), deps.get(name)));
         }
 
         // Write the new files in target/classes
@@ -126,7 +128,7 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         descriptors.forEach((name, content) -> {
             File merged = new File(out, name);
             try {
-                org.apache.commons.io.FileUtils.writeLines(merged, content);
+                content.writeTo(merged);
                 logger.debug("Descriptor combined into " + merged.getAbsolutePath());
             } catch (IOException e) {
                 throw new RuntimeException("Cannot write combined Descriptor files", e);
@@ -134,45 +136,8 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         });
     }
 
-    private List<String> merge(MavenProject project, String name, List<String> local, List<List<String>> deps) {
-        if (name.equals("org.codehaus.groovy.runtime.ExtensionModule")) {
-            return GroovyExtensionCombiner.merge(project.getArtifactId(), project.getVersion(), local, deps);
-        } else {
-            // Regular merge, concat things.
-
-            // Start with deps
-            Set<String> fromDeps = new LinkedHashSet<>();
-            if (deps != null) {
-                deps.forEach(fromDeps::addAll);
-            }
-            if (local != null) {
-                if (local.isEmpty()) {
-                    // Drop this SPI
-                    return Collections.emptyList();
-                }
-                return computeOutput(local, fromDeps);
-            } else {
-                return new ArrayList<>(fromDeps);
-            }
-        }
-    }
-
-    private static List<String> computeOutput(List<String> local, Set<String> fromDeps) {
-        Set<String> lines = new LinkedHashSet<>();
-        for (String line : local) {
-            if (line.trim().equalsIgnoreCase("${COMBINE}")) {
-                //Copy the ones form the dependencies on this line
-                lines.addAll(fromDeps);
-            } else {
-                // Just copy the line
-                lines.add(line);
-            }
-        }
-        return new ArrayList<>(lines);
-    }
-
-    private static Map<String, List<String>> findLocalDescriptors(MavenProject project, List<String> patterns) {
-        Map<String, List<String>> map = new LinkedHashMap<>();
+    private static Map<String, Asset> findLocalDescriptors(MavenProject project, List<String> patterns) {
+        Map<String, Asset> map = new LinkedHashMap<>();
 
         File classes = new File(project.getBuild().getOutputDirectory());
         if (!classes.isDirectory()) {
@@ -188,20 +153,16 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
         for (String p : paths) {
             File file = new File(classes, p);
             if (file.isFile()) {
-                try {
-                    // Compute the descriptor path in the archive - linux style.
-                    String relative = classes.toURI().relativize(file.toURI()).getPath().replace("\\", "/");
-                    map.put("/" + relative, org.apache.commons.io.FileUtils.readLines(file, "UTF-8"));
-                } catch (IOException e) {
-                    throw new RuntimeException("Cannot read " + file.getAbsolutePath(), e);
-                }
+                // Compute the descriptor path in the archive - linux style.
+                String relative = classes.toURI().relativize(file.toURI()).getPath().replace("\\", "/");
+                map.put("/" + relative, new FileAsset(file));
             }
         }
         return map;
     }
 
-    private static Map<String, List<List<String>>> findDescriptorsFromDependencies(List<File> deps, List<String> patterns) {
-        Map<String, List<List<String>>> map = new LinkedHashMap<>();
+    private static Map<String, List<Asset>> findDescriptorsFromDependencies(List<File> deps, List<String> patterns) {
+        Map<String, List<Asset>> map = new LinkedHashMap<>();
 
         for (File file : deps) {
             JavaArchive archive = ShrinkWrap.createFromZipFile(JavaArchive.class, file);
@@ -210,27 +171,14 @@ public class ServiceFileCombinationImpl implements ServiceFileCombiner {
             for (Map.Entry<ArchivePath, Node> entry : content.entrySet()) {
                 Asset asset = entry.getValue().getAsset();
                 if (asset != null) {
-                    List<String> lines;
                     String path = entry.getKey().get();
-                    lines = read(asset, path);
-
-                    List<List<String>> items = map.computeIfAbsent(path, k -> new ArrayList<>());
-                    items.add(lines);
+                    List<Asset> items = map.computeIfAbsent(path, k -> new ArrayList<>());
+                    items.add(asset);
                     map.put(path, items);
                 }
             }
         }
         return map;
-    }
-
-    private static List<String> read(Asset asset, String path) {
-        List<String> lines;
-        try (InputStream input = asset.openStream()){
-            lines = IOUtils.readLines(input, "UTF-8");
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot read " + path, e);
-        }
-        return lines;
     }
 
     private static Map<ArchivePath, Node> getMatchingFilesFromJar(List<String> patterns, JavaArchive archive) {
