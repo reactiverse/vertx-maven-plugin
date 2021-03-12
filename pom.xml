@@ -253,6 +253,12 @@
             <artifactId>shrinkwrap-impl-base</artifactId>
             <version>${shrinkwrap.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId> <!-- to merge plugins binary files -->
+            <version>2.14.0</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- SCM Providers-->
         <dependency>

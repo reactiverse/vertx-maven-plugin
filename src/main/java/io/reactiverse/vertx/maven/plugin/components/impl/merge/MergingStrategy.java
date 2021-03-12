@@ -29,6 +29,9 @@ public interface MergingStrategy {
             case "org.codehaus.groovy.runtime.ExtensionModule":
                 strategy = new GroovyExtensionStrategy();
                 break;
+            case "/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat":
+                strategy = new Log4j2PluginsStrategy();
+                break;
             default:
                 strategy = new AppendStrategy();
         }
