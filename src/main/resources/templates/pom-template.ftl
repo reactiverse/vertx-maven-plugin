@@ -18,7 +18,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.vertx</groupId>
-                <artifactId>vertx-stack-depchain</artifactId>
+                <artifactId>${vertxBom}</artifactId>
                 <version>${r"${vertx.version}"}</version>
                 <type>pom</type>
                 <scope>import</scope>
