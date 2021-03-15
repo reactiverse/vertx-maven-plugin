@@ -27,6 +27,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,6 +47,11 @@ public class SetupMojoTest {
     public void setUp() {
         File junk = new File("target/junk");
         FileUtils.deleteQuietly(junk);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        System.clearProperty("vertxVersion");
     }
 
     @Test
@@ -275,7 +281,7 @@ public class SetupMojoTest {
     }
 
     @Test
-    public void testVerticleCreatPom() throws Exception {
+    public void testVerticleCreatePom() throws Exception {
 
         new File("target/unit/nopom").mkdirs();
 
