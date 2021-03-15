@@ -50,6 +50,8 @@ public class SetupMojo extends AbstractMojo {
     public static final String JAVA_EXTENSION = ".java";
     public static final String VERTX_CORE_VERSION = "vertx-core-version";
     public static final String VERTX_GROUP_ID = "io.vertx";
+    public static final String VERTX_BOM_ARTIFACTID = "vertx-stack-depchain";
+
     private final String PLUGIN_GROUPID = "io.reactiverse";
     private final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
     private final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
@@ -68,6 +70,9 @@ public class SetupMojo extends AbstractMojo {
 
     @Parameter(property = "projectVersion", defaultValue = "1.0-SNAPSHOT")
     protected String projectVersion;
+
+    @Parameter(property = "vertxBom", defaultValue = VERTX_BOM_ARTIFACTID)
+    protected String vertxBom;
 
     @Parameter(property = "vertxVersion")
     protected String vertxVersion;
@@ -214,6 +219,7 @@ public class SetupMojo extends AbstractMojo {
             context.put("mProjectGroupId", projectGroupId);
             context.put("mProjectArtifactId", projectArtifactId);
             context.put("mProjectVersion", projectVersion);
+            context.put("vertxBom", vertxBom != null ? vertxBom : VERTX_BOM_ARTIFACTID);
             context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion(VERTX_CORE_VERSION));
 
             context.put("vertxVerticle", verticle);
@@ -350,22 +356,22 @@ public class SetupMojo extends AbstractMojo {
 
 
     /**
-     * Method used to add the vert.x "vertx-stack-depchain" BOM
+     * Method used to add the vert.x BOM
      *
      * @param model - the {@code {@link Model}}
      */
     private void addVertxBom(Model model) {
-        Dependency vertxBom = dependency(VERTX_GROUP_ID, "vertx-stack-depchain", "${vertx.version}");
-        vertxBom.setType("pom");
-        vertxBom.setScope("import");
+        Dependency dependency = dependency(VERTX_GROUP_ID, vertxBom, "${vertx.version}");
+        dependency.setType("pom");
+        dependency.setScope("import");
 
         if (model.getDependencyManagement() != null) {
-            if (!MojoUtils.hasDependency(project, VERTX_GROUP_ID, "vertx-stack-depchain")) {
-                model.getDependencyManagement().addDependency(vertxBom);
+            if (!MojoUtils.hasDependency(project, VERTX_GROUP_ID, vertxBom)) {
+                model.getDependencyManagement().addDependency(dependency);
             }
         } else {
             DependencyManagement dm = new DependencyManagement();
-            dm.addDependency(vertxBom);
+            dm.addDependency(dependency);
             model.setDependencyManagement(dm);
         }
     }

@@ -25,7 +25,6 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.junit.Assert;
 
 import java.io.*;
 import java.util.Optional;
@@ -149,6 +148,27 @@ public class Verify {
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
         assertEquals(projectProps.getProperty("vertx.version"), "3.4.0");
+    }
+
+    public static void verifySetupWithBom(File pomFile) throws Exception {
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+
+        MavenProject project = new MavenProject(model);
+
+        //Check if the dependencies has been set correctly
+        DependencyManagement dependencyManagement = model.getDependencyManagement();
+        assertThat(dependencyManagement).isNotNull();
+        assertThat(dependencyManagement.getDependencies().isEmpty()).isFalse();
+
+        //Check Vert.x dependencies BOM
+        Optional<Dependency> vertxDeps = dependencyManagement.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-dependencies")
+                && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+
+        assertThat(vertxDeps.isPresent()).isTrue();
+        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.version}");
     }
 
     private static String read(InputStream input) throws IOException {
