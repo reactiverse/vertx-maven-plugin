@@ -287,6 +287,7 @@ public class SetupMojoTest {
         tplContext.put("mProjectGroupId", "com.example.vertx");
         tplContext.put("mProjectArtifactId", "vertx-example");
         tplContext.put("mProjectVersion", "1.0-SNAPSHOT");
+        tplContext.put("vertxBom", "vertx-stack-depchain");
         tplContext.put("vertxVersion", vertxVersion);
         tplContext.put("vertxVerticle", "com.example.vertx.MainVerticle");
         tplContext.put("vmpVersion", MojoUtils.getVersion("vertx-maven-plugin-version"));
