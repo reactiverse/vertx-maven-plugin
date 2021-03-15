@@ -19,7 +19,7 @@ def file = new File(base, "build.log")
 String strLog = file.text
 assert file.exists()
 assert strLog.contains("Starting clustering...")
-assert strLog.contains("io.vertx.spi.cluster.jgroups.JGroupsClusterManager")
+assert strLog.contains("io.vertx.ext.cluster.infinispan.InfinispanClusterManager")
 assert strLog.contains("io.vertx.core.impl.HAManager")
 assert strLog.contains("A quorum has been obtained. Any deploymentIDs waiting on a quorum will now be deployed")
 assert strLog ==~ /(?ms)^.*Quorum=2.*$/

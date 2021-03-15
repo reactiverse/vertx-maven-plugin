@@ -18,7 +18,7 @@ String base = basedir
 def file = new File(base, "build.log")
 assert file.exists()
 assert file.text.contains("Starting clustering...")
-assert file.text.contains("io.vertx.spi.cluster.jgroups.JGroupsClusterManager")
+assert file.text.contains("io.vertx.ext.cluster.infinispan.InfinispanClusterManager")
 assert file.text.contains("io.vertx.core.impl.HAManager")
 assert file.text.contains("A quorum has been obtained. Any deploymentIDs waiting on a quorum will now be deployed")
 

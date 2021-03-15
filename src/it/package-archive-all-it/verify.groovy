@@ -31,4 +31,3 @@ Verify.verifyNotContain(primaryArtifactFile, "Log4j-config.dtd")
 Verify.verifyNotContain(primaryArtifactFile, "Log4j-events.dtd")
 
 Verify.verifyContains(primaryArtifactFile,"META-INF/services/com.fasterxml.jackson.core.JsonFactory")
-Verify.verifyContains(primaryArtifactFile,"META-INF/services/io.vertx.core.spi.FutureFactory")
