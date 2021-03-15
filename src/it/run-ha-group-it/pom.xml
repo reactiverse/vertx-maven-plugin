@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.4.2</vertx.version>
+        <vertx.version>4.0.3</vertx.version>
         <vertx.verticle>demo.SimpleVerticle</vertx.verticle>
     </properties>
     <build>
@@ -54,6 +54,7 @@
                     <runArgs>
                         <runArg>--ha</runArg>
                         <runArg>--hagroup="demo"</runArg>
+                        <runArg>-Djava.net.preferIPv4Stack=true</runArg>
                     </runArgs>
                 </configuration>
             </plugin>
@@ -66,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-jgroups</artifactId>
+            <artifactId>vertx-infinispan</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>

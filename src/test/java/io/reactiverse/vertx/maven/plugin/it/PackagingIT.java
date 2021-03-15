@@ -107,8 +107,8 @@ public class PackagingIT extends VertxMojoTestBase {
         assertThat(entry.isDirectory()).isFalse();
 
         // Jackson (transitive of vert.x core)
-        // /com/fasterxml/jackson/annotation/JacksonAnnotation.class
-        entry = jar.getJarEntry("com/fasterxml/jackson/annotation/JacksonAnnotation.class");
+        // /com/fasterxml/jackson/core/JsonParser.class
+        entry = jar.getJarEntry("com/fasterxml/jackson/core/JsonParser.class");
         assertThat(entry).isNotNull();
         assertThat(entry.isDirectory()).isFalse();
 

@@ -17,14 +17,14 @@
 package org.vertx.demo;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 /**
  * @author kameshs
  */
 public class SimpleVerticle extends AbstractVerticle {
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(Promise<Void> startFuture) throws Exception {
         int instances = vertx.getOrCreateContext().getInstanceCount();
         System.out.println("Instances="+instances);
         startFuture.complete();
