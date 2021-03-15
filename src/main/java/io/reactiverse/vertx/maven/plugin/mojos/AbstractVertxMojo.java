@@ -368,6 +368,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         if (archive.getFileCombinationPatterns().isEmpty()) {
             archive.addFileCombinationPattern("META-INF/services/*");
             archive.addFileCombinationPattern("META-INF/spring.*");
+            archive.addFileCombinationPattern("META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat");
         }
 
         return this.archive;

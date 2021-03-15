@@ -1,6 +1,5 @@
 /*
- *
- *   Copyright (c) 2016-2018 Red Hat, Inc.
+ *   Copyright (c) 2016-2021 Red Hat, Inc.
  *
  *   Red Hat licenses this file to you under the Apache License, version
  *   2.0 (the "License"); you may not use this file except in compliance
@@ -15,28 +14,23 @@
  *   permissions and limitations under the License.
  */
 
-package io.reactiverse.vertx.maven.plugin.components.impl;
+package io.reactiverse.vertx.maven.plugin.components.impl.merge;
 
 import com.google.common.base.Joiner;
+import org.apache.maven.project.MavenProject;
+import org.jboss.shrinkwrap.api.asset.Asset;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * @author <a href="http://escoffier.me">Clement Escoffier</a>
- */
-class GroovyExtensionCombiner {
+public class GroovyExtensionStrategy implements MergingStrategy {
 
-    private GroovyExtensionCombiner() {
-        // avoid direct instantiation.
-    }
-
-    static List<String> merge(String projectName, String projectVersion,
-                              List<String> local, List<List<String>> deps) {
+    @Override
+    public MergeResult merge(MavenProject project, Asset local, List<Asset> deps) {
         List<String> extensionClassesList = new ArrayList<>();
         List<String> staticExtensionClassesList = new ArrayList<>();
 
@@ -58,16 +52,16 @@ class GroovyExtensionCombiner {
         }
 
         List<String> desc = new ArrayList<>();
-        desc.add("moduleName=" + projectName);
-        desc.add("moduleVersion=" + projectVersion);
-        if (! extensionClassesList.isEmpty()) {
+        desc.add("moduleName=" + project.getArtifactId());
+        desc.add("moduleVersion=" + project.getVersion());
+        if (!extensionClassesList.isEmpty()) {
             desc.add("extensionClasses=" + join(extensionClassesList));
         }
-        if (! staticExtensionClassesList.isEmpty()) {
+        if (!staticExtensionClassesList.isEmpty()) {
             desc.add("staticExtensionClasses=" + join(staticExtensionClassesList));
         }
 
-        return desc;
+        return new TextResult(desc);
     }
 
     private static void append(String entry, List<String> list) {
@@ -80,28 +74,13 @@ class GroovyExtensionCombiner {
         return Joiner.on(",").join(strings);
     }
 
-    private static Properties asProperties(List<String> lines) {
-        byte[] content = read(lines);
+    private static Properties asProperties(Asset asset) {
         Properties properties = new Properties();
-
-        if (content.length != 0) {
-            try (ByteArrayInputStream stream = new ByteArrayInputStream(content)) {
-                properties.load(stream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        try (InputStream is = asset.openStream()) {
+            properties.load(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return properties;
-    }
-
-    private static byte[] read(List<String> lines) {
-        if (lines == null || lines.isEmpty()) {
-            return new byte[0];
-        }
-        StringBuilder buffer = new StringBuilder();
-        for (String l : lines) {
-            buffer.append(l).append("\n");
-        }
-        return buffer.toString().getBytes();
     }
 }

@@ -43,6 +43,7 @@ public class ServiceUtils {
         archive.setIncludeClasses(true);
         archive.addFileCombinationPattern("META-INF/services/*");
         archive.addFileCombinationPattern("META-INF/spring.*");
+        archive.addFileCombinationPattern("META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat");
         return archive;
     }
 
