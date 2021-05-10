@@ -115,7 +115,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>2.1.0</asciidoctor-maven-plugin.version>
         <asciidoctorj.version>2.5.1</asciidoctorj.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 
         <!-- Compile dependency versions -->
