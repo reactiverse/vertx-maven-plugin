@@ -13,7 +13,7 @@ By default, the plugin:
 * embeds all _compile_ dependencies
 * includes all files from `target/classes` (compiled classes from `src/main/resources`, processed resources from
 `src/main/resources)
-* combines resources from `META-INF/services` and `META-INF/spring.*`
+* combines resources from `META-INF/services`, `META-INF/spring.*` and `META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat`.
 
 
 === Using archive configuration
