@@ -272,6 +272,10 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
             return true;
         }
 
+        if (name.equals("/module-info.class")){
+            return true;
+        }
+
         if (set.getOptions().getExcludes() != null) {
             for (String pattern : set.getOptions().getExcludes()) {
                 if (SelectorUtils.match(pattern, name)) {
