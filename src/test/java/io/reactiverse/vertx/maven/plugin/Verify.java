@@ -147,7 +147,7 @@ public class Verify {
         Properties projectProps = project.getProperties();
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"), "4.0.3");
+        assertEquals(projectProps.getProperty("vertx.version"), "4.1.0");
     }
 
     public static void verifySetupWithBom(File pomFile) throws Exception {
