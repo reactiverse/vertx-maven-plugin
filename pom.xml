@@ -123,7 +123,7 @@
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
-        <commons-io.version>2.9.0</commons-io.version>
+        <commons-io.version>2.10.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <mojo-executor.version>2.3.1</mojo-executor.version>
         <snakeyaml.version>1.29</snakeyaml.version>
