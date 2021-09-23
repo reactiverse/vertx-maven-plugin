@@ -17,9 +17,12 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import io.reactiverse.vertx.maven.plugin.components.Prompter;
-import jline.console.ConsoleReader;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.component.annotations.Component;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,21 +37,30 @@ import java.util.Objects;
 @Component(role = Prompter.class, instantiationStrategy = "per-lookup")
 public class PrompterImpl implements Prompter {
 
-    private final ConsoleReader console;
+    private final LineReader console;
 
     public PrompterImpl() throws IOException {
-        this.console = new ConsoleReader();
-        console.setHistoryEnabled(false);
-        console.setExpandEvents(false);
+        Terminal terminal = TerminalBuilder.builder()
+            .system(true)
+            .jna(true)
+            .build();
+        console = LineReaderBuilder.builder()
+            .terminal(terminal)
+            .build();
     }
 
     public PrompterImpl(InputStream in, OutputStream out) throws IOException {
-        this.console = new ConsoleReader(in, out);
-        console.setHistoryEnabled(false);
-        console.setExpandEvents(false);
+        Terminal terminal = TerminalBuilder.builder()
+            .system(false)
+            .jna(false)
+            .streams(in, out)
+            .build();
+        console = LineReaderBuilder.builder()
+            .terminal(terminal)
+            .build();
     }
 
-    public ConsoleReader getConsole() {
+    public LineReader getConsole() {
         return console;
     }
 

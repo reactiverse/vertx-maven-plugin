@@ -129,6 +129,7 @@
         <snakeyaml.version>1.29</snakeyaml.version>
         <org.json.version>20210307</org.json.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
+        <jline.version>3.20.0</jline.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>4.1.0</vertx-core.version>
@@ -292,9 +293,19 @@
 
         <!-- user prompt -->
         <dependency>
-            <groupId>jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>2.14.6</version>
+            <groupId>org.jline</groupId>
+            <artifactId>jline-reader</artifactId>
+            <version>${jline.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline-terminal-jna</artifactId>
+            <version>${jline.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.8.0</version>
         </dependency>
 
         <!-- Testing -->

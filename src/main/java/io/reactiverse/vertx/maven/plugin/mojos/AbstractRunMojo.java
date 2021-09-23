@@ -22,6 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -35,7 +36,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -437,15 +437,15 @@ public class AbstractRunMojo extends AbstractVertxMojo {
                 Set<Path> inclDirs = Collections
                     .singleton(new File(project.getBasedir(), "src/main").toPath());
 
-                //TODO - handle exceptions effectively
-                // TODO - Not sure about the runAsync here, it uses the default fork join pool
-                CompletableFuture.runAsync(() -> {
-                    List<Callable<Void>> chain = computeExecutionChain();
+                Set<Artifact> artifacts = project.getArtifacts();
+                Thread buildRunner = new Thread(() -> {
+                    List<Callable<Void>> chain = computeExecutionChain(artifacts);
                     IncrementalBuilder incrementalBuilder = new IncrementalBuilder(inclDirs,
                         chain, getLog(), redeployScanPeriod);
                     incrementalBuilder.run();
                 });
-
+                buildRunner.setDaemon(true);
+                buildRunner.start();
             }
 
             vertxExecutor.execute();
@@ -455,7 +455,7 @@ public class AbstractRunMojo extends AbstractVertxMojo {
         }
     }
 
-    private List<Callable<Void>> computeExecutionChain() {
+    private List<Callable<Void>> computeExecutionChain(Set<Artifact> artifacts) {
         List<Callable<Void>> list = new ArrayList<>();
         if (MojoSpy.MOJOS.isEmpty()) {
             getLog().info("No plugin execution collected. The vertx:initialize goal has not " +
@@ -466,16 +466,16 @@ public class AbstractRunMojo extends AbstractVertxMojo {
             list = MojoSpy.MOJOS.stream()
                 // Include only mojo in [generate-source, process-classes]
                 .filter(exec -> MojoSpy.PHASES.contains(exec.getLifecyclePhase()))
-                .map(this::toTask)
+                .map(execution -> toTask(execution, artifacts))
                 .collect(toList());
         }
         return list;
     }
 
-    private Callable<Void> toTask(MojoExecution execution) {
+    private Callable<Void> toTask(MojoExecution execution, Set<Artifact> artifacts) {
         MojoExecutor executor = new MojoExecutor(execution, project, mavenSession, buildPluginManager);
-
         return () -> {
+            project.setArtifacts(artifacts);
             try {
                 //--- vertx-maven-plugin:1.0-SNAPSHOT:run (default-cli) @ vertx-demo
                 getLog().info(">>> "
