@@ -1,12 +1,10 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
-import jline.console.ConsoleReader;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
