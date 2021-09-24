@@ -45,3 +45,25 @@ jobs:
       - name: Maven deploy
         if: ${{ endsWith(env.PROJECT_VERSION, '-SNAPSHOT') }}
         run: mvn source:jar deploy -s .gh.maven.settings.xml -DskipTests -B
+  Release:
+    name: Release to OSSRH
+    if: ${{ github.repository_owner == 'reactiverse' && startsWith(github.ref, 'refs/tags/') }}
+    needs: Test
+    runs-on: ubuntu-latest
+    env:
+      SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+      SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install JDK
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: 8
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+            gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+            passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+      - name: Maven deploy
+        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy scm-publish:publish-scm -s .gh.maven.settings.xml -DskipTests -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }} -B
