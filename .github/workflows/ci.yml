@@ -71,8 +71,13 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Maven deploy
-        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy scm-publish:publish-scm -DskipTests -B
+        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy -DskipTests -Ddoc.outputDirectory=./public -B
         env:
             SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
             SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
             MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+      - name: GitHub Pages Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./public

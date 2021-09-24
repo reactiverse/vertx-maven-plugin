@@ -20,7 +20,7 @@
 
     <groupId>io.reactiverse</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.25</version>
     <packaging>maven-plugin</packaging>
 
     <name>A Maven Plugin for Eclipse Vert.x</name>
@@ -613,18 +613,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-publish-plugin</artifactId>
-                        <version>${maven-scm-publish-plugin.version}</version>
-                        <configuration>
-                            <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
-                            <scmBranch>gh-pages</scmBranch>
-                            <content>${doc.outputDirectory}</content>
-                            <include>index.html</include>
-                            <checkinComment>Release ${project.version}</checkinComment>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
