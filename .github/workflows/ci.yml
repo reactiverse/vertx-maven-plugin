@@ -71,7 +71,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Maven deploy
-        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy scm-publish:publish-scm -DskipTests -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }} -B
+        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy scm-publish:publish-scm -DskipTests -B
         env:
             SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
             SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
