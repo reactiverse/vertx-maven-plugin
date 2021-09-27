@@ -30,7 +30,7 @@ jobs:
         run: mvn -B clean verify -DwithIts
   Deploy:
     name: Deploy to OSSRH
-    if: ${{ github.repository_owner == 'reactiverse' && (github.event_name == 'push' || github.event_name == 'schedule') }}
+    if: ${{ github.repository_owner == 'reactiverse' && (github.event_name == 'push' || github.event_name == 'schedule') && !startsWith(github.ref, 'refs/tags/') }}
     needs: Test
     runs-on: ubuntu-latest
     steps:
