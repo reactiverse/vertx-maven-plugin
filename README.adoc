@@ -54,10 +54,3 @@ we will try to address it as soon as possible
 
 We love contributions, if you wish to contribute a patch or feature, please open
 a issue in https://github.com/reactiverse/vertx-maven-plugin/issues and send in a PR.
-
-== Releasing
-
-```bash
-mvn release:clean release:prepare
-mvn release:perform
-```
