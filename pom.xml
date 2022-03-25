@@ -134,7 +134,7 @@
         <vertx-core.version>4.1.0</vertx-core.version>
         <assertj-core.version>3.22.0</assertj-core.version>
         <junit.version>4.13.2</junit.version>
-        <maven-verifier.version>1.7.2</maven-verifier.version>
+        <maven-verifier.version>1.8.0</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
         <maven-scm-plugin.version>1.12.2</maven-scm-plugin.version>
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
