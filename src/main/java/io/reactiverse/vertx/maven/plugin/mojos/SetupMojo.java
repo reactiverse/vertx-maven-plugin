@@ -23,7 +23,13 @@ import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependencies;
 import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependency;
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
-import org.apache.maven.model.*;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginExecution;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
@@ -37,9 +43,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 /**
  * This Goal helps in setting up Vert.x maven project with vertx-maven-plugin, with sane defaults
@@ -52,9 +65,9 @@ public class SetupMojo extends AbstractMojo {
     public static final String VERTX_GROUP_ID = "io.vertx";
     public static final String VERTX_BOM_ARTIFACTID = "vertx-stack-depchain";
 
-    private final String PLUGIN_GROUPID = "io.reactiverse";
-    private final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
-    private final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
+    private static final String PLUGIN_GROUPID = "io.reactiverse";
+    private static final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
+    private static final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
 
     /**
      * The Maven project which will define and configure the vertx-maven-plugin
@@ -82,6 +95,9 @@ public class SetupMojo extends AbstractMojo {
 
     @Parameter(property = "dependencies")
     protected List<String> dependencies;
+
+    @Parameter(property = "javaVersion")
+    protected String javaVersion;
 
     @Component
     protected Prompter prompter;
@@ -224,6 +240,8 @@ public class SetupMojo extends AbstractMojo {
 
             context.put("vertxVerticle", verticle);
             context.put("vmpVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
+
+            context.put("javaVersion", javaVersion != null ? javaVersion : SystemUtils.JAVA_SPECIFICATION_VERSION);
 
             SetupTemplateUtils.createPom(context, pomFile);
 
