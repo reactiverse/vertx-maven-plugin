@@ -145,7 +145,7 @@
 
 
         <skipTests>false</skipTests>
-        <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <jackson.bom.version>2.13.2.20220328</jackson.bom.version>
 
         <doc.outputDirectory>${project.build.directory}/generated-docs</doc.outputDirectory>
     </properties>
@@ -159,6 +159,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -209,10 +218,10 @@
             <artifactId>json</artifactId>
             <version>${org.json.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
         </dependency>
 
         <!-- Mojo Utils-->
