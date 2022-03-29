@@ -47,3 +47,11 @@ io.vertx:vertxcodetrans => Inherit version from BOM
 commons-io:commons-io:2.5 => Regular dependency
 io.vertx:vertx-template-engines:4.1.0:shaded => Dependency with classifier
 ----
+
+When creating a project, the `java.specification.version` system property is used to configure the Maven compiler plugin in the new POM file.
+To set a different Java version, use the `javaVersion` property:
+
+[source,subs=attributes+]
+----
+mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DjavaVersion=11
+----

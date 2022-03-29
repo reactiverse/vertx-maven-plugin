@@ -6,8 +6,8 @@
     <version>${mProjectVersion}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>${javaVersion}</maven.compiler.target>
         <!-- vert.x properties -->
         <vertx.version>${vertxVersion}</vertx.version>
         <#if vertxVerticle??><vertx.verticle>${vertxVerticle}</vertx.verticle></#if>
