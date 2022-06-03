@@ -192,7 +192,7 @@ public class SetupMojoTest {
     @Test
     public void testAddVertxMavenPluginWithVertxVersion() throws Exception {
 
-        System.setProperty("vertxVersion", "4.1.0");
+        System.setProperty("vertxVersion", "4.3.1");
 
         InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
         assertNotNull(pomFile);
