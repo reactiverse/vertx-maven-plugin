@@ -27,7 +27,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.9.6</vertx.version>
         <vertx.verticle>org.vertx.demo.MainVerticle</vertx.verticle>
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.13.4.1</jackson.version>
     </properties>
     <build>
         <plugins>
