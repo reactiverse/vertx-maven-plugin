@@ -128,7 +128,7 @@
         <snakeyaml.version>2.2</snakeyaml.version>
         <org.json.version>20231013</org.json.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
-        <jline.version>3.23.0</jline.version>
+        <jline.version>3.24.1</jline.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>4.3.1</vertx-core.version>
