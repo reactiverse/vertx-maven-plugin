@@ -112,7 +112,7 @@
 
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-        <asciidoctor-maven-plugin.version>2.2.5</asciidoctor-maven-plugin.version>
+        <asciidoctor-maven-plugin.version>2.2.6</asciidoctor-maven-plugin.version>
         <asciidoctorj.version>2.5.11</asciidoctorj.version>
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
