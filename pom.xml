@@ -145,7 +145,7 @@
 
 
         <skipTests>false</skipTests>
-        <jackson-databind.version>2.16.1</jackson-databind.version>
+        <jackson-databind.version>2.16.2</jackson-databind.version>
 
         <doc.outputDirectory>${project.build.directory}/generated-docs</doc.outputDirectory>
     </properties>
