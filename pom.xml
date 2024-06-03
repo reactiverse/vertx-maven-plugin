@@ -429,6 +429,9 @@
                         <excludes>
                             <exclude>**/IT*.java</exclude>
                         </excludes>
+                        <systemPropertyVariables>
+                            <vertx-core.version>${vertx-core.version}</vertx-core.version>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
             </plugins>
@@ -474,6 +477,7 @@
                                 <systemPropertyVariables>
                                     <!--suppress MavenModelInspection -->
                                     <maven.home>${maven.home}</maven.home>
+                                    <vertx-core.version>${vertx-core.version}</vertx-core.version>
                                 </systemPropertyVariables>
                             </configuration>
                         </plugin>
@@ -567,6 +571,7 @@
                                 <idprefix />
                                 <idseparator>-</idseparator>
                                 <toc>left</toc>
+                                <vertx-core-version>${vertx-core.version}</vertx-core-version>
                             </attributes>
                             <backend>html</backend>
                             <sourceHighlighter>highlightjs</sourceHighlighter>

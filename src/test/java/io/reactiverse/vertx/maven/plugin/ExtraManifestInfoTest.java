@@ -19,6 +19,7 @@ package io.reactiverse.vertx.maven.plugin;
 import io.reactiverse.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
 import io.reactiverse.vertx.maven.plugin.components.impl.SCMManifestCustomizer;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
+import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
@@ -91,7 +92,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
         assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("io.vertx:vertx-core:4.3.1");
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("io.vertx:vertx-core:" + VertxCoreVersion.VALUE);
         assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
 
@@ -128,7 +129,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
         assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:4.3.1:vertx");
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:" + VertxCoreVersion.VALUE + ":vertx");
         assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
     }

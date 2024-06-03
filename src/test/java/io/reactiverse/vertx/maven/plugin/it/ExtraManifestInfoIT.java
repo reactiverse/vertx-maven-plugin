@@ -18,6 +18,7 @@ package io.reactiverse.vertx.maven.plugin.it;
 
 import io.reactiverse.vertx.maven.plugin.model.ExtraManifestKeys;
 import io.reactiverse.vertx.maven.plugin.util.GitUtil;
+import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.eclipse.jgit.api.Git;
@@ -152,8 +153,7 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
             assertThat(matcher.matches()).isTrue();
 
             assertThat(projectDeps)
-                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:4.3.1 io.vertx:vertx-web:4.3.1 io" +
-                    ".vertx:vertx-jdbc-client:4.3.1");
+                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:" + VertxCoreVersion.VALUE + " io.vertx:vertx-web:" + VertxCoreVersion.VALUE + " io" + ".vertx:vertx-jdbc-client:" + VertxCoreVersion.VALUE);
         } else if ("svn".equalsIgnoreCase(scm)) {
             String scmType = manifest.getMainAttributes().getValue(
                 ExtraManifestKeys.SCM_TYPE.header());
@@ -164,7 +164,7 @@ public class ExtraManifestInfoIT extends VertxMojoTestBase {
             assertThat(revision).isNotNull();
             assertThat(revision).isEqualTo("1381106");
             assertThat(projectDeps)
-                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:4.3.1 io.vertx:vertx-web:4.3.1");
+                .isEqualToIgnoringWhitespace("io.vertx:vertx-core:" + VertxCoreVersion.VALUE + " io.vertx:vertx-web:" + VertxCoreVersion.VALUE);
         }
 
     }

@@ -1,6 +1,7 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
 import com.google.common.collect.ImmutableList;
+import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -97,15 +98,14 @@ public class SetupIT extends VertxMojoTestBase {
         assertThat(testDir).isDirectory();
         initVerifier(testDir);
         setup(verifier, "-DprojectGroupId=org.acme", "-DprojectArtifactId=acme",
-            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=io.vertx:codetrans,commons-io:commons-io:2.5,io" +
-                ".vertx:vertx-template-engines:4.3.1:shaded");
+            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=io.vertx:codetrans,commons-io:commons-io:2.5,io" + ".vertx:vertx-template-engines:" + VertxCoreVersion.VALUE + ":shaded");
         assertThat(new File(testDir, "pom.xml")).isFile();
         assertThat(new File(testDir, "src/main/java")).isDirectory();
         assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
         assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
             .contains("<artifactId>codetrans</artifactId>")
             .contains("<artifactId>commons-io</artifactId>", "<version>2.5</version>", "<groupId>commons-io</groupId>")
-            .contains("<artifactId>vertx-template-engines</artifactId>", "<version>4.3.1</version>",
+            .contains("<artifactId>vertx-template-engines</artifactId>", "<version>" + VertxCoreVersion.VALUE + "</version>",
                 "<classifier>shaded</classifier>");;
     }
 

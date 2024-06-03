@@ -25,7 +25,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>4.3.1</vertx.version>
+        <vertx.version>@vertx-core.version@</vertx.version>
         <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
     </properties>
     <build>
