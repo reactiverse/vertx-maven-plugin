@@ -21,6 +21,7 @@ import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
 import io.reactiverse.vertx.maven.plugin.components.ServiceUtils;
 import io.reactiverse.vertx.maven.plugin.utils.WebJars;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
 import org.apache.maven.plugin.AbstractMojo;
@@ -301,7 +302,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         if (artifact.hasClassifier()) {
             artifactCords.append(":").append(artifact.getClassifier());
         }
-        artifactCords.append(":").append(artifact.getVersion());
+        artifactCords.append(":").append(ArtifactUtils.toSnapshotVersion(artifact.getVersion()));
         return artifactCords.toString();
     }
 

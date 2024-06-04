@@ -8,7 +8,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,6 +64,20 @@ public class RunIT extends VertxMojoTestBase {
 
         String response = getHttpResponse();
         assertThat(response).contains("aloha").contains("This file");
+    }
+
+    @Test
+    public void testRunAppUsingVertxSnapshotVersion() throws Exception {
+        File testDir = initProject("projects/run-vertx-snapshot-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier, "clean");
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha");
     }
 
     private void run(Verifier verifier, String ... previous) throws VerificationException {
