@@ -17,11 +17,11 @@ if you wish to override the vertx version, then you can run the same command as 
 e.g.
 [source,subs=attributes+]
 ----
-mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion=4.3.1
+mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion={vertx-core-version}
 ----
 
-This will configure the vert.x and its dependencies to `4.3.1` i.e. Maven project property `vertx.version`
-set to `4.3.1`
+This will configure the vert.x and its dependencies to `{vertx-core-version}` i.e. Maven project property `vertx.version`
+set to `{vertx-core-version}`
 
 You can also generate a project if you don't have a `pom.xml` file:
 
@@ -45,7 +45,7 @@ addition, you can configure dependencies using the following syntax: `groupId:ar
 ----
 io.vertx:vertxcodetrans => Inherit version from BOM
 commons-io:commons-io:2.5 => Regular dependency
-io.vertx:vertx-template-engines:4.3.1:shaded => Dependency with classifier
+io.vertx:vertx-template-engines:{vertx-core-version}:shaded => Dependency with classifier
 ----
 
 When creating a project, the `java.specification.version` system property is used to configure the Maven compiler plugin in the new POM file.

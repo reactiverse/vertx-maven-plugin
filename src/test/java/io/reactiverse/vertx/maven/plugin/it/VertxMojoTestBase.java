@@ -2,6 +2,7 @@ package io.reactiverse.vertx.maven.plugin.it;
 
 
 import com.google.common.collect.ImmutableMap;
+import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
@@ -19,7 +20,6 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -47,7 +47,8 @@ public class VertxMojoTestBase {
         VARIABLES = ImmutableMap.of(
             "@project.groupId@", "io.reactiverse",
             "@project.artifactId@", "vertx-maven-plugin",
-            "@project.version@", VERSION);
+            "@project.version@", VERSION,
+            "@vertx-core.version@", VertxCoreVersion.VALUE);
     }
 
     boolean isCoverage() {

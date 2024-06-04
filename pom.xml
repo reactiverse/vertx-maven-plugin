@@ -131,7 +131,7 @@
         <jline.version>3.26.1</jline.version>
 
         <!-- Test dependency versions -->
-        <vertx-core.version>4.3.1</vertx-core.version>
+        <vertx-core.version>4.5.8</vertx-core.version>
         <assertj-core.version>3.26.0</assertj-core.version>
         <junit.version>4.13.2</junit.version>
         <maven-verifier.version>1.7.2</maven-verifier.version>
@@ -429,6 +429,9 @@
                         <excludes>
                             <exclude>**/IT*.java</exclude>
                         </excludes>
+                        <systemPropertyVariables>
+                            <vertx-core.version>${vertx-core.version}</vertx-core.version>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
             </plugins>
@@ -474,6 +477,7 @@
                                 <systemPropertyVariables>
                                     <!--suppress MavenModelInspection -->
                                     <maven.home>${maven.home}</maven.home>
+                                    <vertx-core.version>${vertx-core.version}</vertx-core.version>
                                 </systemPropertyVariables>
                             </configuration>
                         </plugin>
@@ -567,6 +571,7 @@
                                 <idprefix />
                                 <idseparator>-</idseparator>
                                 <toc>left</toc>
+                                <vertx-core-version>${vertx-core.version}</vertx-core-version>
                             </attributes>
                             <backend>html</backend>
                             <sourceHighlighter>highlightjs</sourceHighlighter>
