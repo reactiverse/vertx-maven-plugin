@@ -1,6 +1,7 @@
 == Archive configuration
 
-The Vert.x Maven Plugin lets you configure the content of the created archive. Typically you can decide:
+The Vert.x Maven Plugin lets you configure the content of the created archive.
+Typically, you can decide:
 
 * which dependency needs to be embedded
 * which files need to be included
@@ -11,14 +12,13 @@ Besides, you can customize the _manifest_.
 By default, the plugin:
 
 * embeds all _compile_ dependencies
-* includes all files from `target/classes` (compiled classes from `src/main/resources`, processed resources from
-`src/main/resources)
+* includes all files from `target/classes` (compiled classes from `src/main/resources`, processed resources from `src/main/resources)
 * combines resources from `META-INF/services`, `META-INF/spring.*` and `META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat`.
 
 
 === Using archive configuration
 
-In you plugin configuration add the `archive` item:
+In your plugin configuration add the `archive` item:
 
 [source,xml]
 ----
@@ -55,8 +55,8 @@ In you plugin configuration add the `archive` item:
 
 === Configuring embedded dependencies
 
-In the `archive` configuration, you can declare _dependency sets_ which indicate which dependencies must be included and
-excluded. Also for each configure set, you can decide the file to include and exclude.
+In the `archive` configuration, you can declare _dependency sets_ which indicate which dependencies must be included and excluded.
+Also for each configure set, you can decide the file to include and exclude.
 
 Here is an example:
 
@@ -84,24 +84,24 @@ Here is an example:
 </configuration>
 ----
 
-Notice that when a dependency set is configured, no other dependency is embedded, disabling the default. When you
-configure the archive without a dependency set, the default behavior (embedding all _compile_ dependencies) is used.
+Notice that when a dependency set is configured, no other dependency is embedded, disabling the default.
+When you configure the archive without a dependency set, the default behavior (embedding all _compile_ dependencies) is used.
 
 On a dependency set you can configure:
 
-* `includes`: the set of dependencies to specifically include, if not set, include all dependencies not explicitly
-excluded
+* `includes`: the set of dependencies to specifically include, if not set, include all dependencies not explicitly excluded
 * `excludes`: the set of dependencies to exclude
 * `scope`: the scope of the dependency to include, default to `runtime`
-* `useTransitiveDependencies`: a boolean indicating if transitive dependencies from included dependencies must be
-also included in the jar
+* `useTransitiveDependencies`: a boolean indicating if transitive dependencies from included dependencies must be also included in the jar
 * `option`: configure the files to include / exclude from this dependency set
 
-The `option` attribute enable fine-grain tuning of the file to embed. In the example above, the `dtd` files are excluded.
+The `option` attribute enable fine-grain tuning of the file to embed.
+In the example above, the `dtd` files are excluded.
 
 === Embedding specific file
 
-The archive can be configured with a set of _external_ file to include. For instance:
+The archive can be configured with a set of _external_ file to include.
+For instance:
 
 [source,xml]
 ----
@@ -156,7 +156,7 @@ In a `fileSet`, you can configure:
 
 You can also add entries into the `MANIFEST.MF` of the created archive using the `manifest` entry:
 
-[source, xml]
+[source,xml]
 ----
 <executions>
     <execution>
@@ -188,7 +188,7 @@ The files matching these patterns are combined by default:
 
 The `fileCombinationPatterns` attribute allows configuring which files need to be combined:
 
-[source, xml]
+[source,xml]
 ----
 <archive>
     <fileCombinationPatterns>
