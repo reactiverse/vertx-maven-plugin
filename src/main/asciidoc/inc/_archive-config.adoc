@@ -15,6 +15,11 @@ By default, the plugin:
 * includes all files from `target/classes` (compiled classes from `src/main/resources`, processed resources from `src/main/resources)
 * combines resources from `META-INF/services`, `META-INF/spring.*` and `META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat`.
 
+[NOTE]
+====
+If the generated uber-jar contains files under `/META-INF/versions/`, the plugin creates a https://docs.oracle.com/en/java/javase/11/docs/specs/jar/jar.html#multi-release-jar-files[Multi-release JAR file].
+In practice, this happens if your project contains files under `/META-INF/versions/` or depends on at least one Multi-release JAR file (e.g. Infinispan).
+====
 
 === Using archive configuration
 
