@@ -340,6 +340,14 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+
+        if (!entries.containsKey("Multi-Release")) {
+            Node multiReleaseNode = jar.get("/META-INF/versions");
+            if (multiReleaseNode != null && !multiReleaseNode.getChildren().isEmpty()) {
+                attributes.put(new Attributes.Name("Multi-Release"), Boolean.TRUE.toString());
+            }
+        }
+
         if (entries != null) {
             for (Map.Entry<String, String> entry : entries.entrySet()) {
                 attributes.put(new Attributes.Name(entry.getKey()), entry.getValue());
@@ -350,8 +358,6 @@ public class ShrinkWrapFatJarPackageService implements PackageService {
         manifest.write(bout);
         bout.close();
         byte[] bytes = bout.toByteArray();
-        //TODO: merge existing manifest with current one
         jar.setManifest(new ByteArrayAsset(bytes));
-
     }
 }
