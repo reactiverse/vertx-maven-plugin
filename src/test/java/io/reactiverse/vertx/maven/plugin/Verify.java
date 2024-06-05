@@ -27,6 +27,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.jar.JarFile;
@@ -51,20 +52,24 @@ public class Verify {
     }
 
     public static void verifyContains(File archive, String file) throws IOException {
-        JarFile jar = new JarFile(archive);
-        assertThat(jar.getJarEntry(file)).isNotNull();
+        try (JarFile jar = new JarFile(archive)) {
+            assertThat(jar.getJarEntry(file)).isNotNull();
+        }
     }
 
     public static void verifyNotContain(File archive, String file) throws IOException {
-        JarFile jar = new JarFile(archive);
-        assertThat(jar.getJarEntry(file)).isNull();
+        try (JarFile jar = new JarFile(archive)) {
+            assertThat(jar.getJarEntry(file)).isNull();
+        }
     }
 
     public static void verifyContainsInManifest(File archive, String key, String value) throws Exception {
-        Manifest manifest = new JarFile(archive).getManifest();
-        assertThat(manifest).isNotNull();
-        String v = manifest.getMainAttributes().getValue(key);
-        assertThat(v).isNotNull().isEqualTo(value);
+        try (JarFile jarFile = new JarFile(archive)) {
+            Manifest manifest = jarFile.getManifest();
+            assertThat(manifest).isNotNull();
+            String v = manifest.getMainAttributes().getValue(key);
+            assertThat(v).isNotNull().isEqualTo(value);
+        }
     }
 
     public static void verifyServiceRelocation(File jarFile) throws Exception {
@@ -80,17 +85,18 @@ public class Verify {
     }
 
     public static void verifyContainWithContent(File jarFile, String path, String... lines) throws IOException {
-        JarFile jar = new JarFile(jarFile);
-        ZipEntry entry = jar.getEntry(path);
-        assertThat(entry).isNotNull();
-        String content = read(jar.getInputStream(entry));
-        assertThat(content).containsSubsequence(lines);
+        try (JarFile jar = new JarFile(jarFile)) {
+            ZipEntry entry = jar.getEntry(path);
+            assertThat(entry).isNotNull();
+            String content = read(jar.getInputStream(entry));
+            assertThat(content).containsSubsequence(lines);
+        }
     }
 
     public static void verifySetup(File pomFile) throws Exception {
         assertNotNull("Unable to find pom.xml", pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+        Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
 
         MavenProject project = new MavenProject(model);
 
@@ -136,12 +142,12 @@ public class Verify {
         assertNotNull(pluginConfig);
         String redeploy = pluginConfig.getChild("redeploy").getValue();
         assertNotNull(redeploy);
-        assertTrue(Boolean.valueOf(redeploy));
+        assertTrue(Boolean.parseBoolean(redeploy));
     }
 
     public static void verifySetupWithVersion(File pomFile) throws Exception {
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+        Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
 
         MavenProject project = new MavenProject(model);
         Properties projectProps = project.getProperties();
@@ -152,7 +158,7 @@ public class Verify {
 
     public static void verifySetupWithBom(File pomFile) throws Exception {
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+        Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
 
         MavenProject project = new MavenProject(model);
 
@@ -184,7 +190,7 @@ public class Verify {
     }
 
     public static String argsToString(String[] args) {
-        return Stream.of(args).collect(Collectors.joining(" "));
+        return String.join(" ", args);
     }
 
     public static class VertxJarVerifier {
@@ -201,15 +207,14 @@ public class Verify {
         }
 
         protected void verifyManifest() throws Exception {
-
-            Manifest manifest = new JarFile(jarFile).getManifest();
-
-            assertThat(manifest).isNotNull();
-            String mainClass = manifest.getMainAttributes().getValue("Main-Class");
-            String mainVerticle = manifest.getMainAttributes().getValue("Main-Verticle");
-            assertThat(mainClass).isNotNull().isEqualTo("io.vertx.core.Launcher");
-            assertThat(mainVerticle).isNotNull().isEqualTo("org.vertx.demo.MainVerticle");
-
+            try (JarFile jf = new JarFile(jarFile)) {
+                Manifest manifest = jf.getManifest();
+                assertThat(manifest).isNotNull();
+                String mainClass = manifest.getMainAttributes().getValue("Main-Class");
+                String mainVerticle = manifest.getMainAttributes().getValue("Main-Verticle");
+                assertThat(mainClass).isNotNull().isEqualTo("io.vertx.core.Launcher");
+                assertThat(mainVerticle).isNotNull().isEqualTo("org.vertx.demo.MainVerticle");
+            }
         }
     }
 
