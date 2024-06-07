@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="generator" content="Asciidoctor 2.0.23">
 <meta name="author" content="Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont">
 <title>Vert.x Maven Plugin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -85,10 +85,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -141,7 +141,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #content::before{content:none}
 #header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
 #header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
-#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
 #header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
 #header .details span:first-child{margin-left:-.125em}
 #header .details span.email a{color:rgba(0,0,0,.85)}
@@ -163,6 +163,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #toctitle{color:#7a2518;font-size:1.2em}
 @media screen and (min-width:768px){#toctitle{font-size:1.375em}
 body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
 #toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
 #toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
 #toc.toc2>ul{font-size:.9em;margin-bottom:0}
@@ -209,13 +210,10 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.exampleblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>:first-child{margin-top:0}
-.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -331,7 +329,7 @@ a.image{text-decoration:none;display:inline-block}
 a.image object{pointer-events:none}
 sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
 sup.footnote a,sup.footnoteref a{text-decoration:none}
-sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
 #footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
 #footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
 #footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
@@ -394,7 +392,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -443,8 +441,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Vert.x Maven Plugin</h1>
 <div class="details">
 <span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont</span><br>
-<span id="revnumber">version 1.0.28,</span>
-<span id="revdate">2022-06-03</span>
+<span id="revnumber">version 1.0.29,</span>
+<span id="revdate">2024-06-07</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Vert.x Maven Plugin</div>
@@ -506,13 +504,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="introduction">1. Introduction</h3>
 <div class="paragraph">
-<p><a href="http://vertx.io/">Eclipse Vert.x</a> is a toolkit to build reactive and distributed systems on the top of the JVM. Vert.x
-applications can be  developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby&#8230;&#8203;
- As a toolkit, Vert.x is un-opinionated.</p>
+<p><a href="http://vertx.io/">Eclipse Vert.x</a> is a toolkit to build reactive and distributed systems on the top of the JVM.
+Vert.x applications can be developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby&#8230;&#8203;
+As a toolkit, Vert.x is un-opinionated.</p>
 </div>
 <div class="paragraph">
-<p>The maven-vertx-plugin is a plugin for Apache Maven for packaging and running Vert.x applications. The plugin tries
-provide an opinionated way to build Vert.x application:</p>
+<p>The maven-vertx-plugin is a plugin for Apache Maven for packaging and running Vert.x applications.
+The plugin tries to provide an opinionated way to build Vert.x application:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -520,12 +518,12 @@ provide an opinionated way to build Vert.x application:</p>
 <p>applications are packaged as a <em>fat</em> jar (containing your code and all the dependencies including Vert.x)</p>
 </li>
 <li>
-<p>the application is configured  with an <code>application.json</code> file or an <code>application.yml</code> file (translated to json).</p>
+<p>the application is configured with an <code>application.json</code> file or an <code>application.yml</code> file (translated to json).</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>The last version of the Vert.x Maven Plugin is <strong>1.0.28</strong>.</p>
+<p>The last version of the Vert.x Maven Plugin is <strong>1.0.29</strong>.</p>
 </div>
 <div class="sect3">
 <h4 id="using-the-plugin">1.1. Using the plugin</h4>
@@ -564,7 +562,7 @@ provide an opinionated way to build Vert.x application:</p>
         &lt;plugin&gt;
             &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
             &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;1.0.28&lt;/version&gt;
+            &lt;version&gt;1.0.29&lt;/version&gt;
             &lt;executions&gt;
                 &lt;execution&gt;
                     &lt;id&gt;vmp&lt;/id&gt;
@@ -589,10 +587,10 @@ provide an opinionated way to build Vert.x application:</p>
 <div class="sect3">
 <h4 id="packaging">1.2. Packaging</h4>
 <div class="paragraph">
-<p>This plugin packaged the Vert.x application as a fat or über jar. These jars are executable, and so can be launched
-using: <code>java -jar &lt;my-app.jar&gt;</code>.  The packaging process adds certain <strong>MANIFEST.MF</strong> entries that control how the
-application is launched.  The plugin takes care of adding the required entries
-to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+<p>This plugin packaged the Vert.x application as a fat or über jar.
+These jars are executable, and so can be launched using: <code>java -jar &lt;my-app.jar&gt;</code>.
+The packaging process adds certain <strong>MANIFEST.MF</strong> entries that control how the application is launched.
+The plugin takes care of adding the required entries to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a href="#common:configurations">Common Configuration</a></strong></p>
 </div>
 <div class="paragraph">
 <p>The following are the Manifest entries that will be added based on the configuration elements:</p>
@@ -639,9 +637,9 @@ to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a 
 <div class="sect4">
 <h5 id="in-foreground-using-vertxrun">In foreground using <strong><a href="#vertx:run">vertx:run</a></strong></h5>
 <div class="paragraph">
-<p>The Vert.x application could also be run without building the fat jars, typically during the
-development mode.  The <strong><a href="#vertx:run">vertx:run</a></strong> goal helps in running the application. The
-application will be run in as forked process with additional configurations based on the goals.</p>
+<p>The Vert.x application could also be run without building the fat jars, typically during the development mode.
+The <strong><a href="#vertx:run">vertx:run</a></strong> goal helps in running the application.
+The application will be run in as forked process with additional configurations based on the goals.</p>
 </div>
 <div class="paragraph">
 <p>To run the application vert.x application in foreground, execute the following maven command</p>
@@ -650,7 +648,7 @@ application will be run in as forked process with additional configurations base
 <p><code>mvn clean compile vertx:run</code></p>
 </div>
 <div class="paragraph">
-<p>You can enable the <em>redeploy</em> mode rebuilding and restarting the application upon file changes.</p>
+<p>You can enable the redeployment mode rebuilding and restarting the application upon file changes.</p>
 </div>
 <div class="paragraph">
 <p>For more information on configuration options refer to  <strong><a href="#vertx:run">vertx:run</a></strong></p>
@@ -660,8 +658,7 @@ application will be run in as forked process with additional configurations base
 <h5 id="in-background-using-vertxstart">In background using <strong><a href="#vertx:start">vertx:start</a></strong></h5>
 <div class="paragraph">
 <p>This allows the application be run using the uber or fat jar as background process.
-This option also attaches a configurable id or an autogenerated id which could be used to stop the process
-using <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
+This option also attaches a configurable id or an autogenerated id which could be used to stop the process using <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
 </div>
 <div class="paragraph">
 <p>To start the application vert.x application in background, execute the following maven command</p>
@@ -862,7 +859,7 @@ in the next sections.</p>
 <h5 id="example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -875,19 +872,19 @@ if you wish to override the vertx version, then you can run the same command as 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup -DvertxVersion=4.3.1</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DvertxVersion=4.5.8</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will configure the vert.x and its dependencies to <code>4.3.1</code> i.e. Maven project property <code>vertx.version</code>
-set to <code>4.3.1</code></p>
+<p>This will configure the vert.x and its dependencies to <code>4.5.8</code> i.e. Maven project property <code>vertx.version</code>
+set to <code>4.5.8</code></p>
 </div>
 <div class="paragraph">
 <p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup \
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
@@ -907,7 +904,7 @@ addition, you can configure dependencies using the following syntax: <code>group
 <div class="content">
 <pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
 commons-io:commons-io:2.5 =&gt; Regular dependency
-io.vertx:vertx-template-engines:4.3.1:shaded =&gt; Dependency with classifier</pre>
+io.vertx:vertx-template-engines:{vertx-core-version}:shaded =&gt; Dependency with classifier</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -916,7 +913,7 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup -DjavaVersion=11</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DjavaVersion=11</code></pre>
 </div>
 </div>
 </div>
@@ -1009,7 +1006,7 @@ plugins in your build to <em>replay</em> them when a file changes.</p>
 <h5 id="package-configuration">Configuration</h5>
 <div class="paragraph">
 <p>The package goal has the following parameters apart from the ones mentioned in
- <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+<strong><a href="#common:configurations">Common Configuration</a></strong></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 6. Package Configuration</caption>
@@ -1030,31 +1027,31 @@ plugins in your build to <em>replay</em> them when a file changes.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">serviceProviderCombination</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not SPI files (<code>META-INF/services</code>) need to be be combined. Accepted valued as <code>combine</code> and <code>none</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether SPI files (<code>META-INF/services</code>) need to be combined. Accepted valued as <code>combine</code> and <code>none</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">combine</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">classifier</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The classifier to add to the artifact generated. If given, the artifact will be attached with that classifier
-  and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
-  the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
-  artifact allows to deploy it alongside to the original one. Attachment is controlled using the <code>attach</code>
-  parameter.</p></td>
+and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
+the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
+artifact allows to deploy it alongside to the original one. Attachment is controlled using the <code>attach</code>
+parameter.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">attach</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the created archive needs to be attached to the project. If attached, the <em>fat</em> jar is
-  installed and deployed alongside the main artifact (plain jar). Notice that you can&#8217;t disable attachment if
-  the classifier is not set (it would mean detaching the main artifact).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the created archive needs to be attached to the project. If attached, the <em>fat</em> jar is
+installed and deployed alongside the main artifact (plain jar). Notice that you can&#8217;t disable attachment if
+the classifier is not set (it would mean detaching the main artifact).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">skipScmMetadata</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the SCM metadata should be retrieved from the SVN or Git repository</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the SCM metadata should be retrieved from the SVN or Git repository</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
@@ -1358,7 +1355,7 @@ ignored by the goal,</p>
 <h5 id="example-2">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1371,19 +1368,19 @@ if you wish to override the vertx version, then you can run the same command as 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup -DvertxVersion=4.3.1</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DvertxVersion=4.5.8</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will configure the vert.x and its dependencies to <code>4.3.1</code> i.e. Maven project property <code>vertx.version</code>
-set to <code>4.3.1</code></p>
+<p>This will configure the vert.x and its dependencies to <code>4.5.8</code> i.e. Maven project property <code>vertx.version</code>
+set to <code>4.5.8</code></p>
 </div>
 <div class="paragraph">
 <p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup \
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
@@ -1403,7 +1400,7 @@ addition, you can configure dependencies using the following syntax: <code>group
 <div class="content">
 <pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
 commons-io:commons-io:2.5 =&gt; Regular dependency
-io.vertx:vertx-template-engines:4.3.1:shaded =&gt; Dependency with classifier</pre>
+io.vertx:vertx-template-engines:{vertx-core-version}:shaded =&gt; Dependency with classifier</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1412,7 +1409,7 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.28:setup -DjavaVersion=11</code></pre>
+<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DjavaVersion=11</code></pre>
 </div>
 </div>
 </div>
@@ -1421,7 +1418,8 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 <div class="sect2">
 <h3 id="archive-configuration">5. Archive configuration</h3>
 <div class="paragraph">
-<p>The Vert.x Maven Plugin lets you configure the content of the created archive. Typically you can decide:</p>
+<p>The Vert.x Maven Plugin lets you configure the content of the created archive.
+Typically, you can decide:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1448,18 +1446,32 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 <p>embeds all <em>compile</em> dependencies</p>
 </li>
 <li>
-<p>includes all files from <code>target/classes</code> (compiled classes from <code>src/main/resources</code>, processed resources from
-`src/main/resources)</p>
+<p>includes all files from <code>target/classes</code> (compiled classes from <code>src/main/resources</code>, processed resources from `src/main/resources)</p>
 </li>
 <li>
 <p>combines resources from <code>META-INF/services</code>, <code>META-INF/spring.*</code> and <code>META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat</code>.</p>
 </li>
 </ul>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If the generated uber-jar contains files under <code>/META-INF/versions/</code>, the plugin creates a <a href="https://docs.oracle.com/en/java/javase/11/docs/specs/jar/jar.html#multi-release-jar-files">Multi-release JAR file</a>.
+In practice, this happens if your project contains files under <code>/META-INF/versions/</code> or depends on at least one Multi-release JAR file (e.g. Infinispan).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect3">
 <h4 id="using-archive-configuration">5.1. Using archive configuration</h4>
 <div class="paragraph">
-<p>In you plugin configuration add the <code>archive</code> item:</p>
+<p>In your plugin configuration add the <code>archive</code> item:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1498,8 +1510,8 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 <div class="sect3">
 <h4 id="configuring-embedded-dependencies">5.2. Configuring embedded dependencies</h4>
 <div class="paragraph">
-<p>In the <code>archive</code> configuration, you can declare <em>dependency sets</em> which indicate which dependencies must be included and
-excluded. Also for each configure set, you can decide the file to include and exclude.</p>
+<p>In the <code>archive</code> configuration, you can declare <em>dependency sets</em> which indicate which dependencies must be included and excluded.
+Also for each configure set, you can decide the file to include and exclude.</p>
 </div>
 <div class="paragraph">
 <p>Here is an example:</p>
@@ -1529,8 +1541,8 @@ excluded. Also for each configure set, you can decide the file to include and ex
 </div>
 </div>
 <div class="paragraph">
-<p>Notice that when a dependency set is configured, no other dependency is embedded, disabling the default. When you
-configure the archive without a dependency set, the default behavior (embedding all <em>compile</em> dependencies) is used.</p>
+<p>Notice that when a dependency set is configured, no other dependency is embedded, disabling the default.
+When you configure the archive without a dependency set, the default behavior (embedding all <em>compile</em> dependencies) is used.</p>
 </div>
 <div class="paragraph">
 <p>On a dependency set you can configure:</p>
@@ -1538,8 +1550,7 @@ configure the archive without a dependency set, the default behavior (embedding 
 <div class="ulist">
 <ul>
 <li>
-<p><code>includes</code>: the set of dependencies to specifically include, if not set, include all dependencies not explicitly
-excluded</p>
+<p><code>includes</code>: the set of dependencies to specifically include, if not set, include all dependencies not explicitly excluded</p>
 </li>
 <li>
 <p><code>excludes</code>: the set of dependencies to exclude</p>
@@ -1548,8 +1559,7 @@ excluded</p>
 <p><code>scope</code>: the scope of the dependency to include, default to <code>runtime</code></p>
 </li>
 <li>
-<p><code>useTransitiveDependencies</code>: a boolean indicating if transitive dependencies from included dependencies must be
-also included in the jar</p>
+<p><code>useTransitiveDependencies</code>: a boolean indicating if transitive dependencies from included dependencies must be also included in the jar</p>
 </li>
 <li>
 <p><code>option</code>: configure the files to include / exclude from this dependency set</p>
@@ -1557,13 +1567,15 @@ also included in the jar</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The <code>option</code> attribute enable fine-grain tuning of the file to embed. In the example above, the <code>dtd</code> files are excluded.</p>
+<p>The <code>option</code> attribute enable fine-grain tuning of the file to embed.
+In the example above, the <code>dtd</code> files are excluded.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="embedding-specific-file">5.3. Embedding specific file</h4>
 <div class="paragraph">
-<p>The archive can be configured with a set of <em>external</em> file to include. For instance:</p>
+<p>The archive can be configured with a set of <em>external</em> file to include.
+For instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1727,7 +1739,7 @@ If you set the <code>fileCombinationPatterns</code> attribute, the defaults are 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-please update the plugin version as needed (latest is <strong>1.0.28</strong>).
+please update the plugin version as needed (latest is <strong>1.0.29</strong>).
 </td>
 </tr>
 </table>
@@ -2139,15 +2151,22 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </div>
 <div class="sect2">
 <h3 id="references">8. References</h3>
-<div class="paragraph">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/reactiverse/vertx-maven-plugin">Vert.x Maven Plugin repository</a></p>
+</li>
+<li>
 <p><a href="http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html">Maven Properties</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.28<br>
-Last updated 2022-06-03 13:11:03 UTC
+Version 1.0.29<br>
+Last updated 2024-06-07 15:54:44 UTC
 </div>
 </div>
 </body>
