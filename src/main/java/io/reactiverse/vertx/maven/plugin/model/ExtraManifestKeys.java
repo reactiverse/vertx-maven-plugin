@@ -21,13 +21,6 @@ package io.reactiverse.vertx.maven.plugin.model;
  */
 public enum ExtraManifestKeys {
 
-    LAST_COMMIT_TIMESTAMP ("SCM-Last-Commit-Timestamp"),
-    SCM_AUTHOR("SCM-Author"),
-    SCM_URL ("SCM-URL"),
-    SCM_TAG ("SCM-Tag"),
-    SCM_REVISION ("SCM-Revision"),
-    SCM_TYPE ("SCM-Type"),
-
     PROJECT_ARTIFACT_ID ("Maven-ArtifactId"),
     PROJECT_GROUP_ID ("Maven-ArtifactId"),
     PROJECT_VERSION ("Maven-Version"),

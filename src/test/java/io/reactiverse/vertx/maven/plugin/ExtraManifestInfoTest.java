@@ -17,17 +17,14 @@
 package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
-import io.reactiverse.vertx.maven.plugin.components.impl.SCMManifestCustomizer;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
 import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.junit.Before;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,13 +51,6 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         }
     }
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        ScmManager scmManager = (ScmManager) lookup(ScmManager.ROLE);
-        assertThat(scmManager).isNotNull();
-    }
-
     public void testExtraManifestsNoClassifier() {
         File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-jar.xml").toFile();
         assertNotNull(testJarPom);
@@ -78,11 +68,6 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
             @Override
             public void execute() {
 
-            }
-
-            @Override
-            public ScmManager getScmManager() {
-                return scmManager;
             }
         }, mavenProject);
         atts.forEach(attributes::putValue);
@@ -116,11 +101,6 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
             public void execute() {
 
             }
-
-            @Override
-            public ScmManager getScmManager() {
-                return scmManager;
-            }
         }, mavenProject);
         atts.forEach(attributes::putValue);
 
@@ -134,56 +114,4 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
     }
 
-    public void testExtraManifestsWithSCMUrlAndTag() {
-        File testJarPom = Paths.get("src/test/resources/unit/jar-packaging/pom-extramf-scm-jar.xml").toFile();
-        assertNotNull(testJarPom);
-        assertTrue(testJarPom.exists());
-        assertTrue(testJarPom.isFile());
-        MavenProject mavenProject = new MavenProject(buildModel(testJarPom));
-        assertNotNull(mavenProject);
-
-        Manifest manifest = new Manifest();
-        Attributes attributes = manifest.getMainAttributes();
-        attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-
-        ProjectManifestCustomizer customizer = new ProjectManifestCustomizer();
-        Map<String, String> atts = customizer.getEntries(new PackageMojo() {
-            @Override
-            public void execute() {
-
-            }
-
-            @Override
-            public ScmManager getScmManager() {
-                return scmManager;
-            }
-        }, mavenProject);
-
-        atts.forEach(attributes::putValue);
-
-        atts = new SCMManifestCustomizer().getEntries(new PackageMojo() {
-            @Override
-            public void execute() {
-
-            }
-
-            @Override
-            public ScmManager getScmManager() {
-                return scmManager;
-            }
-        }, mavenProject);
-        atts.forEach(attributes::putValue);
-
-        assertThat(attributes.isEmpty()).isFalse();
-
-        assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
-        assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
-        assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:3.3.3:vertx");
-        assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
-        assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
-        assertThat(attributes.getValue(SCM_URL.header())).isEqualTo("https://github.com/reactiverse/vertx-maven-plugin");
-        assertThat(attributes.getValue(SCM_TAG.header())).isEqualTo("HEAD");
-
-    }
 }

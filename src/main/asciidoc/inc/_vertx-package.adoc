@@ -34,9 +34,4 @@ installed and deployed alongside the main artifact (plain jar). Notice that you 
 the classifier is not set (it would mean detaching the main artifact).
 | &nbsp;
 | true
-
-| skipScmMetadata
-| Whether the SCM metadata should be retrieved from the SVN or Git repository
-| &nbsp;
-| true
 |===

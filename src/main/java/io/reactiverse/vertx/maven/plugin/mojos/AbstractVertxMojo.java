@@ -30,7 +30,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.scm.manager.ScmManager;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -192,9 +191,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     @Component
     protected LifecycleExecutor lifecycleExecutor;
 
-    @Component
-    protected ScmManager scmManager;
-
     /**
      * Configure the packaging content.
      */
@@ -224,9 +220,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Parameter(property = "vertx.skip", defaultValue = "false")
     protected boolean skip;
-
-    @Parameter(alias = "skipScmMetadata", property = "vertx.skipScmMetadata", defaultValue = "false")
-    protected boolean skipScmMetadata;
 
     /**
      * The Plexus container.
@@ -337,13 +330,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         container = (PlexusContainer) context.get(PlexusConstants.PLEXUS_KEY);
     }
 
-    /**
-     * @return the SCM manager.
-     */
-    public ScmManager getScmManager() {
-        return scmManager;
-    }
-
     protected Archive computeArchive() throws MojoExecutionException {
         if (archive == null) {
             archive = ServiceUtils.getDefaultFatJar();
@@ -385,9 +371,5 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
                 ManifestCustomizerService.class.getName() + " components");
         }
         return customizers;
-    }
-
-    public boolean skipScmMetadata() {
-        return skipScmMetadata;
     }
 }
