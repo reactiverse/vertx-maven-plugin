@@ -33,42 +33,6 @@
         <url>https://github.com/reactiverse/vertx-maven-plugin/issues/</url>
     </issueManagement>
 
-    <developers>
-        <developer>
-            <id>kameshsampath</id>
-            <name>Kamesh Sampath</name>
-            <email>kamesh.sampath@hotmail.com</email>
-            <roles>
-                <role>Plugin Developer</role>
-            </roles>
-            <timezone>+5:30</timezone>
-        </developer>
-    </developers>
-
-    <contributors>
-        <contributor>
-            <name>Ronald Huß</name>
-            <email>protected</email>
-            <roles>
-                <role>Patch Contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Clement Escoffier</name>
-            <email>protected</email>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Thomas Segismont</name>
-            <email>protected</email>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </contributor>
-    </contributors>
-
     <licenses>
         <license>
             <name>Apache License 2</name>
@@ -136,31 +100,12 @@
         <junit.version>4.13.2</junit.version>
         <maven-verifier.version>1.7.2</maven-verifier.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <maven-scm-plugin.version>1.13.0</maven-scm-plugin.version>
-        <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
-        <org.eclipse.jgit.version>5.13.3.202401111512-r</org.eclipse.jgit.version>
-        <jacoco.version>0.8.6</jacoco.version>
-        <sonar-jacoco-listeners.version>5.14.0.18788</sonar-jacoco-listeners.version>
-        <sonar-maven.version>3.8.0.2131</sonar-maven.version>
-
 
         <skipTests>false</skipTests>
         <jackson-databind.version>2.17.1</jackson-databind.version>
 
         <doc.outputDirectory>${project.build.directory}/generated-docs</doc.outputDirectory>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.maven.scm</groupId>
-                <artifactId>maven-scm</artifactId>
-                <version>${maven-scm-plugin.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -259,24 +204,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- SCM Providers-->
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-manager-plexus</artifactId>
-        </dependency>
-
-        <!--  Only Git and SVN are by default added as plugin deps, others developers will declare it as neded  -->
-
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-gitexe</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-svnexe</artifactId>
-        </dependency>
-        <!--  end providers declaration  -->
-
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
@@ -349,14 +276,6 @@
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-invoker</artifactId>
             <version>2.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- SCM Metadata Integration Tests -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>${org.eclipse.jgit.version}</version>
             <scope>test</scope>
         </dependency>
 

@@ -11,7 +11,6 @@ import org.apache.maven.lifecycle.DefaultLifecycleExecutor;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.DefaultBuildPluginManager;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.scm.manager.plexus.DefaultScmManager;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
@@ -75,7 +74,6 @@ public class InitializeMojoTest {
             new DefaultMavenExecutionResult());
 
         mojo.lifecycleExecutor = new DefaultLifecycleExecutor();
-        mojo.scmManager = new DefaultScmManager();
         mojo.remoteRepositories = Collections.emptyList();
         mojo.projectBuildDir = OUT.getAbsolutePath();
 
