@@ -18,4 +18,4 @@ String base = basedir
 def file = new File(base, "build.log")
 assert file.exists()
 assert file.text.contains("Instances=2")
-assert file.text.contains("Succeeded in deploying worker verticle")
+assert file.text.contains("Worker=true")
