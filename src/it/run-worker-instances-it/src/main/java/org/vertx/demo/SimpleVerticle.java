@@ -17,6 +17,7 @@
 package org.vertx.demo;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
 import io.vertx.core.Promise;
 
 /**
@@ -24,11 +25,12 @@ import io.vertx.core.Promise;
  */
 public class SimpleVerticle extends AbstractVerticle {
     @Override
-    public void start(Promise<Void> startFuture) throws Exception {
-        int instances = vertx.getOrCreateContext().getInstanceCount();
+    public void start(Promise<Void> startPromise) throws Exception {
+        Context context = vertx.getOrCreateContext();
+        int instances = context.getInstanceCount();
         System.out.println("Instances="+instances);
-        startFuture.complete();
-
+        boolean workerContext = context.isWorkerContext();
+        System.out.println("Worker=" + workerContext);
         vertx.close();
     }
 }
