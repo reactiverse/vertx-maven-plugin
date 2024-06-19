@@ -1,7 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.it.VerificationException;
@@ -11,8 +9,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -59,7 +56,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code
         File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("aloha", uuid));
+        filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
@@ -81,7 +78,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code
         File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("aloha", uuid));
+        filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
@@ -103,7 +100,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code
         File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("aloha", uuid));
+        filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid + " prop"));
@@ -125,7 +122,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code (verticle)
         File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("vert.x", uuid));
+        filter(source, Collections.singletonMap("vert.x", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Bonjour " + uuid));
@@ -133,7 +130,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the launcher class
         source = new File(testDir, "src/main/java/demo/Main.java");
         String uuid2 = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("Bonjour", uuid2));
+        filter(source, Collections.singletonMap("Bonjour", uuid2));
 
         // Wait until we get "uuid uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
@@ -155,7 +152,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code (verticle)
         File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("vert.x", uuid));
+        filter(source, Collections.singletonMap("vert.x", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Buongiorno " + uuid));
@@ -163,7 +160,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the launcher class
         source = new File(testDir, "src/main/java/demo/Main.java");
         String uuid2 = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("Buongiorno", uuid2));
+        filter(source, Collections.singletonMap("Buongiorno", uuid2));
 
         // Wait until we get "uuid uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
@@ -185,7 +182,7 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code
         File source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("Hello", uuid));
+        filter(source, Collections.singletonMap("Hello", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid));
@@ -206,7 +203,7 @@ public class RedeployIT extends VertxMojoTestBase {
 
         // Touch the java source code
         File source = new File(testDir, "src/main/less/style.less");
-        filter(source, ImmutableMap.of("#f938ab;", "green;"));
+        filter(source, Collections.singletonMap("#f938ab;", "green;"));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
@@ -230,14 +227,14 @@ public class RedeployIT extends VertxMojoTestBase {
         // Touch the java source code
         File source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of("Hello", uuid));
+        filter(source, Collections.singletonMap("Hello", uuid));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid));
 
         source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid2 = UUID.randomUUID().toString();
-        filter(source, ImmutableMap.of(uuid, uuid2));
+        filter(source, Collections.singletonMap(uuid, uuid2));
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
@@ -262,15 +259,14 @@ public class RedeployIT extends VertxMojoTestBase {
     private void run(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
 
-        verifier.executeGoals(ImmutableList.of("compile", "vertx:run"), getEnv());
+        verifier.executeGoals(Arrays.asList("compile", "vertx:run"), getEnv());
     }
 
     private void run(Verifier verifier, String... previous) throws VerificationException {
         verifier.setLogFileName("build-run.log");
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        builder.add(previous);
-        builder.add("vertx:run");
-        verifier.executeGoals(builder.build(), getEnv());
+        List<String> goals = new ArrayList<>(Arrays.asList(previous));
+        goals.add("vertx:run");
+        verifier.executeGoals(goals, getEnv());
     }
 
 }

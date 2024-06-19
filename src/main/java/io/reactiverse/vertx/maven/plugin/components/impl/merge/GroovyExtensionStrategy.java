@@ -16,7 +16,6 @@
 
 package io.reactiverse.vertx.maven.plugin.components.impl.merge;
 
-import com.google.common.base.Joiner;
 import org.apache.maven.project.MavenProject;
 import org.jboss.shrinkwrap.api.asset.Asset;
 
@@ -55,10 +54,10 @@ public class GroovyExtensionStrategy implements MergingStrategy {
         desc.add("moduleName=" + project.getArtifactId());
         desc.add("moduleVersion=" + project.getVersion());
         if (!extensionClassesList.isEmpty()) {
-            desc.add("extensionClasses=" + join(extensionClassesList));
+            desc.add("extensionClasses=" + String.join(",", extensionClassesList));
         }
         if (!staticExtensionClassesList.isEmpty()) {
-            desc.add("staticExtensionClasses=" + join(staticExtensionClassesList));
+            desc.add("staticExtensionClasses=" + String.join(",", staticExtensionClassesList));
         }
 
         return new TextResult(desc);
@@ -68,10 +67,6 @@ public class GroovyExtensionStrategy implements MergingStrategy {
         if (entry != null) {
             Collections.addAll(list, entry.split("\\s*,\\s*"));
         }
-    }
-
-    private static String join(List<String> strings) {
-        return Joiner.on(",").join(strings);
     }
 
     private static Properties asProperties(Asset asset) {

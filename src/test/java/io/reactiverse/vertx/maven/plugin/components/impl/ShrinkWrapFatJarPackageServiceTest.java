@@ -1,7 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import io.reactiverse.vertx.maven.plugin.components.PackageConfig;
 import io.reactiverse.vertx.maven.plugin.components.PackageType;
 import io.reactiverse.vertx.maven.plugin.components.PackagingException;
@@ -27,8 +25,10 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public class ShrinkWrapFatJarPackageServiceTest {
 
 
-    private ShrinkWrapFatJarPackageService service = new ShrinkWrapFatJarPackageService();
+    private final ShrinkWrapFatJarPackageService service = new ShrinkWrapFatJarPackageService();
     private File out;
 
     @Before
@@ -78,10 +78,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).containsExactly("META-INF/MANIFEST.MF");
     }
 
@@ -92,9 +94,9 @@ public class ShrinkWrapFatJarPackageServiceTest {
 
         Archive archive = new Archive();
         archive.setIncludeClasses(false);
-        archive.setDependencySets(ImmutableList.of(new DependencySet()));
+        archive.setDependencySets(Collections.singletonList(new DependencySet()));
 
-        Set<Artifact> artifacts = ImmutableSet.of(getFirstArtifact(), getSecondArtifact());
+        Set<Artifact> artifacts = Stream.of(getFirstArtifact(), getSecondArtifact()).collect(toSet());
 
         File output = new File(out, "test-all-dependencies.jar");
         PackageConfig config = new PackageConfig()
@@ -105,10 +107,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).containsOnly("META-INF/MANIFEST.MF", "testconfig.yaml", "out/some-config.yaml");
     }
 
@@ -119,11 +123,11 @@ public class ShrinkWrapFatJarPackageServiceTest {
 
         Archive archive = new Archive();
         archive.setIncludeClasses(false);
-        archive.setDependencySets(ImmutableList.of(new DependencySet()));
+        archive.setDependencySets(Collections.singletonList(new DependencySet()));
 
         DefaultArtifact artifact = getSecondArtifact();
         artifact.setFile(new File("missing-on-purpose"));
-        Set<Artifact> artifacts = ImmutableSet.of(getFirstArtifact(), artifact);
+        Set<Artifact> artifacts = Stream.of(getFirstArtifact(), artifact).collect(toSet());
 
         File output = new File(out, "test-all-dependencies-missing-artifact-file.jar");
         PackageConfig config = new PackageConfig()
@@ -134,10 +138,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).containsOnly("META-INF/MANIFEST.MF", "testconfig.yaml");
     }
 
@@ -170,9 +176,9 @@ public class ShrinkWrapFatJarPackageServiceTest {
 
         Archive archive = new Archive();
         archive.setIncludeClasses(false);
-        archive.setDependencySets(ImmutableList.of(new DependencySet().addInclude("org.acme:jar1")));
+        archive.setDependencySets(Collections.singletonList(new DependencySet().addInclude("org.acme:jar1")));
 
-        Set<Artifact> artifacts = ImmutableSet.of(getFirstArtifact(), getSecondArtifact());
+        Set<Artifact> artifacts = Stream.of(getFirstArtifact(), getSecondArtifact()).collect(toSet());
 
         File output = new File(out, "test-inclusion.jar");
         PackageConfig config = new PackageConfig()
@@ -183,10 +189,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).contains("META-INF/MANIFEST.MF", "testconfig.yaml").hasSize(2);
     }
 
@@ -197,9 +205,9 @@ public class ShrinkWrapFatJarPackageServiceTest {
 
         Archive archive = new Archive();
         archive.setIncludeClasses(false);
-        archive.setDependencySets(ImmutableList.of(new DependencySet().addExclude("org.acme:jar2")));
+        archive.setDependencySets(Collections.singletonList(new DependencySet().addExclude("org.acme:jar2")));
 
-        Set<Artifact> artifacts = ImmutableSet.of(getFirstArtifact(), getSecondArtifact());
+        Set<Artifact> artifacts = Stream.of(getFirstArtifact(), getSecondArtifact()).collect(toSet());
 
         File output = new File(out, "test-exclusion.jar");
         PackageConfig config = new PackageConfig()
@@ -210,10 +218,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).contains("META-INF/MANIFEST.MF", "testconfig.yaml").hasSize(2);
     }
 
@@ -244,10 +254,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).contains("META-INF/MANIFEST.MF", "config/testconfig.yaml", "config/testconfig2.yaml").hasSize(3);
     }
 
@@ -279,10 +291,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).contains("META-INF/MANIFEST.MF", "config/testconfig.yaml").hasSize(2);
     }
 
@@ -313,10 +327,12 @@ public class ShrinkWrapFatJarPackageServiceTest {
         service.doPackage(config);
 
         assertThat(output).isFile();
-        JarFile jar = new JarFile(output);
-        List<String> list = jar.stream().map(ZipEntry::getName)
-            .filter(s -> ! s.endsWith("/")) // Directories
-            .collect(Collectors.toList());
+        List<String> list;
+        try (JarFile jar = new JarFile(output)) {
+            list = jar.stream().map(ZipEntry::getName)
+                .filter(s -> !s.endsWith("/")) // Directories
+                .collect(Collectors.toList());
+        }
         assertThat(list).contains("META-INF/MANIFEST.MF", "config/some-config.yaml").hasSize(2);
     }
 

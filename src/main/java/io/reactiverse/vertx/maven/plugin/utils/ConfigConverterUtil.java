@@ -17,13 +17,12 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * This class is used to handle the configuration conversions form YAML to JSON
@@ -35,9 +34,9 @@ public class ConfigConverterUtil {
     public static void convertYamlToJson(File yamlFile, File jsonFilePath) throws IOException {
         FileUtils.deleteQuietly(jsonFilePath);
         String content = FileUtils.readFileToString(yamlFile, "UTF-8");
-        Yaml yaml = new Yaml();
-        Map<Object, Object> map = yaml.load(content);
-        JSONObject jsonObject = new JSONObject(map);
-        FileUtils.write(jsonFilePath, jsonObject.toString(), "UTF-8");
+        ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+        Object obj = yamlReader.readValue(content, Object.class);
+        ObjectMapper jsonWriter = new ObjectMapper();
+        FileUtils.write(jsonFilePath, jsonWriter.writeValueAsString(obj), "UTF-8");
     }
 }

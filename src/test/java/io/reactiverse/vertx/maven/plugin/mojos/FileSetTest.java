@@ -1,7 +1,8 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -16,14 +17,14 @@ public class FileSetTest {
     public void test() {
         FileSet set = new FileSet()
             .setDirectory("directory")
-            .setExcludes(ImmutableList.of("a", "b"))
-            .setIncludes(ImmutableList.of("c", "d"))
+            .setExcludes(Arrays.asList("a", "b"))
+            .setIncludes(Arrays.asList("c", "d"))
             .setOutputDirectory("output")
             .setUseDefaultExcludes(true);
 
         assertThat(set.getDirectory()).isEqualTo("directory");
-        assertThat(set.getExcludes()).isEqualTo(ImmutableList.of("a", "b"));
-        assertThat(set.getIncludes()).isEqualTo(ImmutableList.of("c", "d"));
+        assertThat(set.getExcludes()).isEqualTo(Arrays.asList("a", "b"));
+        assertThat(set.getIncludes()).isEqualTo(Arrays.asList("c", "d"));
         assertThat(set.getOutputDirectory()).isEqualTo("output");
         assertThat(set.isUseDefaultExcludes()).isTrue();
     }

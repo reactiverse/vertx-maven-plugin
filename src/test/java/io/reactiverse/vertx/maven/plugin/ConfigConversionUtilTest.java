@@ -18,15 +18,15 @@
 package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.utils.ConfigConverterUtil;
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author kameshs
@@ -42,9 +42,8 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonFilePath);
         String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
         assertNotNull(jsonDoc);
-        JSONObject jsonMap = new JSONObject(jsonDoc);
-        assertNotNull(jsonMap);
-        assertEquals(8080, jsonMap.get("http.port"));
+        JsonObject jsonObject = new JsonObject(jsonDoc);
+        assertThat(jsonObject.getInteger("http.port")).isEqualTo(8080);
 
     }
 
@@ -57,14 +56,9 @@ public class ConfigConversionUtilTest {
         assertNotNull(jsonFilePath);
         String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
         assertNotNull(jsonDoc);
-        JSONObject jsonMap = new JSONObject(jsonDoc);
-        assertNotNull(jsonMap);
-        assertNotNull(jsonMap.get("names"));
-        JSONArray names = jsonMap.getJSONArray("names");
-        assertThat(names.length() == 4).isTrue();
-        assertEquals("kamesh", names.get(0));
-
+        JsonObject jsonObject = new JsonObject(jsonDoc);
+        assertThat(jsonObject.getJsonArray("names"))
+            .hasSize(4)
+            .first().isEqualTo("kamesh");
     }
-
-
 }

@@ -17,19 +17,14 @@
 
 package io.reactiverse.vertx.maven.plugin.mojos;
 
-import com.google.common.base.Strings;
 import io.reactiverse.vertx.maven.plugin.components.Prompter;
 import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependencies;
 import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependency;
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.PluginExecution;
+import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
@@ -43,16 +38,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
  * This Goal helps in setting up Vert.x maven project with vertx-maven-plugin, with sane defaults
@@ -132,7 +120,7 @@ public class SetupMojo extends AbstractMojo {
         vertxVersion = vertxVersion == null ? MojoUtils.getVersion(VERTX_CORE_VERSION) : vertxVersion;
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
-        if (!Strings.isNullOrEmpty(verticle)) {
+        if (!StringUtils.isBlank(verticle)) {
             if (verticle.endsWith(JAVA_EXTENSION)) {
                 verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
             }

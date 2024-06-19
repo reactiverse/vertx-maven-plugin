@@ -1,6 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.utils;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -32,7 +31,7 @@ public class MavenExecutionUtils {
         MavenExecutionRequest request = DefaultMavenExecutionRequest.copy(session.getRequest());
         request.setStartTime(session.getStartTime());
         request.setExecutionListener(null);
-        request.setGoals(ImmutableList.of(phase));
+        request.setGoals(Collections.singletonList(phase));
         return request;
     }
 
@@ -59,12 +58,12 @@ public class MavenExecutionUtils {
 
             @Override
             public List<MavenProject> getAllProjects() {
-                return ImmutableList.of(project);
+                return Collections.singletonList(project);
             }
 
             @Override
             public List<MavenProject> getSortedProjects() {
-                return ImmutableList.of(project);
+                return Collections.singletonList(project);
             }
 
             @Override
@@ -78,7 +77,7 @@ public class MavenExecutionUtils {
             }
         };
         newSession.setProjectDependencyGraph(graph);
-        newSession.setProjects(ImmutableList.of(project));
+        newSession.setProjects(Collections.singletonList(project));
         return newSession;
     }
 

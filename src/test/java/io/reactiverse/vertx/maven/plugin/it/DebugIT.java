@@ -1,6 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import com.google.common.collect.ImmutableList;
 import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -8,6 +7,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -85,7 +85,7 @@ public class DebugIT extends VertxMojoTestBase {
 
     private void debug(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(ImmutableList.of("compile", "vertx:debug"), getEnv());
+        verifier.executeGoals(Arrays.asList("compile", "vertx:debug"), getEnv());
     }
 
 }
