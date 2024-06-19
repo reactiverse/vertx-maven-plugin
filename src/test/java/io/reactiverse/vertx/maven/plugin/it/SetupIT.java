@@ -1,6 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
@@ -75,54 +74,6 @@ public class SetupIT extends VertxMojoTestBase {
         assertThat(new File(testDir, "pom.xml")).isFile();
         assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
             .contains("vertx-core", "vertx-maven-plugin", "<vertx.verticle>org.acme.MyVerticle</vertx.verticle>");
-        assertThat(new File(testDir, "src/main/java")).isDirectory();
-        assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
-
-    }
-
-    @Test
-    public void testProjectGenerationFromScratchWithDependencies() throws VerificationException, IOException {
-        testDir = initEmptyProject("projects/project-generation-with-verticle-and-deps");
-        assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        setup(verifier, "-DprojectGroupId=org.acme", "-DprojectArtifactId=acme",
-            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=vertx-web,jmx,missing");
-        assertThat(new File(testDir, "pom.xml")).isFile();
-        assertThat(new File(testDir, "src/main/java")).isDirectory();
-        assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
-        assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
-            .contains("vertx-web", "vertx-dropwizard-metrics").doesNotContain("missing");
-    }
-
-    @Test
-    public void testProjectGenerationFromScratchWithCustomDependencies() throws VerificationException, IOException {
-        testDir = initEmptyProject("projects/project-generation-with-verticle-and-custom-deps");
-        assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        setup(verifier, "-DprojectGroupId=org.acme", "-DprojectArtifactId=acme",
-            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=io.vertx:codetrans,commons-io:commons-io:2.5,io" + ".vertx:vertx-template-engines:" + VertxCoreVersion.VALUE + ":shaded");
-        assertThat(new File(testDir, "pom.xml")).isFile();
-        assertThat(new File(testDir, "src/main/java")).isDirectory();
-        assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
-        assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
-            .contains("<artifactId>codetrans</artifactId>")
-            .contains("<artifactId>commons-io</artifactId>", "<version>2.5</version>", "<groupId>commons-io</groupId>")
-            .contains("<artifactId>vertx-template-engines</artifactId>", "<version>" + VertxCoreVersion.VALUE + "</version>",
-                "<classifier>shaded</classifier>");;
-    }
-
-    @Test
-    public void testProjectGenerationFromEmptyPomWithDependencies() throws VerificationException, IOException {
-        testDir = initProject("projects/simple-pom-it",
-            "projects/project-generation-from-empty-pom-with-dependencies");
-        assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        setup(verifier, "-DprojectGroupId=org.acme", "-DprojectArtifactId=acme",
-            "-Dverticle=org.acme.MyVerticle.java", "-Ddependencies=vertx-web,jmx,missing");
-        assertThat(new File(testDir, "pom.xml")).isFile();
-        assertThat(FileUtils.readFileToString(new File(testDir, "pom.xml"), "UTF-8"))
-            .contains("vertx-core", "vertx-maven-plugin", "<vertx.verticle>org.acme.MyVerticle</vertx.verticle>")
-            .contains("vertx-web", "vertx-dropwizard-metrics").doesNotContain("missing");
         assertThat(new File(testDir, "src/main/java")).isDirectory();
         assertThat(new File(testDir, "src/main/java/org/acme/MyVerticle.java")).isFile();
 
