@@ -1,6 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import com.google.common.collect.ImmutableList;
 import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
@@ -9,6 +8,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -128,12 +130,10 @@ public class SetupIT extends VertxMojoTestBase {
 
     private void setup(Verifier verifier, String... params) throws VerificationException {
         verifier.setLogFileName("build-setup.log");
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        builder.add("io.reactiverse:vertx-maven-plugin:" + VertxMojoTestBase.VERSION + ":setup");
-        for (String p : params) {
-            builder.add(p);
-        }
-        verifier.executeGoals(builder.build(), getEnv());
+        List<String> goals = new ArrayList<>();
+        goals.add("io.reactiverse:vertx-maven-plugin:" + VertxMojoTestBase.VERSION + ":setup");
+        goals.addAll(Arrays.asList(params));
+        verifier.executeGoals(goals, getEnv());
     }
 
 }

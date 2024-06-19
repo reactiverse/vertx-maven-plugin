@@ -18,10 +18,6 @@ public class MavenProcessInvoker extends DefaultInvoker {
 
     private static final InvocationOutputHandler DEFAULT_OUTPUT_HANDLER = new SystemOutHandler();
 
-    private InvocationOutputHandler outputHandler = DEFAULT_OUTPUT_HANDLER;
-
-    private InvocationOutputHandler errorHandler = DEFAULT_OUTPUT_HANDLER;
-
     @Override
     public InvocationResult execute(InvocationRequest request) throws MavenInvocationException {
         MavenCommandLineBuilder cliBuilder = new MavenCommandLineBuilder();
@@ -76,8 +72,8 @@ public class MavenProcessInvoker extends DefaultInvoker {
 
         assert !request.isInteractive();
 
-        InvocationOutputHandler outputHandler = request.getOutputHandler(this.outputHandler);
-        InvocationOutputHandler errorHandler = request.getErrorHandler(this.errorHandler);
+        InvocationOutputHandler outputHandler = request.getOutputHandler(DEFAULT_OUTPUT_HANDLER);
+        InvocationOutputHandler errorHandler = request.getErrorHandler(DEFAULT_OUTPUT_HANDLER);
 
         return executeCommandLine(cli, outputHandler, errorHandler);
     }

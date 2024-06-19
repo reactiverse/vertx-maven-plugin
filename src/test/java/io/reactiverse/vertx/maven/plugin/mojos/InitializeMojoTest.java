@@ -1,6 +1,5 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
-import com.google.common.collect.ImmutableSet;
 import io.reactiverse.vertx.maven.plugin.ArtifactBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -22,7 +21,9 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -50,12 +51,13 @@ public class InitializeMojoTest {
     public void testThatTestDependenciesAreFilteredOut() throws Exception {
         InitializeMojo mojo = createMojoInstance();
 
-        Set<Artifact> deps = ImmutableSet.of(
-            new ArtifactBuilder().artifact("acme-1").type("txt").build(),
-            // Jar artifact for the next dependency, as the file will be emtpy if analyze it will
-            // throw an exception
-            new ArtifactBuilder().artifact("acme-test").scope("test").build(),
-            new ArtifactBuilder().artifact("acme-2").classifier("hello").type("txt").build());
+        Set<Artifact> deps = Stream.of(
+                new ArtifactBuilder().artifact("acme-1").type("txt").build(),
+                // Jar artifact for the next dependency, as the file will be emtpy if analyze it will
+                // throw an exception
+                new ArtifactBuilder().artifact("acme-test").scope("test").build(),
+                new ArtifactBuilder().artifact("acme-2").classifier("hello").type("txt").build())
+            .collect(toSet());
         mojo.project.setDependencyArtifacts(deps);
 
         mojo.execute();

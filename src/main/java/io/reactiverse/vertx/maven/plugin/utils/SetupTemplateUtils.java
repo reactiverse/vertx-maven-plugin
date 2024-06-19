@@ -16,10 +16,10 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
-import com.google.common.base.Strings;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -57,7 +57,7 @@ public class SetupTemplateUtils {
     }
 
     public static void createVerticle(MavenProject project, String verticle, Log log) throws MojoExecutionException {
-        if (Strings.isNullOrEmpty(verticle)) {
+        if (StringUtils.isBlank(verticle)) {
             return;
         }
         log.info("Creating verticle " + verticle);

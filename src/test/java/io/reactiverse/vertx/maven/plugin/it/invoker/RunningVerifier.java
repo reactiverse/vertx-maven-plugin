@@ -7,7 +7,7 @@ import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.InvokerLogger;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.apache.maven.shared.invoker.PrintStreamLogger;
-import org.apache.maven.shared.utils.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -82,6 +82,7 @@ public class RunningVerifier extends Verifier {
             invoker.setMavenHome(new File(defaultMavenHome));
             invoker.setWorkingDirectory(new File(getBasedir()));
             request.setOutputHandler(new PrintStreamHandler(log, true));
+            request.setErrorHandler(new PrintStreamHandler(log, true));
             if (System.getProperty("mavenOpts") != null) {
                 request.setMavenOpts(System.getProperty("mavenOpts"));
             }

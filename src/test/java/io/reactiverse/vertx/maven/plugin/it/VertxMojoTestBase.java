@@ -1,19 +1,20 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
 
-import com.google.common.collect.ImmutableMap;
 import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
-import org.apache.maven.shared.utils.StringUtils;
 import org.junit.BeforeClass;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class VertxMojoTestBase {
     static String VERSION;
-    private static ImmutableMap<String, String> VARIABLES;
+    private static Map<String, String> VARIABLES;
 
     @BeforeClass
     public static void init() {
@@ -44,11 +45,12 @@ public class VertxMojoTestBase {
         VERSION = properties.getProperty("vertx-maven-plugin-version");
         assertThat(VERSION).isNotNull();
 
-        VARIABLES = ImmutableMap.of(
-            "@project.groupId@", "io.reactiverse",
-            "@project.artifactId@", "vertx-maven-plugin",
-            "@project.version@", VERSION,
-            "@vertx-core.version@", VertxCoreVersion.VALUE);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("@project.groupId@", "io.reactiverse");
+        variables.put("@project.artifactId@", "vertx-maven-plugin");
+        variables.put("@project.version@", VERSION);
+        variables.put("@vertx-core.version@", VertxCoreVersion.VALUE);
+        VARIABLES = Collections.unmodifiableMap(variables);
     }
 
     boolean isCoverage() {
@@ -82,7 +84,7 @@ public class VertxMojoTestBase {
 
     public static String get() throws IOException {
         URL url = new URL("http://localhost:8080");
-        return IOUtils.toString(url, "UTF-8");
+        return IOUtils.toString(url, StandardCharsets.UTF_8);
     }
 
     static File initProject(String name) {
@@ -193,7 +195,7 @@ public class VertxMojoTestBase {
         verifier.setLogFileName("build-package.log");
         verifier.executeGoal("package", getEnv());
 
-        verifier.assertFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
+        verifier.verifyFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
         verifier.resetStreams();
     }
 
