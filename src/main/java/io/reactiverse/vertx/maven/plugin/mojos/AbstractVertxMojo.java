@@ -129,21 +129,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     protected static final String VERTX_COMMAND_START = "start";
 
-    /**
-     *
-     */
-    protected static final String VERTX_PACKAGING = "jar";
-
-    /**
-     *
-     */
-    protected static final String VERTX_PID_FILE = "vertx-start-process.id";
-
-    /**
-     *
-     */
-    protected static final String VERTX_RUN_MODE_JAR = "jar";
-
     /* ==== Maven deps ==== */
     /**
      * The Maven project which will define and confiure the vertx-maven-plugin
@@ -198,9 +183,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     protected Archive archive;
 
     /* ==== Config ====  */
-    // TODO-ROL: It would be awesome if this would not be required but, if not given,
-    // the plugin tries to detect a single verticle. Maybe even decorated with a specific annotation ?
-    // (like @MainVerticle ?). Only if no such verticle can be uniquely identified, then throw an exception.
+
     /**
      * The verticle that will be the main entry point on to the vertx application, the same property will be used
      * as &quot;Main-Verticle;&quot; attribute value on the MANIFEST.MF
