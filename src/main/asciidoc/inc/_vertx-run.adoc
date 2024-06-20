@@ -48,17 +48,6 @@ typically passed to vert.x applications using --java-opts.
 | vertx.redeploy.grace.period
 | 1000
 
-| redeployTerminationPeriod
-| the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
-  This is useful on Windows, where the process is not killed immediately.
-| vertx.redeploy.termination.period
-| 1000 (1 second)
-
-|worker
-|If specified the verticle will be a worker verticle
-|&nbsp;
-|false
-
 |===
 
 When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
