@@ -1,6 +1,7 @@
 [[vertx:run]]
 === *vertx:run*
-This goal allows to run the Vert.x application as part of the maven build.
+
+This goal allows to run the Vert.x application as part of the Maven build.
 The application is always run as a forked process.
 
 The goal has the following exclusive configuration apart from the applicable **<<common:run-configurations,Common Run Configuration>>**
@@ -34,7 +35,7 @@ typically passed to vert.x applications using --java-opts.
 | _no arguments_
 
 | redeploy
-| Whether or not the redeployment is enabled
+| Whether the redeployment is enabled
 | &nbsp;
 | false
 
@@ -100,7 +101,7 @@ typically passed to vert.x applications using --java-opts.
 | 5005
 
 | debugSuspend
-| Whether or not the application must wait until a debugger is attached to start
+| Whether the application must wait until a debugger is attached to start
 | debug.suspend
 | false
 |===

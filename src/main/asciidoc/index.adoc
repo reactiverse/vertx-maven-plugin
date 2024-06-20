@@ -26,7 +26,6 @@ include::inc/_vertx-setup.adoc[]
 include::inc/_vertx-initialize.adoc[]
 include::inc/_vertx-package.adoc[]
 include::inc/_vertx-run.adoc[]
-include::inc/_vertx-setup.adoc[]
 
 include::inc/_archive-config.adoc[]
 
