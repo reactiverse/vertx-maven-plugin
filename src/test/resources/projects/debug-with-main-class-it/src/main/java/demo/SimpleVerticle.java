@@ -18,15 +18,12 @@
 package demo;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
 
 public class SimpleVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         vertx.createHttpServer()
-                .requestHandler(req -> req.response().end(
-                    config().getString("message") + " " + System.getProperty("vertx.debug")
-                ))
-                .listen(8080);
+            .requestHandler(req -> req.response().end(config().getString("message")))
+            .listen(8080);
     }
 }

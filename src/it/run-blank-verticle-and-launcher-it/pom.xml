@@ -26,8 +26,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>@vertx-core.version@</vertx.version>
-        <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
-        <vertx.launcher>org.vertx.demo.MyLauncher</vertx.launcher>
+        <vertx.verticle/>
+        <vertx.launcher/>
     </properties>
     <build>
         <plugins>
@@ -50,9 +50,6 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <configuration>
-                            <redeploy>true</redeploy>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

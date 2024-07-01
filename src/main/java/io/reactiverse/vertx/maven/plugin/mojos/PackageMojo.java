@@ -27,8 +27,10 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -42,7 +44,6 @@ import java.io.File;
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
 public class PackageMojo extends AbstractVertxMojo {
-
 
     /**
      * The service provider combination strategy.
@@ -61,7 +62,7 @@ public class PackageMojo extends AbstractVertxMojo {
     protected String classifier;
 
     /**
-     * Whether or not the created archive needs to be attached to the project. If attached, the fat jar is
+     * Whether the created archive needs to be attached to the project. If attached, the fat jar is
      * installed and deployed alongside the main artifact. Notice that you can't disable attachment if the classifier
      * is not set (it would mean detaching the main artifact).
      */
@@ -151,6 +152,48 @@ public class PackageMojo extends AbstractVertxMojo {
 
         attachIfNeeded(jar);
 
+    }
+
+    private Archive computeArchive() throws MojoExecutionException {
+        if (archive == null) {
+            archive = ServiceUtils.getDefaultFatJar();
+        }
+
+        if (archive.getDependencySets().isEmpty()) {
+            archive.addDependencySet(DependencySet.ALL);
+        }
+
+        // Extend the manifest with launcher and verticle
+        archive.getManifest().putIfAbsent("Main-Class", getVertxVersionAdapter().mainClass());
+
+        String mainVerticle = getVertxVersionAdapter().mainVerticle();
+        if (mainVerticle != null) {
+            archive.getManifest().putIfAbsent("Main-Verticle", mainVerticle);
+        }
+
+        List<ManifestCustomizerService> customizers = getManifestCustomizers();
+        customizers.forEach(customizer ->
+            this.archive.getManifest().putAll(customizer.getEntries(this, project)));
+
+        if (archive.getFileCombinationPatterns().isEmpty()) {
+            archive.addFileCombinationPattern("META-INF/services/*");
+            archive.addFileCombinationPattern("META-INF/spring.*");
+            archive.addFileCombinationPattern("META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat");
+        }
+
+        return this.archive;
+    }
+
+    private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
+        List<ManifestCustomizerService> customizers;
+        try {
+            customizers = container.lookupList(ManifestCustomizerService.class);
+        } catch (ComponentLookupException e) {
+            getLog().debug("ManifestCustomerService lookup failed", e);
+            throw new MojoExecutionException("Unable to retrieve the " +
+                                             ManifestCustomizerService.class.getName() + " components");
+        }
+        return customizers;
     }
 
     private void attachIfNeeded(File jar) {
