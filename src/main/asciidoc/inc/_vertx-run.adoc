@@ -1,60 +1,12 @@
 [[vertx:run]]
 === *vertx:run*
 
-This goal allows to run the Vert.x application as part of the Maven build.
-The application is always run as a forked process.
+This goal allows to run the Vert.x application as part of the Maven build, in a separate process.
 
-The goal has the following exclusive configuration apart from the applicable **<<common:run-configurations,Common Run Configuration>>**
+It monitors the `src/main` directory and, if the code changes, rebuilds the project and restarts the application.
+The plugin re-executes the mojos that ran between the _generate-source_ and the _process-classes_ phases.
 
-[cols="1,5,2,3"]
-|===
-| Element | Description | Property| Default
-
-|runArgs
-|The list of arguments that can be passed as part of `run` command.  You can also pass the required run arguments using the system
-property. e.g. `-Dvertx.runArgs="--worker --instances=2"`. The system property takes precedence over the plugin configurations
-|vertx.runArgs
-|&nbsp;
-
-| options
-| The configuration file to use to configure Vert.x.
-This property is passed as the `-options` option to vertx run.
-| vertx.options
-| src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml
-
-| config
-| The configuration file to use to configure the application.
-This property is passed as the `-config` option to vertx run.
-| vertx.config
-| src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml
-
-| jvmArgs
-| The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.
-| vertx.jvmArguments
-| _no arguments_
-
-| redeploy
-| Whether the redeployment is enabled
-| &nbsp;
-| false
-
-| redeployScanPeriod
-| The file system check period (in milliseconds)
-| vertx.redeploy.scan.period
-| 1000
-
-| redeployGracePeriod
-| The amount of time (in milliseconds) to wait between 2 re-deployments
-| vertx.redeploy.grace.period
-| 1000
-
-|===
-
-When the redeployment is enabled, it replays the plugin configured between the _generate-source_ and
-_process-classes_ phases.
-
-So to start a Vert.x application just launch:
+So, to start a Vert.x application, just launch:
 
 [source]
 ----
@@ -63,48 +15,76 @@ mvn vertx:run
 
 If the sources are not compiled, the plugin executes `mvn compile` for you.
 
-IMPORTANT: `vertx:run` starts the application in a forked JVM.
-
-[[vertx:debug]]
-=== *vertx:debug*
-This goal allows to debug the Vert.x application.The application is started in a JVM with the debugging enabled.In
-your IDE, you need to create a **remote** debug configuration to plug the debugger.
-
-The goal does not have any exclusive configuration, **<<common:run-configurations,Common Run Configuration>>**
-defines all the applicable configurations for the goal.
+The goal has the following configuration:
 
 [cols="1,5,2,3"]
 |===
 | Element | Description | Property| Default
 
-| options
-| The configuration file to use to configure Vert.x.
-This property is passed as the `-options` option to vertx run.
-| vertx.options
-| src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml
+| `redeployScanPeriod`
+| The file system check period (in milliseconds).
+| `vertx.redeploy.scan.period`
+| `250`
 
-| config
-| The configuration file to use to configure the application.
-This property is passed as the `-config` option to vertx run.
-| vertx.config
-| src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml
+| `redeployGracePeriod`
+| The amount of time (in milliseconds) to wait between 2 re-deployments.
+| `vertx.redeploy.grace.period`
+| `1000`
 
-| jvmArgs
-| The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.
-| vertx.jvmArguments
-| _no arguments_
+| `jvmArgs`
+| The JVM arguments that will be used when starting the Vert.x application.
+| `vertx.jvmArguments`
+| &nbsp;
 
-| debugPort
-| The debugger port
-| debug.port
-| 5005
+| `runArgs`
+| The list of arguments that can be passed to the main class, if it is a Vert.x launcher.
+You can also pass the required run arguments using the system property. e.g. `-Dvertx.runArgs="--worker --instances=2"`.
+The system property takes precedence over the plugin configurations
+| `vertx.runArgs`
+| &nbsp;
 
-| debugSuspend
-| Whether the application must wait until a debugger is attached to start
-| debug.suspend
-| false
+| `options`
+| The Vert.x configuration file path that will be passed to the main class, if it is a Vert.x launcher, as `-options`.
+If a YAML file is configured then it will be converted to JSON by the plugin.
+The converted file will be saved in `${project.outputDir}/conf` directory.
+| `vertx.options`
+| `src/main/options.json` or `src/main/options.yaml` or `src/main/options.yml`
+
+| `config`
+| The verticle configuration file path that will be passed to the main class, if it is a Vert.x launcher, as `-conf`.
+If a YAML file is configured then it will be converted to JSON by the plugin.
+The converted file will be saved in `${project.outputDir}/conf` directory.
+| `vertx.config`
+| `src/main/config/application.json` or `src/main/config/application.yml` or `src/main/config/application.yaml`
+
+| `vertxWebEnvironment`
+| The link:https://vertx.io/docs/vertx-web/java/#_development_mode[environment] for Vert.x Web apps.
+| `vertxweb.environment`
+| Defaults to either the `VERTXWEB_ENVIRONMENT` environment variable value or, if absent, to `dev`.
+
+| `workDirectory`
+| The working directory for the Vert.x application.
+| `vertx.directory`
+| `${project.basedir}`
+
+| `disableBlockedThreadChecker`
+| Whether the Vert.x application should be started with its blocked thread checker disabled.
+| `vertx.disable.blocked.thread.checker`
+| `true`
+
+| `debug`
+| Whether the JVM running the Vert.x application should start a remote debug server.
+| `vertx.debug`
+| `true`
+
+| `debugSuspend`
+| Whether the application must wait until a debugger is attached before starting.
+| `vertx.debug.suspend`
+| `false`
+
+| `debugPort`
+| The remote debug server port.
+| `vertx.debug.port`
+| `5005`
+
 |===
-
-IMPORTANT: the redeploy mode and debug cannot be used together.
-When `vertx:debug` is launched, the redeployment mode is disabled.

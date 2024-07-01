@@ -1,9 +1,12 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>${mProjectGroupId}</groupId>
     <artifactId>${mProjectArtifactId}</artifactId>
     <version>${mProjectVersion}</version>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${javaVersion}</maven.compiler.source>
@@ -14,6 +17,7 @@
         <!-- Maven plugins -->
         <vertx-maven-plugin.version>${vmpVersion}</vertx-maven-plugin.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -25,12 +29,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -46,9 +52,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <redeploy>true</redeploy>
-                </configuration>
             </plugin>
         </plugins>
     </build>

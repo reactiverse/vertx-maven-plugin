@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -209,7 +208,6 @@ public class RedeployIT extends VertxMojoTestBase {
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
     }
 
-    //FIXME - need to find a way to test this scenario for redeploy* properties in more robust pattern
     @Test
     public void testRedeployScanPeriod() throws Exception {
         File testDir = initProject("projects/redeploy-scan-period-it");
@@ -239,11 +237,6 @@ public class RedeployIT extends VertxMojoTestBase {
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
 
-        final String redeployingLogRegex = "^Stopping vert.x application '"
-            + "\\p{Alnum}{8}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{12}"
-            + "-redeploy'$";
-        Pattern pattern = Pattern.compile(redeployingLogRegex);
-
         File buildLog = new File(testDir, "build-run.log");
         assertThat(buildLog).isNotNull();
         assertThat(buildLog.exists()).isTrue();
@@ -251,7 +244,7 @@ public class RedeployIT extends VertxMojoTestBase {
         List<String> lines = IOUtils.readLines(new FileReader(buildLog));
         assertThat(lines.isEmpty()).isFalse();
         long redeployCount = lines.stream()
-            .filter(s -> pattern.matcher(s).matches())
+            .filter(s -> s.contains("Redeploying Vert.x Application"))
             .count();
         assertThat(redeployCount).isEqualTo(2);
     }

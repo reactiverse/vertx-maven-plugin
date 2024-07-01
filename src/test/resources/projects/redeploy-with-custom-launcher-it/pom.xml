@@ -53,7 +53,6 @@
                 </executions>
 
                 <configuration>
-                    <redeploy>true</redeploy>
                     <launcher>demo.Main</launcher>
                 </configuration>
 

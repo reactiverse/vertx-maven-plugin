@@ -20,12 +20,7 @@ package io.reactiverse.vertx.maven.plugin;
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.model.Build;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.PluginExecution;
+import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,27 +31,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 public class SetupMojoTest {
@@ -94,8 +76,6 @@ public class SetupMojoTest {
         pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
 
-        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
-
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
         model.getProperties().putIfAbsent("vertx.version", MojoUtils.getVersion("vertx-core-version"));
@@ -124,10 +104,7 @@ public class SetupMojoTest {
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.valueOf(redeploy));
+        assertNull(pluginConfig);
     }
 
     @Test
@@ -150,8 +127,6 @@ public class SetupMojoTest {
         pluginExec.addGoal("package");
         pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
-
-        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
         Build build = new Build();
         model.setBuild(build);
@@ -183,10 +158,7 @@ public class SetupMojoTest {
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.valueOf(redeploy));
+        assertNull(pluginConfig);
     }
 
     @Test
@@ -212,8 +184,6 @@ public class SetupMojoTest {
         pluginExec.addGoal("package");
         pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
-
-        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
@@ -246,10 +216,7 @@ public class SetupMojoTest {
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.valueOf(redeploy));
+        assertNull(pluginConfig);
         Properties projectProps = project.getProperties();
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
@@ -328,11 +295,6 @@ public class SetupMojoTest {
         assertTrue(vmPlugin.isPresent());
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
-        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.valueOf(redeploy));
         Properties projectProps = project.getProperties();
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());

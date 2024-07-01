@@ -135,14 +135,10 @@ public class Verify {
         assertThat(vertxCoreDep.isPresent()).isTrue();
         assertThat(vertxCoreDep.get().getVersion()).isNull();
 
-        //Check Redeploy Configuration
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.parseBoolean(redeploy));
+        assertNull(pluginConfig);
     }
 
     public static void verifySetupWithVersion(File pomFile) throws Exception {

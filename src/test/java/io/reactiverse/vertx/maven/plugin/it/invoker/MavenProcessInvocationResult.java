@@ -6,6 +6,8 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.jvnet.winp.WinProcess;
 
+import java.lang.reflect.Method;
+
 /**
  * Result of {@link MavenProcessInvoker#execute(InvocationRequest)}. It keeps a reference on the created process.
  *
@@ -19,36 +21,40 @@ public class MavenProcessInvocationResult implements InvocationResult {
     void destroy() {
         if (process != null && process.isAlive()) {
             if (SystemUtils.IS_OS_WINDOWS) {
-                for (WinProcess wp : WinProcess.all()) {
-                    try {
-                        String cli = wp.getCommandLine();
-                        if (cli.contains("java")) {
-                            if (cli.contains("-Dvertx.debug")) {
-                                System.out.println("Killing Background Vertx Debug Process ..." + wp.getPid());
-                                wp.killRecursively();
-                            }
-
-                            if (cli.contains("-Dvertx.id")) {
-                                System.out.println("Killing Background Vertx Process  ..." + wp.getPid());
-                                wp.killRecursively();
-                            }
-
-                            if (cli.contains("--launcher-class")) {
-                                System.out.println("Killing Background Vertx Run Process ..." + wp.getPid());
-                                wp.killRecursively();
-                            }
-
-                        }
-
-                    } catch (Exception e) {
-                        //Ignore
-                    }
-                }
-                return;
+                WinProcess winProcess = getWinProcess(process);
+                winProcess.killRecursively();
             } else {
                 process.destroy();
             }
         }
+    }
+
+    private WinProcess getWinProcess(Process process) {
+        Method pidMethod = findPidMethod();
+        WinProcess winProcess;
+        if (pidMethod != null) {
+            // Java 9+
+            // To avoid reflection access warnings we get the pid with builtin method
+            int pid;
+            try {
+                pid = Math.toIntExact((long) pidMethod.invoke(process, new Object[]{}));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            winProcess = new WinProcess(pid);
+        } else {
+            winProcess = new WinProcess(process);
+        }
+        return winProcess;
+    }
+
+    private Method findPidMethod() {
+        for (Method method : Process.class.getMethods()) {
+            if ("pid".equals(method.getName()) && (method.getParameterCount() == 0)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     MavenProcessInvocationResult setProcess(Process process) {

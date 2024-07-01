@@ -41,7 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 /**
  * This Goal helps in setting up Vert.x maven project with vertx-maven-plugin, with sane defaults
@@ -146,9 +147,6 @@ public class SetupMojo extends AbstractMojo {
         pluginExec.addGoal("package");
         pluginExec.setId("vmp");
         vertxMavenPlugin.addExecution(pluginExec);
-
-        //Plugin Configuration
-        vertxMavenPlugin.setConfiguration(configuration(element("redeploy", "true")));
 
         Build build = createBuildSectionIfRequired(model);
         build.getPlugins().add(vertxMavenPlugin);
