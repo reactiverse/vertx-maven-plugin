@@ -84,32 +84,26 @@ public class InitializeMojo extends AbstractVertxMojo {
 
         // Start the spy
         MavenExecutionRequest request = mavenSession.getRequest();
-        MojoSpy.init(request);
+        MojoSpy mojoSpy = new MojoSpy(request);
+        request.setExecutionListener(mojoSpy);
     }
 
     private void unpackWebjars(Set<Artifact> dependencies) throws MojoExecutionException {
         for (Artifact artifact : dependencies) {
-            File file = getArtifactFile(artifact)
-                .filter(File::isFile)
-                .orElseThrow(() ->
-                    new MojoExecutionException("Unable to copy WebJar dependency, "
-                        + artifact.getGroupId() + ":" + artifact.getArtifactId() + " has not been resolved"));
             if (artifact.getType().equalsIgnoreCase("jar")) {
-                unpackWebJar(artifact, file);
+                unpackWebJar(artifact);
             }
         }
     }
 
-    private void unpackWebJar(Artifact artifact, File file) throws MojoExecutionException {
-        if (WebJars.isWebJar(getLog(), file)) {
+    private void unpackWebJar(Artifact artifact) throws MojoExecutionException {
             try {
-                WebJars.extract(this, file,
-                    createWebRootDirIfNeeded(), stripWebJarVersion);
+                if (WebJars.isWebJar(artifact.getFile())) {
+                    WebJars.extract(artifact.getFile(), createWebRootDirIfNeeded(), stripWebJarVersion);
+                }
             } catch (IOException e) {
-                throw new MojoExecutionException("Unable to unpack '"
-                    + artifact.toString() + "'", e);
+                throw new MojoExecutionException("Unable to unpack WebJar dependency: " + artifact, e);
             }
-        }
     }
 
     private File createWebRootDirIfNeeded() {
@@ -121,24 +115,18 @@ public class InitializeMojo extends AbstractVertxMojo {
                 getLog().error("Unable to create directory: " + webRoot.getAbsolutePath());
             }
         }
-
         return webRoot;
     }
 
     private void copyJSDependencies(Set<Artifact> dependencies) throws MojoExecutionException {
         for (Artifact artifact : dependencies) {
             if (artifact.getType().equalsIgnoreCase("js")) {
-                File file = getArtifactFile(artifact)
-                    .filter(File::isFile)
-                    .orElseThrow(() ->
-                        new MojoExecutionException("Unable to copy JS dependencies, "
-                            + artifact.getGroupId() + ":" + artifact.getArtifactId() + " has not been resolved"));
-                copyJavascriptDependency(artifact, file);
+                copyJavascriptDependency(artifact);
             }
         }
     }
 
-    private void copyJavascriptDependency(Artifact artifact, File file) throws MojoExecutionException {
+    private void copyJavascriptDependency(Artifact artifact) throws MojoExecutionException {
         try {
             if (stripJavaScriptDependencyVersion) {
                 String name = artifact.getArtifactId();
@@ -147,13 +135,12 @@ public class InitializeMojo extends AbstractVertxMojo {
                 }
                 name += ".js";
                 File output = new File(createWebRootDirIfNeeded(), name);
-                FileUtils.copyFile(file, output);
+                FileUtils.copyFile(artifact.getFile(), output);
             } else {
-                FileUtils.copyFileToDirectory(file, createWebRootDirIfNeeded());
+                FileUtils.copyFileToDirectory(artifact.getFile(), createWebRootDirIfNeeded());
             }
         } catch (IOException e) {
-            throw new MojoExecutionException("Unable to copy '"
-                + artifact.toString() + "'", e);
+            throw new MojoExecutionException("Unable to copy Javascript dependency: " + artifact, e);
         }
     }
 }

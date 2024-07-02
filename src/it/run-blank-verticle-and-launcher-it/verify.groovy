@@ -15,15 +15,7 @@
  *   permissions and limitations under the License.
  */
 
-package demo;
-
-import io.vertx.core.AbstractVerticle;
-
-public class SimpleVerticle extends AbstractVerticle {
-    @Override
-    public void start() throws Exception {
-        vertx.createHttpServer()
-            .requestHandler(req -> req.response().end(config().getString("message")))
-            .listen(8080);
-    }
-}
+String base = basedir
+def file = new File(base, "build.log")
+assert file.exists()
+assert file.text.contains("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required")

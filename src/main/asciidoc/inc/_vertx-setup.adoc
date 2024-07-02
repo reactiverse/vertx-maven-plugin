@@ -1,7 +1,8 @@
 [[vertx:setup]]
 === *vertx:setup*
 
-This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is configured with a default configuration.
+This goal adds the Vert.x Maven Plugin to your `pom.xml` file.
+The plugin is configured with a default configuration.
 
 ==== Example
 
@@ -10,18 +11,15 @@ This goal adds the Vert.x Maven Plugin to your `pom.xml` file. The plugin is con
 mvn io.reactiverse:vertx-maven-plugin:{version}:setup
 ----
 
-The setup goal by default uses the plugin property _vertx-core-version_
-from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
-if you wish to override the vertx version, then you can run the same command as above with `-DvertxVersion=<your-vertx-version>`
+The setup goal by default uses the plugin property _vertx-core-version_ from the plugin properties file `vertx-maven-plugin.properties` as the Vert.x version of the project.
+If you wish to override the Vert.x version, then you can run the same command as above with `-DvertxVersion=<your-vertx-version>`:
 
-e.g.
 [source,subs=attributes+]
 ----
 mvn io.reactiverse:vertx-maven-plugin:{version}:setup -DvertxVersion={vertx-core-version}
 ----
 
-This will configure the vert.x and its dependencies to `{vertx-core-version}` i.e. Maven project property `vertx.version`
-set to `{vertx-core-version}`
+This will configure the vert.x and its dependencies to `{vertx-core-version}` i.e. Maven project property `vertx.version` set to `{vertx-core-version}`.
 
 You can also generate a project if you don't have a `pom.xml` file:
 
@@ -31,22 +29,10 @@ mvn io.reactiverse:vertx-maven-plugin:{version}:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
-    -Dverticle=org.acme.Foo \
-    -Ddependencies=web,jmx,mongo
+    -Dverticle=org.acme.Foo
 ----
-
 
 The `verticle` parameter creates a new verticle class file.
-The `dependencies` parameters specifies the Vert.x dependencies you need.
-
-Dependencies are selected from a list of know dependencies matching the one listed on http://vertx.io/docs. In
-addition, you can configure dependencies using the following syntax: `groupId:artifactId:version:classifier` such as in:
-
-----
-io.vertx:vertxcodetrans => Inherit version from BOM
-commons-io:commons-io:2.5 => Regular dependency
-io.vertx:vertx-template-engines:{vertx-core-version}:shaded => Dependency with classifier
-----
 
 When creating a project, the `java.specification.version` system property is used to configure the Maven compiler plugin in the new POM file.
 To set a different Java version, use the `javaVersion` property:

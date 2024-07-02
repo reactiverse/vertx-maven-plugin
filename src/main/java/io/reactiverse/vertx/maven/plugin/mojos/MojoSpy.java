@@ -32,9 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MojoSpy extends AbstractExecutionListener {
 
-    static final List<MojoExecution> MOJOS = new CopyOnWriteArrayList<>();
-
-    static final List<String> PHASES = Arrays.asList(
+    private static final List<String> PHASES = Arrays.asList(
         "generate-sources",
         "process-sources",
         "generate-resources",
@@ -42,11 +40,12 @@ public class MojoSpy extends AbstractExecutionListener {
         "compile",
         "process-classes"
     );
+
+    private final List<MojoExecution> mojos = new CopyOnWriteArrayList<>();
     private final MavenExecutionRequest request;
+    private final ExecutionListener delegate;
 
-    private ExecutionListener delegate;
-
-    private MojoSpy(MavenExecutionRequest request) {
+    public MojoSpy(MavenExecutionRequest request) {
         this.delegate = request.getExecutionListener();
         this.request = request;
     }
@@ -129,16 +128,16 @@ public class MojoSpy extends AbstractExecutionListener {
     }
 
     private void addExecutionIfNotContainedAlready(MojoExecution execution) {
-        String artifact = execution.getArtifactId();
-        String id = execution.getExecutionId();
-        // We must avoid duplicates in the list
-        for (MojoExecution exec : MOJOS) {
-            if (exec.getArtifactId().equals(artifact)  && exec.getExecutionId().equals(id)) {
-                // Duplicate found.
-                return;
+        if (PHASES.contains(execution.getLifecyclePhase())) {
+            String artifact = execution.getArtifactId();
+            String id = execution.getExecutionId();
+            for (MojoExecution exec : mojos) {
+                if (exec.getArtifactId().equals(artifact) && exec.getExecutionId().equals(id)) {
+                    return;
+                }
             }
+            mojos.add(execution);
         }
-        MOJOS.add(execution);
     }
 
     @Override
@@ -190,7 +189,7 @@ public class MojoSpy extends AbstractExecutionListener {
         }
     }
 
-    public static void init(MavenExecutionRequest request) {
-        request.setExecutionListener(new MojoSpy(request));
+    public List<MojoExecution> getMojos() {
+        return mojos;
     }
 }

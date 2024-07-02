@@ -18,8 +18,6 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.components.Prompter;
-import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependencies;
-import io.reactiverse.vertx.maven.plugin.dependencies.VertxDependency;
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,10 +33,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -51,10 +52,10 @@ public class SetupMojo extends AbstractMojo {
     public static final String JAVA_EXTENSION = ".java";
     public static final String VERTX_CORE_VERSION = "vertx-core-version";
     public static final String VERTX_GROUP_ID = "io.vertx";
-    public static final String VERTX_BOM_ARTIFACTID = "vertx-stack-depchain";
+    public static final String VERTX_BOM_ARTIFACT_ID = "vertx-stack-depchain";
 
-    private static final String PLUGIN_GROUPID = "io.reactiverse";
-    private static final String PLUGIN_ARTIFACTID = "vertx-maven-plugin";
+    private static final String PLUGIN_GROUP_ID = "io.reactiverse";
+    private static final String PLUGIN_ARTIFACT_ID = "vertx-maven-plugin";
     private static final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
 
     /**
@@ -72,7 +73,7 @@ public class SetupMojo extends AbstractMojo {
     @Parameter(property = "projectVersion", defaultValue = "1.0-SNAPSHOT")
     protected String projectVersion;
 
-    @Parameter(property = "vertxBom", defaultValue = VERTX_BOM_ARTIFACTID)
+    @Parameter(property = "vertxBom", defaultValue = VERTX_BOM_ARTIFACT_ID)
     protected String vertxBom;
 
     @Parameter(property = "vertxVersion")
@@ -80,9 +81,6 @@ public class SetupMojo extends AbstractMojo {
 
     @Parameter(property = "verticle")
     protected String verticle;
-
-    @Parameter(property = "dependencies")
-    protected List<String> dependencies;
 
     @Parameter(property = "javaVersion")
     protected String javaVersion;
@@ -108,7 +106,7 @@ public class SetupMojo extends AbstractMojo {
         createDirectories();
         SetupTemplateUtils.createVerticle(project, verticle, getLog());
 
-        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, PLUGIN_GROUPID + ":" + PLUGIN_ARTIFACTID);
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, PLUGIN_GROUP_ID + ":" + PLUGIN_ARTIFACT_ID);
         if (vmPlugin.isPresent()) {
             return;
         }
@@ -132,17 +130,15 @@ public class SetupMojo extends AbstractMojo {
 
         //Add Vert.x Core Dependency
         addVertxDependencies(model);
-        // Add other dependencies
-        addDependencies(model);
 
-        Plugin vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${vertx-maven-plugin.version}");
+        Plugin vertxMavenPlugin = plugin(PLUGIN_GROUP_ID, PLUGIN_ARTIFACT_ID, "${vertx-maven-plugin.version}");
 
         if (isParentPom(model)) {
             addPluginManagementSection(model, vertxMavenPlugin);
             //strip the vertxVersion off
-            vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID);
+            vertxMavenPlugin = plugin(PLUGIN_GROUP_ID, PLUGIN_ARTIFACT_ID);
         } else {
-            vertxMavenPlugin = plugin(PLUGIN_GROUPID, PLUGIN_ARTIFACTID, "${vertx-maven-plugin.version}");
+            vertxMavenPlugin = plugin(PLUGIN_GROUP_ID, PLUGIN_ARTIFACT_ID, "${vertx-maven-plugin.version}");
         }
 
         PluginExecution pluginExec = new PluginExecution();
@@ -223,7 +219,7 @@ public class SetupMojo extends AbstractMojo {
             context.put("mProjectGroupId", projectGroupId);
             context.put("mProjectArtifactId", projectArtifactId);
             context.put("mProjectVersion", projectVersion);
-            context.put("vertxBom", vertxBom != null ? vertxBom : VERTX_BOM_ARTIFACTID);
+            context.put("vertxBom", vertxBom != null ? vertxBom : VERTX_BOM_ARTIFACT_ID);
             context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion(VERTX_CORE_VERSION));
 
             context.put("vertxVerticle", verticle);
@@ -236,7 +232,7 @@ public class SetupMojo extends AbstractMojo {
             //The project should be recreated and set with right model
             MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
 
-            model = xpp3Reader.read(new FileInputStream(pomFile));
+            model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
         } catch (Exception e) {
             throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
         }
@@ -245,10 +241,6 @@ public class SetupMojo extends AbstractMojo {
         project.setPomFile(pomFile);
         project.setOriginalModel(model); // the current model is the original model as well
 
-        // Add dependencies
-        if (addDependencies(model)) {
-            save(pomFile, model);
-        }
         return pomFile;
     }
 
@@ -261,59 +253,6 @@ public class SetupMojo extends AbstractMojo {
             throw new MojoExecutionException("Unable to write the pom.xml file", e);
         }
     }
-
-    private Dependency parse(String dependency) {
-        Dependency res = new Dependency();
-        String[] segments = dependency.split(":");
-        if (segments.length >= 2) {
-            res.setGroupId(segments[0]);
-            res.setArtifactId(segments[1]);
-            if (segments.length >= 3 && !segments[2].isEmpty()) {
-                res.setVersion(segments[2]);
-            }
-            if (segments.length >= 4) {
-                res.setClassifier(segments[3]);
-            }
-            return res;
-        } else {
-            getLog().warn("Invalid dependency description '" + dependency + "'");
-            return null;
-        }
-    }
-
-    private boolean addDependencies(Model model) {
-        if (dependencies == null || dependencies.isEmpty()) {
-            return false;
-        }
-
-        boolean updated = false;
-        List<VertxDependency> deps = VertxDependencies.get();
-        for (String dependency : this.dependencies) {
-            Optional<VertxDependency> optional = deps.stream()
-                .filter(d -> d.labels().contains(dependency.toLowerCase()))
-                .findAny();
-
-            if (optional.isPresent()) {
-                getLog().info("Adding dependency " + optional.get().toCoordinates());
-                model.addDependency(optional.get().toDependency());
-                updated = true;
-            } else if (dependency.contains(":")) {
-                // Add it as a dependency
-                // groupId:artifactId:version:classifier
-                Dependency parsed = parse(dependency);
-                if (parsed != null) {
-                    getLog().info("Adding dependency " + parsed.getManagementKey());
-                    model.addDependency(parsed);
-                    updated = true;
-                }
-            } else {
-                getLog().warn("Cannot find a dependency matching '" + dependency + "'");
-            }
-        }
-
-        return updated;
-    }
-
 
     private void createDirectories() {
         File root = project.getBasedir();

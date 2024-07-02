@@ -1,8 +1,7 @@
 [[common:run-configurations]]
 == Common Run Configurations
 
-These are the common configuration shared by the run based goals such as **<<vertx:run,run>>**,
- **<<vertx:start,start>>** and  **<<vertx:stop,stop>>**.
+These are the common configuration shared by the run based goals such as **<<vertx:run,run>>** and  **<<vertx:debug,debug>>**.
 
 .Run configuration
 [cols="1,5,2,3"]
@@ -40,4 +39,4 @@ The converted file will be saved in `${project.outputDir}/conf` directory
 
 |===
 
-NOTE: Right now the plugin supports only file based Vert.x configuration
+NOTE: Right now the plugin supports only file based Vert.x configuration.
