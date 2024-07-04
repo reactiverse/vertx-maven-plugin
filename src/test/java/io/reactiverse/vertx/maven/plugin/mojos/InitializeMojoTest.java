@@ -1,7 +1,6 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.ArtifactBuilder;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
@@ -15,8 +14,10 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
-import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.util.Collections;
@@ -31,12 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InitializeMojoTest {
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private static final File OUT = new File("target/junk");
+    private File projectBuildDir;
 
-    @After
-    public void tearDown() {
-        FileUtils.deleteQuietly(OUT);
+    @Before
+    public void setUp() throws Exception {
+        projectBuildDir = temporaryFolder.newFolder();
     }
 
     @Test
@@ -77,10 +80,10 @@ public class InitializeMojoTest {
 
         mojo.lifecycleExecutor = new DefaultLifecycleExecutor();
         mojo.remoteRepositories = Collections.emptyList();
-        mojo.projectBuildDir = OUT.getAbsolutePath();
+        mojo.projectBuildDir = projectBuildDir.getAbsolutePath();
 
         Build build = new Build();
-        build.setOutputDirectory(OUT.getAbsolutePath());
+        build.setOutputDirectory(projectBuildDir.getAbsolutePath());
         mojo.project.setBuild(build);
 
         return mojo;

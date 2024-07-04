@@ -4,7 +4,6 @@ import io.reactiverse.vertx.maven.plugin.components.PackageConfig;
 import io.reactiverse.vertx.maven.plugin.components.PackageType;
 import io.reactiverse.vertx.maven.plugin.components.PackagingException;
 import io.reactiverse.vertx.maven.plugin.mojos.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -12,9 +11,10 @@ import org.apache.maven.project.MavenProject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -40,21 +38,16 @@ import static org.mockito.Mockito.when;
  */
 public class ShrinkWrapFatJarPackageServiceTest {
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private final ShrinkWrapFatJarPackageService service = new ShrinkWrapFatJarPackageService();
     private File out;
+    private ShrinkWrapFatJarPackageService service;
 
     @Before
-    public void setUp() {
-        out = new File("target/output");
-        FileUtils.deleteQuietly(out);
-        boolean mkdirs = out.mkdirs();
-        Logger.getAnonymousLogger().log(Level.FINER, "Creating out directory: " + mkdirs);
-    }
-
-    @After
-    public void tearDown() {
-        FileUtils.deleteQuietly(out);
+    public void setUp() throws Exception {
+        out = temporaryFolder.newFolder();
+        service = new ShrinkWrapFatJarPackageService();
     }
 
     @Test

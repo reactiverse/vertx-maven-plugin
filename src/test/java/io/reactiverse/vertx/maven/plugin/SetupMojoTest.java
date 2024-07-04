@@ -19,7 +19,6 @@ package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -29,9 +28,15 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,11 +48,14 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
 public class SetupMojoTest {
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private File baseDir;
 
     @Before
-    public void setUp() {
-        File junk = new File("target/junk");
-        FileUtils.deleteQuietly(junk);
+    public void setUp() throws Exception {
+        baseDir = temporaryFolder.newFolder();
     }
 
     @After
@@ -57,10 +65,13 @@ public class SetupMojoTest {
 
     @Test
     public void testAddVertxMavenPlugin() throws Exception {
-        InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
-        assertNotNull(pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(pomFile);
+
+        Model model;
+        try (InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml")) {
+            assertNotNull(pomFile);
+            model = xpp3Reader.read(pomFile);
+        }
 
         MavenProject project = new MavenProject(model);
 
@@ -93,8 +104,6 @@ public class SetupMojoTest {
         updatedPom.flush();
         updatedPom.close();
 
-        //System.out.println(updatedPom);
-
         //Check if it has been added
 
         model = xpp3Reader.read(new StringReader(updatedPom.toString()));
@@ -109,18 +118,20 @@ public class SetupMojoTest {
 
     @Test
     public void testAddVertxMavenPluginWithNoBuildPom() throws Exception {
-        InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-nobuild-pom.xml");
-        assertNotNull(pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(pomFile);
+
+        Model model;
+        try (InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-nobuild-pom.xml")) {
+            assertNotNull(pomFile);
+            model = xpp3Reader.read(pomFile);
+        }
 
         MavenProject project = new MavenProject(model);
 
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.reactiverse:vertx-maven-plugin");
         assertFalse(vmPlugin.isPresent());
 
-        Plugin vertxMavenPlugin = plugin("io.reactiverse", "vertx-maven-plugin",
-            MojoUtils.getVersion("vertx-maven-plugin-version"));
+        Plugin vertxMavenPlugin = plugin("io.reactiverse", "vertx-maven-plugin", MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
@@ -147,8 +158,6 @@ public class SetupMojoTest {
         updatedPom.flush();
         updatedPom.close();
 
-        //System.out.println(updatedPom);
-
         //Check if it has been added
 
         model = xpp3Reader.read(new StringReader(updatedPom.toString()));
@@ -163,21 +172,21 @@ public class SetupMojoTest {
 
     @Test
     public void testAddVertxMavenPluginWithVertxVersion() throws Exception {
-
         System.setProperty("vertxVersion", "4.3.1");
-
-        InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml");
-        assertNotNull(pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(pomFile);
+
+        Model model;
+        try (InputStream pomFile = getClass().getResourceAsStream("/unit/setup/vmp-setup-pom.xml")) {
+            assertNotNull(pomFile);
+            model = xpp3Reader.read(pomFile);
+        }
 
         MavenProject project = new MavenProject(model);
 
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.reactiverse:vertx-maven-plugin");
         assertFalse(vmPlugin.isPresent());
 
-        Plugin vertxMavenPlugin = plugin("io.reactiverse", "vertx-maven-plugin",
-            MojoUtils.getVersion("vertx-maven-plugin-version"));
+        Plugin vertxMavenPlugin = plugin("io.reactiverse", "vertx-maven-plugin", MojoUtils.getVersion("vertx-maven-plugin-version"));
 
         PluginExecution pluginExec = new PluginExecution();
         pluginExec.addGoal("initialize");
@@ -187,8 +196,7 @@ public class SetupMojoTest {
 
         model.getBuild().getPlugins().add(vertxMavenPlugin);
 
-        String vertxVersion = System.getProperty("vertxVersion") == null ? MojoUtils.getVersion("vertx-core-version") :
-            System.getProperty("vertxVersion");
+        String vertxVersion = System.getProperty("vertxVersion") == null ? MojoUtils.getVersion("vertx-core-version") : System.getProperty("vertxVersion");
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
 
@@ -204,8 +212,6 @@ public class SetupMojoTest {
         xpp3Writer.write(updatedPom, model);
         updatedPom.flush();
         updatedPom.close();
-
-        //System.out.println(updatedPom);
 
         //Check if it has been added
 
@@ -253,25 +259,22 @@ public class SetupMojoTest {
     public void testVerticleCreation() throws MojoExecutionException {
         MavenProject mock = mock(MavenProject.class);
         Log log = mock(Log.class);
-        when(mock.getBasedir()).thenReturn(new File("target/junk"));
+        when(mock.getBasedir()).thenReturn(baseDir);
 
         SetupTemplateUtils.createVerticle(mock, "me.demo.Foo.java", log);
         SetupTemplateUtils.createVerticle(mock, "me.demo.Bar", log);
         SetupTemplateUtils.createVerticle(mock, "Baz.java", log);
         SetupTemplateUtils.createVerticle(mock, "Bob", log);
 
-        assertThat(new File("target/junk/src/main/java/me/demo/Foo.java")).isFile();
-        assertThat(new File("target/junk/src/main/java/me/demo/Bar.java")).isFile();
-        assertThat(new File("target/junk/src/main/java/Baz.java")).isFile();
-        assertThat(new File("target/junk/src/main/java/Bob.java")).isFile();
+        assertThat(new File(baseDir, "src/main/java/me/demo/Foo.java")).isFile();
+        assertThat(new File(baseDir, "src/main/java/me/demo/Bar.java")).isFile();
+        assertThat(new File(baseDir, "src/main/java/Baz.java")).isFile();
+        assertThat(new File(baseDir, "src/main/java/Bob.java")).isFile();
     }
 
     @Test
     public void testVerticleCreatePom() throws Exception {
-
-        new File("target/unit/nopom").mkdirs();
-
-        File pomFile = new File("target/unit/nopom/pom.xml");
+        File pomFile = temporaryFolder.newFile("pom.xml");
 
         String vertxVersion = MojoUtils.getVersion("vertx-core-version");
 
@@ -289,8 +292,12 @@ public class SetupMojoTest {
         assertThat(pomFile).isFile();
 
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(new FileInputStream(pomFile));
+        Model model;
+        try (InputStream is = Files.newInputStream(pomFile.toPath())) {
+            model = xpp3Reader.read(is);
+        }
         MavenProject project = new MavenProject(model);
+
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.reactiverse:vertx-maven-plugin");
         assertTrue(vmPlugin.isPresent());
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
