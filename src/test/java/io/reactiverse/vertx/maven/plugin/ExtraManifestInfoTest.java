@@ -18,7 +18,7 @@ package io.reactiverse.vertx.maven.plugin;
 
 import io.reactiverse.vertx.maven.plugin.components.impl.ProjectManifestCustomizer;
 import io.reactiverse.vertx.maven.plugin.mojos.PackageMojo;
-import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
+import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
@@ -40,6 +40,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author kameshs
  */
 public class ExtraManifestInfoTest extends PlexusTestCase {
+
+    private String vertxCoreVersion;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        vertxCoreVersion = MojoUtils.getVersion("vertx-core-version");
+        assertThat(vertxCoreVersion).isNotNull();
+    }
 
     private Model buildModel(File pomFile) {
         try {
@@ -77,7 +86,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
         assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("io.vertx:vertx-core:" + VertxCoreVersion.VALUE);
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("io.vertx:vertx-core:" + vertxCoreVersion);
         assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
 
@@ -109,7 +118,7 @@ public class ExtraManifestInfoTest extends PlexusTestCase {
         assertThat(attributes.getValue("Manifest-Version")).isEqualTo("1.0");
         assertThat(attributes.getValue(PROJECT_NAME.header())).isEqualTo("vertx-demo");
         assertThat(attributes.getValue(BUILD_TIMESTAMP.header())).isNotNull().isNotEmpty();
-        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:" + VertxCoreVersion.VALUE + ":vertx");
+        assertThat(attributes.getValue(PROJECT_DEPS.header())).isEqualTo("com.example:example:" + vertxCoreVersion + ":vertx");
         assertThat(attributes.getValue(PROJECT_GROUP_ID.header())).isEqualTo("org.vertx.demo");
         assertThat(attributes.getValue(PROJECT_VERSION.header())).isEqualTo("1.0.0-SNAPSHOT");
     }

@@ -1,7 +1,6 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
 
-import io.reactiverse.vertx.maven.plugin.utils.VertxCoreVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +26,10 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class VertxMojoTestBase {
-    static String VERSION;
+public abstract class VertxMojoTestBase {
+
+    protected static String VERTX_MAVEN_PLUGIN_VERSION;
+
     private static Map<String, String> VARIABLES;
 
     @BeforeClass
@@ -42,14 +43,17 @@ public class VertxMojoTestBase {
             fail("Cannot load " + constants.getAbsolutePath(), e);
         }
 
-        VERSION = properties.getProperty("vertx-maven-plugin-version");
-        assertThat(VERSION).isNotNull();
+        VERTX_MAVEN_PLUGIN_VERSION = properties.getProperty("vertx-maven-plugin-version");
+        assertThat(VERTX_MAVEN_PLUGIN_VERSION).isNotNull();
+
+        String vertxCoreVersion = properties.getProperty("vertx-core-version");
+        assertThat(vertxCoreVersion).isNotNull();
 
         Map<String, String> variables = new HashMap<>();
         variables.put("@project.groupId@", "io.reactiverse");
         variables.put("@project.artifactId@", "vertx-maven-plugin");
-        variables.put("@project.version@", VERSION);
-        variables.put("@vertx-core.version@", VertxCoreVersion.VALUE);
+        variables.put("@project.version@", VERTX_MAVEN_PLUGIN_VERSION);
+        variables.put("@vertx-core.version@", vertxCoreVersion);
         VARIABLES = Collections.unmodifiableMap(variables);
     }
 
@@ -134,18 +138,18 @@ public class VertxMojoTestBase {
     }
 
     static void installPluginToLocalRepository(String local) {
-        File repo = new File(local, "io/reactiverse/vertx-maven-plugin/" + VertxMojoTestBase.VERSION);
+        File repo = new File(local, "io/reactiverse/vertx-maven-plugin/" + VERTX_MAVEN_PLUGIN_VERSION);
         if (!repo.isDirectory()) {
             boolean mkdirs = repo.mkdirs();
             Logger.getLogger(VertxMojoTestBase.class.getName())
                 .log(Level.FINE, repo.getAbsolutePath() + " created? " + mkdirs);
         }
 
-        File plugin = new File("target", "vertx-maven-plugin-" + VertxMojoTestBase.VERSION + ".jar");
+        File plugin = new File("target", "vertx-maven-plugin-" + VERTX_MAVEN_PLUGIN_VERSION + ".jar");
 
         try {
             FileUtils.copyFileToDirectory(plugin, repo);
-            String installedPomName = "vertx-maven-plugin-" + VertxMojoTestBase.VERSION + ".pom";
+            String installedPomName = "vertx-maven-plugin-" + VERTX_MAVEN_PLUGIN_VERSION + ".pom";
             FileUtils.copyFile(new File("pom.xml"), new File(repo, installedPomName));
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy the plugin jar, or the pom file, to the local repository", e);

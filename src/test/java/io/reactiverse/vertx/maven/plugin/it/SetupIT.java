@@ -82,7 +82,7 @@ public class SetupIT extends VertxMojoTestBase {
     private void setup(Verifier verifier, String... params) throws VerificationException {
         verifier.setLogFileName("build-setup.log");
         List<String> goals = new ArrayList<>();
-        goals.add("io.reactiverse:vertx-maven-plugin:" + VertxMojoTestBase.VERSION + ":setup");
+        goals.add("io.reactiverse:vertx-maven-plugin:" + VERTX_MAVEN_PLUGIN_VERSION + ":setup");
         goals.addAll(Arrays.asList(params));
         verifier.executeGoals(goals, getEnv());
     }
