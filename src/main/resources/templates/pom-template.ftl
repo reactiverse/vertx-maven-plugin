@@ -35,6 +35,12 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
         </dependency>
+        <#if vertxVersion?starts_with("5.")>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-launcher-application</artifactId>
+            </dependency>
+        </#if>
     </dependencies>
 
     <build>

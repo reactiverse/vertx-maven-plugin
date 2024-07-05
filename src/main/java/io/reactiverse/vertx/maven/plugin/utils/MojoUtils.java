@@ -19,7 +19,6 @@ package io.reactiverse.vertx.maven.plugin.utils;
 
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -131,23 +130,6 @@ public class MojoUtils {
                 .findFirst();
         }
         return optPlugin;
-    }
-
-    /**
-     * Checks whether the project has the dependency
-     *
-     * @param project    - the project to check existence of dependency
-     * @param groupId    - the dependency groupId
-     * @param artifactId - the dependency artifactId
-     * @return true if the project has the dependency
-     */
-    public static boolean hasDependency(MavenProject project, String groupId, String artifactId) {
-
-        Optional<Dependency> dep = project.getDependencies().stream()
-            .filter(d -> groupId.equals(d.getGroupId())
-                && artifactId.equals(d.getArtifactId())).findFirst();
-
-        return dep.isPresent();
     }
 
     /**

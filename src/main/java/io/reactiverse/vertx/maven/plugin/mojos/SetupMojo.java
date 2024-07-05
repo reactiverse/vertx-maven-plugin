@@ -22,6 +22,7 @@ import io.reactiverse.vertx.maven.plugin.utils.MojoUtils;
 import io.reactiverse.vertx.maven.plugin.utils.SetupTemplateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -31,16 +32,17 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toCollection;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.dependency;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 
@@ -54,10 +56,18 @@ public class SetupMojo extends AbstractMojo {
     public static final String VERTX_CORE_VERSION = "vertx-core-version";
     public static final String VERTX_GROUP_ID = "io.vertx";
     public static final String VERTX_BOM_ARTIFACT_ID = "vertx-stack-depchain";
+    public static final String VERTX_CORE_ARTIFACT_ID = "vertx-core";
+    public static final String VERTX_LAUNCHER_APPLICATION_ARTIFACT_ID = "vertx-launcher-application";
 
     private static final String PLUGIN_GROUP_ID = "io.reactiverse";
     private static final String PLUGIN_ARTIFACT_ID = "vertx-maven-plugin";
     private static final String VERTX_MAVEN_PLUGIN_VERSION_PROPERTY = "vertx-maven-plugin-version";
+
+    /**
+     * The Maven Session.
+     */
+    @Parameter(defaultValue = "${session}", readonly = true)
+    protected MavenSession mavenSession;
 
     /**
      * The Maven project which will define and configure the vertx-maven-plugin
@@ -91,7 +101,6 @@ public class SetupMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-
         File pomFile = project.getFile();
 
         Model model;
@@ -113,8 +122,7 @@ public class SetupMojo extends AbstractMojo {
         }
 
         //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
-        model.getProperties().putIfAbsent("vertx-maven-plugin.version",
-            MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
+        model.getProperties().putIfAbsent("vertx-maven-plugin.version", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
 
         vertxVersion = vertxVersion == null ? MojoUtils.getVersion(VERTX_CORE_VERSION) : vertxVersion;
 
@@ -129,8 +137,12 @@ public class SetupMojo extends AbstractMojo {
         //Add Vert.x BOM
         addVertxBom(model);
 
-        //Add Vert.x Core Dependency
-        addVertxDependencies(model);
+        //Add Vert.x Dependencies
+        Stream.Builder<String> deps = Stream.<String>builder().add(VERTX_CORE_ARTIFACT_ID);
+        if (vertxVersion.startsWith("5.")) {
+            deps.add(VERTX_LAUNCHER_APPLICATION_ARTIFACT_ID);
+        }
+        addVertxDependencies(model, deps.build().collect(toCollection(LinkedHashSet::new)));
 
         Plugin vertxMavenPlugin = plugin(PLUGIN_GROUP_ID, PLUGIN_ARTIFACT_ID, "${vertx-maven-plugin.version}");
 
@@ -178,61 +190,44 @@ public class SetupMojo extends AbstractMojo {
     private File createPomFileFromUserInputs() throws MojoExecutionException {
         File pomFile;
         Model model;
-        String workingdDir = System.getProperty("user.dir");
-        getLog().info("No pom.xml found, creating it in " + workingdDir);
-        pomFile = new File(workingdDir, "pom.xml");
+        String currentDirectory = System.getProperty("user.dir");
+        getLog().info("Creating a new pom.xml file in: " + currentDirectory);
+        pomFile = new File(currentDirectory, "pom.xml");
+
         try {
+            projectGroupId = promptOrUseDefault(projectGroupId, "Set the project groupId", "io.vertx.example");
+            projectArtifactId = promptOrUseDefault(projectArtifactId, "Set the project artifactId", "my-vertx-project");
+            projectVersion = promptOrUseDefault(projectVersion, "Set the project version", "1.0-SNAPSHOT");
+            vertxVersion = promptOrUseDefault(vertxVersion, "Set the Vert.x version", MojoUtils.getVersion(VERTX_CORE_VERSION));
+            verticle = promptOrUseDefault(verticle, "Set the verticle class name", projectGroupId.replace("-", ".").replace("_", ".") + ".MainVerticle");
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error while prompting setup config", e);
+        }
 
-            if (projectGroupId == null) {
-                projectGroupId = prompter.promptWithDefaultValue("Set the project groupId",
-                    "io.vertx.example");
-            }
+        if (verticle != null && verticle.endsWith(JAVA_EXTENSION)) {
+            verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
+        }
 
-            // If the user does not specify the artifactId, we switch to the interactive mode.
-            if (projectArtifactId == null) {
-                projectArtifactId = prompter.promptWithDefaultValue("Set the project artifactId",
-                    "my-vertx-project");
+        Map<String, String> context = new HashMap<>();
+        context.put("mProjectGroupId", projectGroupId);
+        context.put("mProjectArtifactId", projectArtifactId);
+        context.put("mProjectVersion", projectVersion);
+        context.put("vertxBom", vertxBom != null ? vertxBom : VERTX_BOM_ARTIFACT_ID);
+        context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion(VERTX_CORE_VERSION));
 
-                // Ask for version only if we asked for the artifactId
-                projectVersion = prompter.promptWithDefaultValue("Set the project version", "1.0-SNAPSHOT");
+        context.put("vertxVerticle", verticle);
+        context.put("vmpVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
 
-                // Ask for maven version if not set
-                if (vertxVersion == null) {
-                    vertxVersion = prompter.promptWithDefaultValue("Set the Vert.x version",
-                        MojoUtils.getVersion(VERTX_CORE_VERSION));
-                }
+        context.put("javaVersion", javaVersion != null ? javaVersion : SystemUtils.JAVA_SPECIFICATION_VERSION);
 
-                if (verticle == null) {
-                    verticle = prompter.promptWithDefaultValue("Set the verticle class name",
-                        projectGroupId.replace("-", ".").replace("_", ".")
-                            + ".MainVerticle");
-                }
-            }
+        SetupTemplateUtils.createPom(context, pomFile);
 
-            if (verticle != null && verticle.endsWith(JAVA_EXTENSION)) {
-                verticle = verticle.substring(0, verticle.length() - JAVA_EXTENSION.length());
-            }
-
-            Map<String, String> context = new HashMap<>();
-            context.put("mProjectGroupId", projectGroupId);
-            context.put("mProjectArtifactId", projectArtifactId);
-            context.put("mProjectVersion", projectVersion);
-            context.put("vertxBom", vertxBom != null ? vertxBom : VERTX_BOM_ARTIFACT_ID);
-            context.put("vertxVersion", vertxVersion != null ? vertxVersion : MojoUtils.getVersion(VERTX_CORE_VERSION));
-
-            context.put("vertxVerticle", verticle);
-            context.put("vmpVersion", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
-
-            context.put("javaVersion", javaVersion != null ? javaVersion : SystemUtils.JAVA_SPECIFICATION_VERSION);
-
-            SetupTemplateUtils.createPom(context, pomFile);
-
-            //The project should be recreated and set with right model
-            MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-
-            model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
-        } catch (Exception e) {
-            throw new MojoExecutionException("Error while setup of vertx-maven-plugin", e);
+        //The project should be recreated and set with right model
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        try (InputStream is = Files.newInputStream(pomFile.toPath())) {
+            model = xpp3Reader.read(is);
+        } catch (IOException | XmlPullParserException e) {
+            throw new MojoExecutionException("Error while reading POM file model", e);
         }
 
         project = new MavenProject(model);
@@ -240,6 +235,16 @@ public class SetupMojo extends AbstractMojo {
         project.setOriginalModel(model); // the current model is the original model as well
 
         return pomFile;
+    }
+
+    private String promptOrUseDefault(String value, String msg, String defaultValue) throws IOException {
+        if (value != null) {
+            return value;
+        }
+        if (mavenSession.getRequest().isInteractiveMode()) {
+            return prompter.promptWithDefaultValue(msg, defaultValue);
+        }
+        return defaultValue;
     }
 
     private void save(File pomFile, Model model) throws MojoExecutionException {
@@ -283,17 +288,14 @@ public class SetupMojo extends AbstractMojo {
      *
      * @param model - the {@code {@link Model}}
      */
-    private void addVertxDependencies(Model model) {
-        String groupId = VERTX_GROUP_ID;
-        String artifactId = "vertx-core";
-        if (model.getDependencies() != null) {
-            if (!MojoUtils.hasDependency(project, groupId, artifactId)) {
-                model.getDependencies().add(
-                    dependency(groupId, artifactId, null));
+    private void addVertxDependencies(Model model, LinkedHashSet<String> toAdd) {
+        for (Dependency dependency : model.getDependencies()) {
+            if (VERTX_GROUP_ID.equals(dependency.getGroupId())) {
+                toAdd.remove(dependency.getArtifactId());
             }
-        } else {
-            model.setDependencies(new ArrayList<>());
-            model.getDependencies().add(dependency(groupId, artifactId, null));
+        }
+        for (String artifactId : toAdd) {
+            model.getDependencies().add(dependency(VERTX_GROUP_ID, artifactId, null));
         }
     }
 
@@ -304,19 +306,21 @@ public class SetupMojo extends AbstractMojo {
      * @param model - the {@code {@link Model}}
      */
     private void addVertxBom(Model model) {
+        DependencyManagement dependencyManagement = model.getDependencyManagement();
+        if (dependencyManagement != null) {
+            for (Dependency dependency : dependencyManagement.getDependencies()) {
+                if (VERTX_GROUP_ID.equals(dependency.getGroupId()) && vertxBom.equals(dependency.getArtifactId())) {
+                    return;
+                }
+            }
+        } else {
+            dependencyManagement = new DependencyManagement();
+            model.setDependencyManagement(dependencyManagement);
+        }
         Dependency dependency = dependency(VERTX_GROUP_ID, vertxBom, "${vertx.version}");
         dependency.setType("pom");
         dependency.setScope("import");
-
-        if (model.getDependencyManagement() != null) {
-            if (!MojoUtils.hasDependency(project, VERTX_GROUP_ID, vertxBom)) {
-                model.getDependencyManagement().addDependency(dependency);
-            }
-        } else {
-            DependencyManagement dm = new DependencyManagement();
-            dm.addDependency(dependency);
-            model.setDependencyManagement(dm);
-        }
+        dependencyManagement.addDependency(dependency);
     }
 
 }
