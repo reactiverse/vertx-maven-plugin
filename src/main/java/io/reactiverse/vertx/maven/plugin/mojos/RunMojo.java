@@ -192,7 +192,7 @@ public class RunMojo extends AbstractVertxMojo {
     private void buildLoop(FileChangesHelper fileChangesHelper) throws MojoExecutionException {
         while (!stop) {
 
-            VertxAppBuilder appBuilder = new VertxAppBuilder(java, getVertxVersionAdapter().mainClass())
+            VertxAppBuilder appBuilder = new VertxAppBuilder(java, getVertxApplicationInfo().mainClass())
                 .env(WEB_ENVIRONMENT_VARIABLE_NAME, vertxWebEnvironment)
                 .workDir(workDirectory);
 
@@ -219,8 +219,11 @@ public class RunMojo extends AbstractVertxMojo {
                 }
             }
 
-            if (getVertxVersionAdapter().isVertxLauncher()) {
-                appBuilder.addAppArg("run").addAppArg(getVertxVersionAdapter().mainVerticle());
+            if (getVertxApplicationInfo().isVertxLauncher()) {
+                if (getVertxApplicationInfo().isLegacyVertxLauncher()) {
+                    appBuilder.addAppArg("run");
+                }
+                appBuilder.addAppArg(getVertxApplicationInfo().mainVerticle());
                 File optionsFile = scanAndLoad("options", options);
                 if (optionsFile != null) {
                     appBuilder

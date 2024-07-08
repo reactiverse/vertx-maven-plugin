@@ -58,6 +58,9 @@ import java.util.Set;
  */
 public abstract class AbstractVertxMojo extends AbstractMojo implements Contextualizable {
 
+    private static final String LAUNCHER = "io.vertx.launcher.application.VertxApplication";
+    private static final String LEGACY_LAUNCHER = "io.vertx.core.Launcher";
+
     /* ==== Maven deps ==== */
 
     /**
@@ -145,7 +148,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     protected PlexusContainer container;
 
     private List<File> classPathElements;
-    private VertxVersionAdapter vertxVersionAdapter;
+    private VertxApplicationInfo applicationInfo;
 
     // Visible for testing
     public MavenProject getProject() {
@@ -176,42 +179,94 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         return classPathElements;
     }
 
-    /**
-     * Adapter for mojos.
-     */
-    public VertxVersionAdapter getVertxVersionAdapter() throws MojoExecutionException {
-        if (vertxVersionAdapter == null) {
-            vertxVersionAdapter = selectRunAdapter();
+    public VertxApplicationInfo getVertxApplicationInfo() throws MojoExecutionException {
+        if (applicationInfo == null) {
+            applicationInfo = computeApplicationInfo();
         }
-        return vertxVersionAdapter;
+        return applicationInfo;
     }
 
-    private VertxVersionAdapter selectRunAdapter() throws MojoExecutionException {
+    private VertxApplicationInfo computeApplicationInfo() throws MojoExecutionException {
+        String vertxVersion = null;
+        boolean hasLauncherLegacyCliJar = false, hasLauncherApplicationJar = false;
         for (Artifact artifact : project.getArtifacts()) {
-            if ("io.vertx".equals(artifact.getGroupId()) && "vertx-core".equals(artifact.getArtifactId())) {
-                String version = artifact.getVersion();
-                if (version.startsWith("4.")) {
-                    return createVertx4VersionAdapter();
+            if ("io.vertx".equals(artifact.getGroupId()))
+                if ("vertx-core".equals(artifact.getArtifactId())) {
+                    vertxVersion = artifact.getVersion();
+                } else if ("vertx-launcher-legacy-cli".equals(artifact.getArtifactId())) {
+                    hasLauncherLegacyCliJar = true;
+                } else if ("vertx-launcher-application".equals(artifact.getArtifactId())) {
+                    hasLauncherApplicationJar = true;
                 }
-                throw new MojoExecutionException("Unsupported Vert.x version: " + version);
-            }
         }
-        throw new MojoExecutionException("Vert.x core not found, it should be a dependency of the project.");
+        if (vertxVersion == null) {
+            throw new MojoExecutionException("Vert.x core not found, it should be a dependency of the project.");
+        }
+        if (vertxVersion.startsWith("4.")) {
+            return computeVertx4ApplicationInfo();
+        }
+        if (vertxVersion.startsWith("5.")) {
+            return computeVertx5ApplicationInfo(hasLauncherLegacyCliJar, hasLauncherApplicationJar);
+        }
+        throw new MojoExecutionException("Unsupported Vert.x version: " + vertxVersion);
     }
 
-    private Vertx4VersionAdapter createVertx4VersionAdapter() throws MojoExecutionException {
-        String mainClass = StringUtils.isBlank(launcher) ? Vertx4VersionAdapter.IO_VERTX_CORE_LAUNCHER : launcher.trim();
+    private VertxApplicationInfo computeVertx4ApplicationInfo() throws MojoExecutionException {
         String mainVerticle = StringUtils.isBlank(verticle) ? null : verticle.trim();
-        boolean isVertxLauncher = Vertx4VersionAdapter.IO_VERTX_CORE_LAUNCHER.equals(mainClass) || isMainClassInstanceOfLauncher(launcher, Vertx4VersionAdapter.IO_VERTX_CORE_LAUNCHER, getClassPathElements());
+        String mainClass = StringUtils.isBlank(launcher) ? LEGACY_LAUNCHER : launcher.trim();
+        boolean isVertxLauncher = isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements());
         if (isVertxLauncher) {
-            if (StringUtils.isBlank(verticle)) {
+            if (mainVerticle == null) {
                 throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
             }
         }
-        return new Vertx4VersionAdapter(mainClass, mainVerticle, isVertxLauncher);
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isVertxLauncher);
+    }
+
+    private VertxApplicationInfo computeVertx5ApplicationInfo(boolean hasLauncherLegacyCliJar, boolean hasLauncherApplicationJar) throws MojoExecutionException {
+        String mainVerticle = StringUtils.isBlank(verticle) ? null : verticle.trim();
+        String mainClass;
+        boolean isVertxLauncher, isLegacyVertxLauncher;
+        if (StringUtils.isBlank(launcher)) {
+            if (hasLauncherLegacyCliJar && hasLauncherApplicationJar) {
+                throw new MojoExecutionException("Invalid configuration, the element `launcher` (`vertx.launcher` property) is required (both `io.vertx:vertx-launcher-application` and `io.vertx:vertx-launcher-legacy-cli` dependencies are present).");
+            }
+            if (hasLauncherApplicationJar) {
+                mainClass = LAUNCHER;
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = false;
+            } else if (hasLauncherLegacyCliJar) {
+                mainClass = LEGACY_LAUNCHER;
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = true;
+            } else {
+                throw new MojoExecutionException("Invalid configuration, you must add the `io.vertx:vertx-launcher-application` or `io.vertx:vertx-launcher-legacy-cli` dependency to the project.");
+            }
+        } else {
+            mainClass = launcher.trim();
+            if (isMainClassInstanceOfLauncher(mainClass, LAUNCHER, getClassPathElements())) {
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = false;
+            } else if (isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements())) {
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = true;
+            } else {
+                isVertxLauncher = false;
+                isLegacyVertxLauncher = false;
+            }
+        }
+        if (isVertxLauncher) {
+            if (mainVerticle == null) {
+                throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
+            }
+        }
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isLegacyVertxLauncher);
     }
 
     private static boolean isMainClassInstanceOfLauncher(String mainClassName, String launcherClassName, List<File> classPathElements) throws MojoExecutionException {
+        if (launcherClassName.equals(mainClassName)) {
+            return true;
+        }
         URL[] classPathUrls = new URL[classPathElements.size()];
         for (int i = 0; i < classPathElements.size(); i++) {
             try {

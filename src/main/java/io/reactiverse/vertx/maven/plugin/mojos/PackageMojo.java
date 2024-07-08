@@ -164,9 +164,8 @@ public class PackageMojo extends AbstractVertxMojo {
         }
 
         // Extend the manifest with launcher and verticle
-        archive.getManifest().putIfAbsent("Main-Class", getVertxVersionAdapter().mainClass());
-
-        String mainVerticle = getVertxVersionAdapter().mainVerticle();
+        archive.getManifest().putIfAbsent("Main-Class", getVertxApplicationInfo().mainClass());
+        String mainVerticle = getVertxApplicationInfo().mainVerticle();
         if (mainVerticle != null) {
             archive.getManifest().putIfAbsent("Main-Verticle", mainVerticle);
         }
