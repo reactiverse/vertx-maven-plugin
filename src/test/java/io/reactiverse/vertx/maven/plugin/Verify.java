@@ -135,14 +135,10 @@ public class Verify {
         assertThat(vertxCoreDep.isPresent()).isTrue();
         assertThat(vertxCoreDep.get().getVersion()).isNull();
 
-        //Check Redeploy Configuration
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
         Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
-        assertNotNull(pluginConfig);
-        String redeploy = pluginConfig.getChild("redeploy").getValue();
-        assertNotNull(redeploy);
-        assertTrue(Boolean.parseBoolean(redeploy));
+        assertNull(pluginConfig);
     }
 
     public static void verifySetupWithVersion(File pomFile) throws Exception {
@@ -154,6 +150,56 @@ public class Verify {
         assertNotNull(projectProps);
         assertFalse(projectProps.isEmpty());
         assertEquals(projectProps.getProperty("vertx.version"), "4.3.1");
+    }
+
+    public static void verifySetupWithVertx5(File pomFile) throws Exception {
+        assertNotNull("Unable to find pom.xml", pomFile);
+        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
+        Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
+
+        MavenProject project = new MavenProject(model);
+
+        Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, "io.reactiverse:vertx-maven-plugin");
+        assertTrue(vmPlugin.isPresent());
+
+        //Check if the properties have been set correctly
+        Properties properties = model.getProperties();
+        assertThat(properties.containsKey("vertx.version")).isTrue();
+        assertEquals(properties.getProperty("vertx.version"), "5.0.0-SNAPSHOT");
+
+        assertThat(properties.containsKey("vertx-maven-plugin.version")).isTrue();
+        assertThat(properties.getProperty("vertx-maven-plugin.version")).isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
+
+        //Check if the dependencies has been set correctly
+        DependencyManagement dependencyManagement = model.getDependencyManagement();
+        assertThat(dependencyManagement).isNotNull();
+        assertThat(dependencyManagement.getDependencies().isEmpty()).isFalse();
+
+        //Check Vert.x dependencies BOM
+        Optional<Dependency> vertxDeps = dependencyManagement.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-stack-depchain") && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+        assertThat(vertxDeps.isPresent()).isTrue();
+        assertThat(vertxDeps.get().getVersion()).isEqualTo("${vertx.version}");
+
+        //Check Vert.x core dependency
+        Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-core") && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+        assertThat(vertxCoreDep.isPresent()).isTrue();
+        assertThat(vertxCoreDep.get().getVersion()).isNull();
+
+        //Check Vert.x App Launcher dependency
+        Optional<Dependency> vertxLauncherApp = model.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-launcher-application") && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+        assertThat(vertxLauncherApp.isPresent()).isTrue();
+        assertThat(vertxLauncherApp.get().getVersion()).isNull();
+
+        Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
+        assertNotNull(vmp);
+        Xpp3Dom pluginConfig = (Xpp3Dom) vmp.getConfiguration();
+        assertNull(pluginConfig);
     }
 
     public static void verifySetupWithBom(File pomFile) throws Exception {

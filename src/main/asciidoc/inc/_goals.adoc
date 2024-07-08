@@ -1,7 +1,6 @@
 == Maven Goals
 
-This plugin supports the following goals which are explained in detail
-in the next sections.
+This plugin supports the following goals which are explained in detail in the next sections.
 
 .Plugin Goals
 [cols="1,3"]
@@ -9,26 +8,14 @@ in the next sections.
 |Goal | Description
 
 |**<<vertx:setup>>**
-|Add the vertx-maven-plugin to your `pom.xml` file
+|Create a new project or add the Vert.x Maven Plugin to an existing project.
 
 |**<<vertx:initialize>>**
-|Copy _js_ dependencies to _webroot_, unpack webjars to _webroot_ (optional) and initialize the redeployment mode
+|Copy _js_ dependencies to _webroot_, unpack webjars to _webroot_ (optional) and initialize the redeployment mode.
 
 |**<<vertx:package>>**
 |Package Vert.x applications
 
 |**<<vertx:run>>**
 |Run a Vert.x application in foreground
-
-|**<<vertx:debug>>**
-|Debug a Vert.x application in foreground
-
-|**<<vertx:start>>**
-|Run a Vert.x application in daemon mode with specific id
-
-|**<<vertx:setup>>**
-|Sets up vert.x maven plugin and basic vert.x dependencies on an existing maven project
-
-|**<<vertx:stop>>**
-|Stops the vert.x application running in daemon mode
 |===

@@ -46,7 +46,7 @@ public class DebugIT extends VertxMojoTestBase {
         debug(verifier);
 
         String response = getHttpResponse();
-        assertThat(response).isEqualTo("aloha true");
+        assertThat(response).isEqualTo("aloha");
 
         verifier.verifyTextInLog("Listening for transport dt_socket at address: 5005");
     }
@@ -62,7 +62,7 @@ public class DebugIT extends VertxMojoTestBase {
         debug(verifier);
 
         String response = getHttpResponse();
-        assertThat(response).isEqualTo("aloha prop true");
+        assertThat(response).isEqualTo("aloha prop");
 
         verifier.verifyTextInLog("Listening for transport dt_socket at address: 5000");
     }
@@ -78,14 +78,14 @@ public class DebugIT extends VertxMojoTestBase {
         debug(verifier);
 
         String response = getHttpResponse();
-        assertThat(response).isEqualTo("bonjour true");
+        assertThat(response).isEqualTo("bonjour");
 
         verifier.verifyTextInLog("Listening for transport dt_socket at address: 5005");
     }
 
     private void debug(Verifier verifier) throws VerificationException {
         verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(Arrays.asList("compile", "vertx:debug"), getEnv());
+        verifier.executeGoals(Arrays.asList("compile", "vertx:run"), getEnv());
     }
 
 }

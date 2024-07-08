@@ -1,6 +1,0 @@
-ifdef::basebackend-html[toc::[]]
-
-:numbered:
-
-include::_common_configuration.adoc[]
-include::_common_run-configuration.adoc[]

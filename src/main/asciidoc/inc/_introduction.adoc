@@ -45,9 +45,6 @@ Generally, you will use the following configuration:
                     </goals>
                 </execution>
             </executions>
-            <configuration>
-                <redeploy>true</redeploy>
-            </configuration>
         </plugin>
         ...
     </plugins>

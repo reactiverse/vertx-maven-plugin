@@ -17,11 +17,10 @@
 
 package io.reactiverse.vertx.maven.plugin.mojos;
 
-import io.reactiverse.vertx.maven.plugin.components.ManifestCustomizerService;
-import io.reactiverse.vertx.maven.plugin.components.ServiceUtils;
+import io.reactiverse.vertx.maven.plugin.utils.MavenUtils;
 import io.reactiverse.vertx.maven.plugin.utils.WebJars;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
 import org.apache.maven.plugin.AbstractMojo;
@@ -32,121 +31,40 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.ArtifactRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The base Mojo class that will be extended by the other plugin goals
  */
 public abstract class AbstractVertxMojo extends AbstractMojo implements Contextualizable {
 
-    /**
-     * The vert.x Core Launcher class
-     */
-
-    public static final String IO_VERTX_CORE_LAUNCHER = "io.vertx.core.Launcher";
-
-    /**
-     * Vert.x options file name, without suffix (could be JSON or YAML file).
-     */
-    protected static final String VERTX_OPTIONS_FILE = "options";
-
-    /**
-     * Verticle configuration file name, without suffix (could be JSON or YAML file).
-     */
-    protected static final String VERTICLE_CONFIG_FILE = "application";
-
-    protected static final String JSON_EXTENSION = ".json";
-
-    protected static final List<String> YAML_EXTENSIONS = Arrays.asList(".yml", ".yaml");
-
-    /**
-     * Vert.x configuration option
-     */
-    protected static final String VERTX_ARG_OPTIONS = "-options";
-
-    /**
-     * Verticle configuration option
-     */
-    protected static final String VERTX_ARG_CONF = "-conf";
-
-    /**
-     * vert.x launcher argument
-     */
-    protected static final String VERTX_ARG_LAUNCHER_CLASS = "--launcher-class";
-    /**
-     *
-     */
-    protected static final String DEFAULT_CONF_DIR = "src/main/conf";
-
-    /**
-     * vert.x java-opt argument
-     */
-    protected static final String VERTX_ARG_JAVA_OPT = "--java-opts";
-
-    /**
-     * vert.x redeploy argument
-     */
-    protected static final String VERTX_ARG_REDEPLOY = "--redeploy=";
-
-    /**
-     * vert.x redeploy scan period
-     */
-    protected static final String VERTX_ARG_REDEPLOY_SCAN_PERIOD = "--redeploy-scan-period=";
-
-    /**
-     * vert.x redeploy grace period
-     */
-    protected static final String VERTX_ARG_REDEPLOY_GRACE_PERIOD = "--redeploy-grace-period=";
-
-    /**
-     * vert.x redeploy termination period
-     */
-    protected static final String VERTX_ARG_REDEPLOY_TERMINATION_PERIOD = "redeploy-termination-period=";
-
-    /**
-     * vert.x command stop
-     */
-    protected static final String VERTX_COMMAND_STOP = "stop";
-
-    /**
-     * vert.x command start
-     */
-    protected static final String VERTX_COMMAND_START = "start";
-
-    /**
-     *
-     */
-    protected static final String VERTX_PACKAGING = "jar";
-
-    /**
-     *
-     */
-    protected static final String VERTX_PID_FILE = "vertx-start-process.id";
-
-    /**
-     *
-     */
-    protected static final String VERTX_RUN_MODE_JAR = "jar";
+    private static final String LAUNCHER = "io.vertx.launcher.application.VertxApplication";
+    private static final String LEGACY_LAUNCHER = "io.vertx.core.Launcher";
 
     /* ==== Maven deps ==== */
+
     /**
-     * The Maven project which will define and confiure the vertx-maven-plugin
+     * The Maven project which will define and configure the vertx-maven-plugin
      */
     @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
@@ -157,6 +75,12 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Parameter(defaultValue = "${project.build.directory}")
     protected String projectBuildDir;
+
+    /**
+     * The maven project classes directory, defaults to target/classes
+     */
+    @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+    File classesDirectory;
 
     /**
      * The maven artifact resolution session, which will be used to resolve Maven artifacts
@@ -198,9 +122,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     protected Archive archive;
 
     /* ==== Config ====  */
-    // TODO-ROL: It would be awesome if this would not be required but, if not given,
-    // the plugin tries to detect a single verticle. Maybe even decorated with a specific annotation ?
-    // (like @MainVerticle ?). Only if no such verticle can be uniquely identified, then throw an exception.
+
     /**
      * The verticle that will be the main entry point on to the vertx application, the same property will be used
      * as &quot;Main-Verticle;&quot; attribute value on the MANIFEST.MF
@@ -210,9 +132,8 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
 
     /**
      * The main launcher class that will be used when launching the Vert.X applications.
-     * It defaults to {@code io.vertx.core.Launcher}
      */
-    @Parameter(defaultValue = "io.vertx.core.Launcher", property = "vertx.launcher")
+    @Parameter(property = "vertx.launcher")
     protected String launcher;
 
     /**
@@ -226,97 +147,12 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     protected PlexusContainer container;
 
+    private List<File> classPathElements;
+    private VertxApplicationInfo applicationInfo;
+
+    // Visible for testing
     public MavenProject getProject() {
         return project;
-    }
-
-    /**
-     * this method resolves maven artifact from all configured repositories using the maven coordinates
-     *
-     * @param artifact - the maven coordinates of the artifact
-     * @return {@link Optional} {@link File} pointing to the resolved artifact in local repository
-     */
-    protected Optional<File> resolveArtifact(String artifact) {
-        ArtifactRequest artifactRequest = new ArtifactRequest();
-        artifactRequest.setArtifact(new org.eclipse.aether.artifact.DefaultArtifact(artifact));
-        try {
-            ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
-            if (artifactResult.isResolved()) {
-                getLog().debug("Resolved :" + artifactResult.getArtifact().getArtifactId());
-                return Optional.of(artifactResult.getArtifact().getFile());
-            } else {
-                getLog().error("Unable to resolve:" + artifact);
-            }
-        } catch (ArtifactResolutionException e) {
-            getLog().error("Unable to resolve:" + artifact);
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * this method helps in extracting the Artifact paths from the Maven local repository.
-     * If does does not handle WebJars and non-jar dependencies.
-     *
-     * @param artifacts - the collection of artifacts which needs to be resolved to local {@link File}
-     * @return A {@link Set} of {@link Optional} file paths
-     */
-    protected Set<Optional<File>> extractArtifactPaths(Set<Artifact> artifacts) {
-        return artifacts
-            .stream()
-            .filter(e -> e.getScope().equals("compile") || e.getScope().equals("runtime"))
-            .filter(e -> e.getType().equalsIgnoreCase("jar"))
-            .filter(e -> !WebJars.isWebJar(getLog(), e.getFile()))
-            .map(this::asMavenCoordinates)
-            .distinct()
-            .map(this::resolveArtifact)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * this method helps in resolving the {@link Artifact} as maven coordinates
-     * coordinates ::= group:artifact[:packaging[:classifier]]:version
-     *
-     * @param artifact - the artifact which need to be represented as maven coordinate
-     * @return string representing the maven coordinate
-     */
-    protected String asMavenCoordinates(Artifact artifact) {
-        // TODO-ROL: Shouldn't there be also the classified included after the groupId (if given ?)
-        // Maybe we we should simply reuse DefaultArtifact.toString() (but could be too fragile as it might change
-        // although I don't think it will change any time soon since probably many people already
-        // rely on it)
-        StringBuilder artifactCords = new StringBuilder().
-            append(artifact.getGroupId())
-            .append(":")
-            .append(artifact.getArtifactId());
-        if (!"jar".equals(artifact.getType()) || artifact.hasClassifier()) {
-            artifactCords.append(":").append(artifact.getType());
-        }
-        if (artifact.hasClassifier()) {
-            artifactCords.append(":").append(artifact.getClassifier());
-        }
-        artifactCords.append(":").append(ArtifactUtils.toSnapshotVersion(artifact.getVersion()));
-        return artifactCords.toString();
-    }
-
-    /**
-     * This method returns the project's primary artifact file, this method tries to compute the artifact file name
-     * based on project finalName is configured or not
-     *
-     * @param artifact - the project artifact for which the target file will be needed
-     * @return {@link Optional<File>} representing the optional project primary artifact file
-     */
-    protected Optional<File> getArtifactFile(Artifact artifact) {
-        final String finalName = this.project.getName();
-        if (artifact == null) {
-            Path finalNameArtifact = Paths.get(this.projectBuildDir, finalName + "." + this.project.getPackaging());
-            if (Files.exists(finalNameArtifact)) {
-                return Optional.of(finalNameArtifact.toFile());
-            }
-        } else {
-            return Optional.ofNullable(artifact.getFile());
-        }
-        return Optional.empty();
     }
 
     /**
@@ -330,46 +166,160 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
         container = (PlexusContainer) context.get(PlexusConstants.PLEXUS_KEY);
     }
 
-    protected Archive computeArchive() throws MojoExecutionException {
-        if (archive == null) {
-            archive = ServiceUtils.getDefaultFatJar();
+    /**
+     * List of classpath elements (classes directory and dependencies).
+     */
+    public List<File> getClassPathElements() throws MojoExecutionException {
+        if (classPathElements == null) {
+            classPathElements = new ArrayList<>();
+            classPathElements.add(this.classesDirectory);
+            classPathElements.addAll(extractArtifactPaths(this.project.getArtifacts()));
+            getLog().debug("Classpath elements: " + classPathElements);
         }
-
-        if (archive.getDependencySets().isEmpty()) {
-            archive.addDependencySet(DependencySet.ALL);
-        }
-
-        // Extend the manifest with launcher and verticle
-        if (launcher != null && !launcher.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Class", launcher);
-        }
-
-        if (verticle != null && !verticle.trim().isEmpty()) {
-            archive.getManifest().putIfAbsent("Main-Verticle", verticle);
-        }
-
-        List<ManifestCustomizerService> customizers = getManifestCustomizers();
-        customizers.forEach(customizer ->
-            this.archive.getManifest().putAll(customizer.getEntries(this, project)));
-
-        if (archive.getFileCombinationPatterns().isEmpty()) {
-            archive.addFileCombinationPattern("META-INF/services/*");
-            archive.addFileCombinationPattern("META-INF/spring.*");
-            archive.addFileCombinationPattern("META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat");
-        }
-
-        return this.archive;
+        return classPathElements;
     }
 
-    private List<ManifestCustomizerService> getManifestCustomizers() throws MojoExecutionException {
-        List<ManifestCustomizerService> customizers;
-        try {
-            customizers = container.lookupList(ManifestCustomizerService.class);
-        } catch (ComponentLookupException e) {
-            getLog().debug("ManifestCustomerService lookup failed", e);
-            throw new MojoExecutionException("Unable to retrieve the " +
-                ManifestCustomizerService.class.getName() + " components");
+    public VertxApplicationInfo getVertxApplicationInfo() throws MojoExecutionException {
+        if (applicationInfo == null) {
+            applicationInfo = computeApplicationInfo();
         }
-        return customizers;
+        return applicationInfo;
+    }
+
+    private VertxApplicationInfo computeApplicationInfo() throws MojoExecutionException {
+        String vertxVersion = null;
+        boolean hasLauncherLegacyCliJar = false, hasLauncherApplicationJar = false;
+        for (Artifact artifact : project.getArtifacts()) {
+            if ("io.vertx".equals(artifact.getGroupId()))
+                if ("vertx-core".equals(artifact.getArtifactId())) {
+                    vertxVersion = artifact.getVersion();
+                } else if ("vertx-launcher-legacy-cli".equals(artifact.getArtifactId())) {
+                    hasLauncherLegacyCliJar = true;
+                } else if ("vertx-launcher-application".equals(artifact.getArtifactId())) {
+                    hasLauncherApplicationJar = true;
+                }
+        }
+        if (vertxVersion == null) {
+            throw new MojoExecutionException("Vert.x core not found, it should be a dependency of the project.");
+        }
+        if (vertxVersion.startsWith("4.")) {
+            return computeVertx4ApplicationInfo();
+        }
+        if (vertxVersion.startsWith("5.")) {
+            return computeVertx5ApplicationInfo(hasLauncherLegacyCliJar, hasLauncherApplicationJar);
+        }
+        throw new MojoExecutionException("Unsupported Vert.x version: " + vertxVersion);
+    }
+
+    private VertxApplicationInfo computeVertx4ApplicationInfo() throws MojoExecutionException {
+        String mainVerticle = StringUtils.isBlank(verticle) ? null : verticle.trim();
+        String mainClass = StringUtils.isBlank(launcher) ? LEGACY_LAUNCHER : launcher.trim();
+        boolean isVertxLauncher = isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements());
+        if (isVertxLauncher) {
+            if (mainVerticle == null) {
+                throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
+            }
+        }
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isVertxLauncher);
+    }
+
+    private VertxApplicationInfo computeVertx5ApplicationInfo(boolean hasLauncherLegacyCliJar, boolean hasLauncherApplicationJar) throws MojoExecutionException {
+        String mainVerticle = StringUtils.isBlank(verticle) ? null : verticle.trim();
+        String mainClass;
+        boolean isVertxLauncher, isLegacyVertxLauncher;
+        if (StringUtils.isBlank(launcher)) {
+            if (hasLauncherLegacyCliJar && hasLauncherApplicationJar) {
+                throw new MojoExecutionException("Invalid configuration, the element `launcher` (`vertx.launcher` property) is required (both `io.vertx:vertx-launcher-application` and `io.vertx:vertx-launcher-legacy-cli` dependencies are present).");
+            }
+            if (hasLauncherApplicationJar) {
+                mainClass = LAUNCHER;
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = false;
+            } else if (hasLauncherLegacyCliJar) {
+                mainClass = LEGACY_LAUNCHER;
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = true;
+            } else {
+                throw new MojoExecutionException("Invalid configuration, you must add the `io.vertx:vertx-launcher-application` or `io.vertx:vertx-launcher-legacy-cli` dependency to the project.");
+            }
+        } else {
+            mainClass = launcher.trim();
+            if (isMainClassInstanceOfLauncher(mainClass, LAUNCHER, getClassPathElements())) {
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = false;
+            } else if (isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements())) {
+                isVertxLauncher = true;
+                isLegacyVertxLauncher = true;
+            } else {
+                isVertxLauncher = false;
+                isLegacyVertxLauncher = false;
+            }
+        }
+        if (isVertxLauncher) {
+            if (mainVerticle == null) {
+                throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
+            }
+        }
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isLegacyVertxLauncher);
+    }
+
+    private static boolean isMainClassInstanceOfLauncher(String mainClassName, String launcherClassName, List<File> classPathElements) throws MojoExecutionException {
+        if (launcherClassName.equals(mainClassName)) {
+            return true;
+        }
+        URL[] classPathUrls = new URL[classPathElements.size()];
+        for (int i = 0; i < classPathElements.size(); i++) {
+            try {
+                classPathUrls[i] = classPathElements.get(i).toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("Invalid classpath element: " + classPathElements.get(i), e);
+            }
+        }
+        try (URLClassLoader classLoader = new URLClassLoader(classPathUrls)) {
+            Class<?> mainClass = classLoader.loadClass(mainClassName);
+            for (Class<?> superClass : ClassUtils.getAllSuperclasses(mainClass)) {
+                if (launcherClassName.equals(superClass.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failure while inspecting main class hierarchy", e);
+        } catch (ClassNotFoundException e) {
+            throw new MojoExecutionException("Could not find main class: " + mainClassName);
+        }
+    }
+
+    private Set<File> extractArtifactPaths(Set<Artifact> artifacts) throws MojoExecutionException {
+        try {
+            Set<File> files = new LinkedHashSet<>();
+            for (Artifact e : artifacts) {
+                if (e.getScope().equals("compile") || e.getScope().equals("runtime")) {
+                    if (e.getType().equals("jar")) {
+                        if (!WebJars.isWebJar(e.getFile())) {
+                            File resolvedArtifact = resolveArtifact(MavenUtils.asMavenCoordinates(e));
+                            if (resolvedArtifact != null) {
+                                files.add(resolvedArtifact.getAbsoluteFile());
+                            }
+                        }
+                    }
+                }
+            }
+            return files;
+        } catch (IOException | ArtifactResolutionException ex) {
+            throw new MojoExecutionException("Unable to extract artifact paths", ex);
+        }
+    }
+
+    private File resolveArtifact(String artifact) throws ArtifactResolutionException {
+        ArtifactRequest artifactRequest = new ArtifactRequest();
+        artifactRequest.setArtifact(new DefaultArtifact(artifact));
+        ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
+        if (artifactResult.isResolved()) {
+            getLog().debug("Resolved: " + artifactResult.getArtifact().getArtifactId());
+            return artifactResult.getArtifact().getFile();
+        }
+        getLog().warn("Unable to resolve artifact: " + artifact);
+        return null;
     }
 }

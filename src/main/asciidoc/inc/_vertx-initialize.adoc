@@ -1,7 +1,7 @@
 [[vertx:initialize]]
 === *vertx:initialize*
 
-This goals has several aims:
+This goal has several aims:
 
 * copy _js_ dependencies to the _webroot_ directory
 * unpack _webjars_ dependencies to the _webroot_ directory (optional)
@@ -25,17 +25,17 @@ The initialize goal has the following parameters apart from the ones mentioned i
 | ${project.baseDir}/target/classes/webroot
 
 | unpackWebJar
-| Whether or not webjars are unpacked to _webRoot_. If not unpacked, webjars can be https://www.webjars.org/documentation#vertx[served from the classpath].
+| Whether webjars are unpacked to _webRoot_. If not unpacked, webjars can be https://www.webjars.org/documentation#vertx[served from the classpath].
 | &nbsp;
 | false
 
 | stripWebJarVersion
-| Whether or not the version is stripped when unpacking webjars
+| Whether the version is stripped when unpacking webjars
 | &nbsp;
 | true
 
 | stripJavaScriptDependencyVersion
-| Whether or not the version is stripped when copying the JavaScript file
+| Whether the version is stripped when copying the JavaScript file
 | &nbsp;
 | true
 |===

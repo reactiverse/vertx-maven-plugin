@@ -17,48 +17,50 @@
 
 package io.reactiverse.vertx.maven.plugin;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactiverse.vertx.maven.plugin.utils.ConfigConverterUtil;
-import io.vertx.core.json.JsonObject;
-import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author kameshs
  */
 public class ConfigConversionUtilTest {
 
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void convertSimpleYamlToJson() throws Exception {
         File yamlFile = new File("src/test/resources/testconfig.yaml");
-        File jsonFilePath = File.createTempFile("testconfig", ".json");
-        assertTrue(yamlFile.isFile());
+        assertThat(yamlFile).exists().canRead();
+        File jsonFilePath = tempFolder.newFile("testconfig.json");
         ConfigConverterUtil.convertYamlToJson(yamlFile, jsonFilePath);
-        assertNotNull(jsonFilePath);
-        String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
-        assertNotNull(jsonDoc);
-        JsonObject jsonObject = new JsonObject(jsonDoc);
-        assertThat(jsonObject.getInteger("http.port")).isEqualTo(8080);
-
+        assertThat(jsonFilePath).exists().canRead();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonFilePath);
+        assertThat(jsonNode.get("http.port").asInt()).isEqualTo(8080);
     }
 
     @Test
     public void convertArrayYamlToJson() throws Exception {
         File yamlFile = new File("src/test/resources/testconfig2.yaml");
-        File jsonFilePath = File.createTempFile("testconfig2", ".json");
-        assertTrue(yamlFile.isFile());
+        assertThat(yamlFile).exists().canRead();
+        File jsonFilePath = tempFolder.newFile("testconfig2.json");
         ConfigConverterUtil.convertYamlToJson(yamlFile, jsonFilePath);
-        assertNotNull(jsonFilePath);
-        String jsonDoc = FileUtils.readFileToString(jsonFilePath, "UTF-8");
-        assertNotNull(jsonDoc);
-        JsonObject jsonObject = new JsonObject(jsonDoc);
-        assertThat(jsonObject.getJsonArray("names"))
+        assertThat(jsonFilePath).exists().canRead();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonFilePath);
+        JsonNode names = jsonNode.get("names");
+        assertThat(names.isArray()).isTrue();
+        assertThat(names)
             .hasSize(4)
-            .first().isEqualTo("kamesh");
+            .first().extracting(JsonNode::asText).isEqualTo("kamesh");
     }
 }

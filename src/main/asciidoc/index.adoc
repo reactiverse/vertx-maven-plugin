@@ -19,16 +19,13 @@ ifdef::basebackend-html[toc::[]]
 
 include::inc/_introduction.adoc[]
 
-include::inc/_configurations-index.adoc[toc::[]]
+include::inc/_common_configuration.adoc[]
 
 include::inc/_goals.adoc[]
 include::inc/_vertx-setup.adoc[]
 include::inc/_vertx-initialize.adoc[]
 include::inc/_vertx-package.adoc[]
 include::inc/_vertx-run.adoc[]
-include::inc/_vertx-start.adoc[]
-include::inc/_vertx-stop.adoc[]
-include::inc/_vertx-setup.adoc[]
 
 include::inc/_archive-config.adoc[]
 

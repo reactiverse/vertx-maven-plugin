@@ -33,13 +33,15 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,13 +51,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SPICombineTest {
 
-    private ServiceFileCombinationImpl combiner = new ServiceFileCombinationImpl();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private File outputDirectory;
+    private ServiceFileCombinationImpl combiner;
+
+    @Before
+    public void setUp() throws Exception {
+        outputDirectory = temporaryFolder.newFolder();
+        combiner = new ServiceFileCombinationImpl();
+    }
 
     @Test
     public void testCombine() throws Exception {
-        File jar1 = new File("target/testCombine1.jar");
-        File jar2 = new File("target/testCombine2.jar");
-        File jar3 = new File("target/testCombine3.jar");
+        File jar1 = temporaryFolder.newFile("testCombine1.jar");
+        File jar2 = temporaryFolder.newFile("testCombine2.jar");
+        File jar3 = temporaryFolder.newFile("testCombine3.jar");
 
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.addAsServiceProvider("com.test.demo.DemoSPI",
@@ -103,7 +115,7 @@ public class SPICombineTest {
 
         mojo.setLog(new SystemStreamLog());
         Build build = new Build();
-        build.setOutputDirectory("target/junk");
+        build.setOutputDirectory(outputDirectory.getAbsolutePath());
         project.setBuild(build);
 
         ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
@@ -114,22 +126,20 @@ public class SPICombineTest {
 
         combiner.doCombine(config);
 
-        File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
+        File merged = new File(outputDirectory, "META-INF/services/com.test.demo.DemoSPI");
         assertThat(merged).isFile();
 
         List<String> lines = FileUtils.readLines(merged, "UTF-8");
         assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
-        Stream.of(jar1, jar2, jar3, new File("target/junk")).forEach(FileUtils::deleteQuietly);
     }
 
     @Test
     public void testCombineDiffSPI() throws Exception {
-
-        File jar1 = new File("target/testCombineDiffSPI.jar");
-        File jar2 = new File("target/testCombineDiffSPI2.jar");
-        File jar3 = new File("target/testCombineDiffSPI3.jar");
-        File jar4 = new File("target/testCombineDiffSPI4.jar");
+        File jar1 = temporaryFolder.newFile("testCombineDiffSPI.jar");
+        File jar2 = temporaryFolder.newFile("testCombineDiffSPI2.jar");
+        File jar3 = temporaryFolder.newFile("testCombineDiffSPI3.jar");
+        File jar4 = temporaryFolder.newFile("testCombineDiffSPI4.jar");
 
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.addAsServiceProvider("com.test.demo.DemoSPI",
@@ -183,7 +193,7 @@ public class SPICombineTest {
 
         mojo.setLog(new SystemStreamLog());
         Build build = new Build();
-        build.setOutputDirectory("target/junk");
+        build.setOutputDirectory(outputDirectory.getAbsolutePath());
         project.setBuild(build);
 
         ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
@@ -193,7 +203,7 @@ public class SPICombineTest {
             .setMojo(mojo);
 
         combiner.doCombine(config);
-        File merged = new File("target/junk/META-INF/services/com.test.demo.DemoSPI");
+        File merged = new File(outputDirectory, "META-INF/services/com.test.demo.DemoSPI");
         assertThat(merged).isFile();
 
         List<String> lines = FileUtils.readLines(merged, "UTF-8");
@@ -201,15 +211,13 @@ public class SPICombineTest {
             "com.test.demo.DemoSPI.impl.DemoSPIImpl",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl2",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl4");
-        Stream.of(jar1, jar2, jar3, jar4, new File("target/junk")).forEach(FileUtils::deleteQuietly);
-
     }
 
     @Test
     public void testCombineWithSpringDescriptors() throws Exception {
-        File jar1 = new File("target/testCombine1Spring.jar");
-        File jar2 = new File("target/testCombine2Spring.jar");
-        File jar3 = new File("target/testCombine3Spring.jar");
+        File jar1 = temporaryFolder.newFile("testCombine1Spring.jar");
+        File jar2 = temporaryFolder.newFile("testCombine2Spring.jar");
+        File jar3 = temporaryFolder.newFile("testCombine3Spring.jar");
 
         JavaArchive jarArchive1 = ShrinkWrap.create(JavaArchive.class);
         jarArchive1.add(new StringAsset("com.test.demo.DemoSPI.impl.DemoSPIImpl"),
@@ -257,7 +265,7 @@ public class SPICombineTest {
 
         mojo.setLog(new SystemStreamLog());
         Build build = new Build();
-        build.setOutputDirectory("target/junk");
+        build.setOutputDirectory(outputDirectory.getAbsolutePath());
         project.setBuild(build);
 
         ServiceFileCombinationConfig config = new ServiceFileCombinationConfig()
@@ -268,12 +276,11 @@ public class SPICombineTest {
 
         combiner.doCombine(config);
 
-        File merged = new File("target/junk/META-INF/spring.foo");
+        File merged = new File(outputDirectory, "META-INF/spring.foo");
         assertThat(merged).isFile();
 
         List<String> lines = FileUtils.readLines(merged, "UTF-8");
         assertThat(lines).containsExactly("com.test.demo.DemoSPI.impl.DemoSPIImpl",
             "com.test.demo.DemoSPI.impl.DemoSPIImpl2");
-        Stream.of(jar1, jar2, jar3, new File("target/junk")).forEach(FileUtils::deleteQuietly);
     }
 }
