@@ -97,7 +97,7 @@
         <assertj-core.version>3.26.0</assertj-core.version>
         <junit.version>4.13.2</junit.version>
         <maven-verifier.version>1.8.0</maven-verifier.version>
-        <awaitility.version>1.7.0</awaitility.version>
+        <awaitility.version>4.2.1</awaitility.version>
 
         <skipTests>false</skipTests>
 
@@ -275,7 +275,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.jayway.awaitility</groupId>
+            <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
             <scope>test</scope>

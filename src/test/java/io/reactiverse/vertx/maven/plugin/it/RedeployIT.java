@@ -12,8 +12,8 @@ import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test checking that the redeployment is triggered correctly both in Maven and in Vert.x.
@@ -59,6 +59,27 @@ public class RedeployIT extends VertxMojoTestBase {
 
         // Wait until we get "uuid"
         await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+    }
+
+    @Test
+    public void testRedeployDisabled() throws Exception {
+        File testDir = initProject("projects/redeploy-disabled-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha");
+
+        // Touch the java source code
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, Collections.singletonMap("aloha", uuid));
+
+        await().during(15, TimeUnit.SECONDS).until(() -> getHttpResponse().equalsIgnoreCase("aloha"));
     }
 
     @Test

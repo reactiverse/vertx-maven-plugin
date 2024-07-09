@@ -50,16 +50,10 @@ public class RunMojo extends AbstractVertxMojo {
     private static final String WEB_ENVIRONMENT_VARIABLE_NAME = "VERTXWEB_ENVIRONMENT";
 
     /**
-     * How often should the source files be scanned for file changes.
+     * Redeployment configuration.
      */
-    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period", defaultValue = "250")
-    long redeployScanPeriod;
-
-    /**
-     * How long the plugin should wait between two redeployments.
-     */
-    @Parameter(alias = "redeployGracePeriod", property = "vertx.redeploy.grace.period", defaultValue = "1000")
-    long redeployGracePeriod;
+    @Parameter
+    Redeployment redeployment;
 
     /**
      * Sets the environment the Vert.x Web app is running in.
@@ -154,7 +148,7 @@ public class RunMojo extends AbstractVertxMojo {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHookTask()));
 
-        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(new File("src/main"))) {
+        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(redeployment)) {
             buildLoop(fileChangesHelper);
         } catch (Exception e) {
             throw new MojoExecutionException("Failure while running Vert.x application", e);
@@ -261,14 +255,16 @@ public class RunMojo extends AbstractVertxMojo {
                 throw new MojoExecutionException("Failed to start Vert.x Application", e);
             }
 
-            try {
-                Thread.sleep(redeployGracePeriod);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new MojoExecutionException("Interrupted while sleeping for grace period", e);
+            if (redeployment.isEnabled()) {
+                try {
+                    Thread.sleep(redeployment.getGracePeriod());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new MojoExecutionException("Interrupted while sleeping for grace period", e);
+                }
             }
 
-            while (!fileChangesHelper.foundChanges()) {
+            while (true) {
                 if (!vertxApp.isAlive()) {
                     getLog().info("Vert.x Application has stopped");
                     return;
@@ -276,11 +272,16 @@ public class RunMojo extends AbstractVertxMojo {
                 if (stop) {
                     return;
                 }
-                try {
-                    Thread.sleep(redeployScanPeriod);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new MojoExecutionException("Interrupted while sleeping for scan period", e);
+                if (redeployment.isEnabled()) {
+                    if (fileChangesHelper.foundChanges()) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(redeployment.getScanPeriod());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new MojoExecutionException("Interrupted while sleeping for scan period", e);
+                    }
                 }
             }
 
