@@ -42,7 +42,7 @@ public class PrompterImpl implements Prompter {
     public PrompterImpl() throws IOException {
         Terminal terminal = TerminalBuilder.builder()
             .system(true)
-            .jna(true)
+            .jni(true)
             .build();
         console = LineReaderBuilder.builder()
             .terminal(terminal)
@@ -52,7 +52,7 @@ public class PrompterImpl implements Prompter {
     public PrompterImpl(InputStream in, OutputStream out) throws IOException {
         Terminal terminal = TerminalBuilder.builder()
             .system(false)
-            .jna(false)
+            .jni(false)
             .streams(in, out)
             .build();
         console = LineReaderBuilder.builder()

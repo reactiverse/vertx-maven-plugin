@@ -234,13 +234,8 @@
         </dependency>
         <dependency>
             <groupId>org.jline</groupId>
-            <artifactId>jline-terminal-jna</artifactId>
+            <artifactId>jline-terminal-jni</artifactId>
             <version>${jline.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.14.0</version>
         </dependency>
 
         <!-- Testing -->
@@ -377,11 +372,19 @@
         <profile>
             <id>illegal-access</id>
             <activation>
-                <jdk>[9,)</jdk>
+                <jdk>[9,17)</jdk>
             </activation>
             <build>
                 <pluginManagement>
                     <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-failsafe-plugin.version}</version>
+                            <configuration>
+                                <argLine>--illegal-access=permit</argLine>
+                            </configuration>
+                        </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-failsafe-plugin</artifactId>
