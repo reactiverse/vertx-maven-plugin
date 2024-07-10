@@ -1,5 +1,7 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,19 +19,28 @@ public class PrompterImplTest {
     private PipedInputStream input;
     private PrintWriter pipeToInput;
     private ByteArrayOutputStream output;
+    private PrompterImpl prompter;
 
     @Before
     public void setUp() throws Exception {
         input = new PipedInputStream();
         pipeToInput = new PrintWriter(new PipedOutputStream(input), true);
         output = new ByteArrayOutputStream();
+        prompter = new PrompterImpl(input, output);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        IOUtils.closeQuietly(input, pipeToInput, output);
+        if (prompter != null) {
+            IOUtils.closeQuietly(prompter.getConsole().getTerminal());
+        }
     }
 
     @Test
     public void testPrompt() throws IOException {
         pipeToInput.println("good thanks!");
 
-        PrompterImpl prompter = new PrompterImpl(input, output);
         String res = prompter.prompt("how are you? ");
         assertThat(res).isEqualToIgnoringCase("good thanks!");
         assertThat(output.toString()).contains("how are you?", "good thanks!");
@@ -39,7 +50,6 @@ public class PrompterImplTest {
     public void testPromptWithDefault() throws IOException {
         pipeToInput.println("good thanks!");
 
-        PrompterImpl prompter = new PrompterImpl(input, output);
         String res = prompter.promptWithDefaultValue("how are you? ", "not too bad");
         assertThat(res).isEqualToIgnoringCase("good thanks!");
         assertThat(output.toString()).contains("how are you?", "good thanks!");
@@ -50,7 +60,6 @@ public class PrompterImplTest {
     public void testPromptWithDefaultValueAndNoInput() throws IOException {
         pipeToInput.println();
 
-        PrompterImpl prompter = new PrompterImpl(input, output);
         String res = prompter.promptWithDefaultValue("how are you? ", "not too bad");
         assertThat(res).isEqualToIgnoringCase("not too bad");
         assertThat(output.toString()).contains("how are you?");
@@ -60,7 +69,6 @@ public class PrompterImplTest {
     public void testPromptWithDefaultValueAndEmptyInput() throws IOException {
         pipeToInput.println("   \t");
 
-        PrompterImpl prompter = new PrompterImpl(input, output);
         String res = prompter.promptWithDefaultValue("how are you? ", "not too bad");
         assertThat(res).isEqualToIgnoringCase("not too bad");
         assertThat(output.toString()).contains("how are you?");
