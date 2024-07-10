@@ -3,7 +3,7 @@
 
 This goal allows to run the Vert.x application as part of the Maven build, in a separate process.
 
-It monitors the `src/main` directory and, if the code changes, rebuilds the project and restarts the application.
+By default, it monitors the `src/main` directory and, if the code changes, rebuilds the project and restarts the application.
 The plugin re-executes the mojos that ran between the _generate-source_ and the _process-classes_ phases.
 
 So, to start a Vert.x application, just launch:
@@ -13,7 +13,7 @@ So, to start a Vert.x application, just launch:
 mvn vertx:run
 ----
 
-If the sources are not compiled, the plugin executes `mvn compile` for you.
+If the sources aren't compiled, the plugin executes `mvn compile` for you.
 
 The goal has the following configuration:
 
@@ -21,13 +21,35 @@ The goal has the following configuration:
 |===
 | Element | Description | Property| Default
 
+| `redeploy`
+| Whether redeployment is enabled.
+| `vertx.redeploy.enabled`
+| `true`
+
+| `redeployRootDirectory`
+| The root directory to scan for changes.
+| &nbsp;
+| `${project.basedir}/src/main`
+
+| `redeployIncludes`
+| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to include in change monitoring.
+The patterns must be expressed relatively to the `rootDirectory`.
+| &nbsp;
+| &nbsp;
+
+| `redeployExcludes`
+| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to exclude from change monitoring.
+The patterns must be expressed relatively to the `rootDirectory`.
+| &nbsp;
+| &nbsp;
+
 | `redeployScanPeriod`
-| The file system check period (in milliseconds).
+| How often, in milliseconds, should the source files be scanned for file changes.
 | `vertx.redeploy.scan.period`
 | `250`
 
 | `redeployGracePeriod`
-| The amount of time (in milliseconds) to wait between 2 re-deployments.
+| How long, in milliseconds, the plugin should wait between two redeployments.
 | `vertx.redeploy.grace.period`
 | `1000`
 

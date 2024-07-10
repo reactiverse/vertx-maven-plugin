@@ -10,10 +10,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test checking that the redeployment is triggered correctly both in Maven and in Vert.x.
@@ -58,7 +58,29 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+    }
+
+    @Test
+    public void testRedeployDisabled() throws Exception {
+        File testDir = initProject("projects/redeploy-disabled-it");
+        assertThat(testDir).isDirectory();
+
+        initVerifier(testDir);
+        prepareProject(testDir, verifier);
+
+        run(verifier);
+
+        String response = getHttpResponse();
+        assertThat(response).isEqualTo("aloha");
+
+        // Touch the java source code
+        File source = new File(testDir, "src/main/java/demo/SimpleVerticle.java");
+        String uuid = UUID.randomUUID().toString();
+        filter(source, Collections.singletonMap("aloha", uuid));
+
+        Thread.sleep(5000);
+        assertThat(getHttpResponse()).isEqualToIgnoringCase("aloha");
     }
 
     @Test
@@ -80,7 +102,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid));
     }
 
     @Test
@@ -102,7 +124,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("aloha", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid + " prop"));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid + " prop"));
     }
 
     @Test
@@ -124,7 +146,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("vert.x", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Bonjour " + uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Bonjour " + uuid));
 
         // Touch the launcher class
         source = new File(testDir, "src/main/java/demo/Main.java");
@@ -132,7 +154,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("Bonjour", uuid2));
 
         // Wait until we get "uuid uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
     }
 
     @Test
@@ -154,7 +176,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("vert.x", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Buongiorno " + uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase("Buongiorno " + uuid));
 
         // Touch the launcher class
         source = new File(testDir, "src/main/java/demo/Main.java");
@@ -162,7 +184,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("Buongiorno", uuid2));
 
         // Wait until we get "uuid uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().equalsIgnoreCase(uuid2 + " " + uuid));
     }
 
     @Test
@@ -184,7 +206,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("Hello", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().startsWith(uuid));
     }
 
     @Test
@@ -205,7 +227,7 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("#f938ab;", "green;"));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().contains("color: #008000;"));
     }
 
     @Test
@@ -228,14 +250,14 @@ public class RedeployIT extends VertxMojoTestBase {
         filter(source, Collections.singletonMap("Hello", uuid));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().startsWith(uuid));
 
         source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid2 = UUID.randomUUID().toString();
         filter(source, Collections.singletonMap(uuid, uuid2));
 
         // Wait until we get "uuid"
-        await().atMost(1, TimeUnit.MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
+        await().atMost(1, MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
 
         File buildLog = new File(testDir, "build-run.log");
         assertThat(buildLog).isNotNull();

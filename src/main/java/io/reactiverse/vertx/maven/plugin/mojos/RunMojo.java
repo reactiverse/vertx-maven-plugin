@@ -50,15 +50,43 @@ public class RunMojo extends AbstractVertxMojo {
     private static final String WEB_ENVIRONMENT_VARIABLE_NAME = "VERTXWEB_ENVIRONMENT";
 
     /**
-     * How often should the source files be scanned for file changes.
+     * Whether redeployment is enabled.
      */
-    @Parameter(alias = "redeployScanPeriod", property = "vertx.redeploy.scan.period", defaultValue = "250")
+    @Parameter(property = "vertx.redeploy.enabled", defaultValue = "true")
+    boolean redeploy;
+
+    /**
+     * The root directory to scan for changes.
+     */
+    @Parameter(defaultValue = "${project.basedir}/src/main")
+    File redeployRootDirectory;
+
+    /**
+     * A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to include in change monitoring.
+     * <p>
+     * The patterns must be expressed relatively to the {@link #redeployRootDirectory}.
+     */
+    @Parameter
+    List<String> redeployIncludes;
+
+    /**
+     * A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to exclude from change monitoring.
+     * <p>
+     * The patterns must be expressed relatively to the {@link #redeployRootDirectory}.
+     */
+    @Parameter
+    List<String> redeployExcludes;
+
+    /**
+     * How often, in milliseconds, should the source files be scanned for file changes.
+     */
+    @Parameter(property = "vertx.redeploy.scan.period", defaultValue = "250")
     long redeployScanPeriod;
 
     /**
-     * How long the plugin should wait between two redeployments.
+     * How long, in milliseconds, the plugin should wait between two redeployments.
      */
-    @Parameter(alias = "redeployGracePeriod", property = "vertx.redeploy.grace.period", defaultValue = "1000")
+    @Parameter(property = "vertx.redeploy.grace.period", defaultValue = "1000")
     long redeployGracePeriod;
 
     /**
@@ -154,7 +182,7 @@ public class RunMojo extends AbstractVertxMojo {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHookTask()));
 
-        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(new File("src/main"))) {
+        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(redeployRootDirectory, redeployIncludes, redeployExcludes)) {
             buildLoop(fileChangesHelper);
         } catch (Exception e) {
             throw new MojoExecutionException("Failure while running Vert.x application", e);
@@ -261,14 +289,16 @@ public class RunMojo extends AbstractVertxMojo {
                 throw new MojoExecutionException("Failed to start Vert.x Application", e);
             }
 
-            try {
-                Thread.sleep(redeployGracePeriod);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new MojoExecutionException("Interrupted while sleeping for grace period", e);
+            if (redeploy) {
+                try {
+                    Thread.sleep(redeployGracePeriod);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new MojoExecutionException("Interrupted while sleeping for grace period", e);
+                }
             }
 
-            while (!fileChangesHelper.foundChanges()) {
+            while (true) {
                 if (!vertxApp.isAlive()) {
                     getLog().info("Vert.x Application has stopped");
                     return;
@@ -276,11 +306,16 @@ public class RunMojo extends AbstractVertxMojo {
                 if (stop) {
                     return;
                 }
-                try {
-                    Thread.sleep(redeployScanPeriod);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new MojoExecutionException("Interrupted while sleeping for scan period", e);
+                if (redeploy) {
+                    if (fileChangesHelper.foundChanges()) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(redeployScanPeriod);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new MojoExecutionException("Interrupted while sleeping for scan period", e);
+                    }
                 }
             }
 
