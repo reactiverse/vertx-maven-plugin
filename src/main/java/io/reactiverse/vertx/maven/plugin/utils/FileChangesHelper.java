@@ -16,7 +16,6 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
-import io.reactiverse.vertx.maven.plugin.mojos.Redeployment;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.codehaus.plexus.util.SelectorUtils;
@@ -39,8 +38,8 @@ public class FileChangesHelper implements AutoCloseable {
 
     private boolean updated;
 
-    public FileChangesHelper(Redeployment redeployment) throws Exception {
-        observer = new FileAlterationObserver(redeployment.getRootDirectory(), new RedeploymentFileFilter(redeployment));
+    public FileChangesHelper(File redeployRootDirectory, List<String> redeployIncludes, List<String> redeployExcludes) throws Exception {
+        observer = new FileAlterationObserver(redeployRootDirectory, new RedeploymentFileFilter(redeployRootDirectory, redeployIncludes, redeployExcludes));
         observer.initialize();
         observer.addListener(new FileAlterationListenerAdaptor() {
             @Override
@@ -92,10 +91,10 @@ public class FileChangesHelper implements AutoCloseable {
         final List<String> includes;
         final List<String> excludes;
 
-        RedeploymentFileFilter(Redeployment redeployment) {
-            rootDirectory = redeployment.getRootDirectory();
-            includes = toAntPatterns(redeployment.getIncludes());
-            excludes = toAntPatterns(redeployment.getExcludes());
+        RedeploymentFileFilter(File redeployRootDirectory, List<String> redeployIncludes, List<String> redeployExcludes) {
+            rootDirectory = redeployRootDirectory;
+            includes = toAntPatterns(redeployIncludes);
+            excludes = toAntPatterns(redeployExcludes);
         }
 
         private static List<String> toAntPatterns(List<String> patterns) {

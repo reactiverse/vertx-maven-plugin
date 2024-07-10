@@ -50,10 +50,44 @@ public class RunMojo extends AbstractVertxMojo {
     private static final String WEB_ENVIRONMENT_VARIABLE_NAME = "VERTXWEB_ENVIRONMENT";
 
     /**
-     * Redeployment configuration.
+     * Whether redeployment is enabled.
+     */
+    @Parameter(property = "vertx.redeploy.enabled", defaultValue = "true")
+    boolean redeploy;
+
+    /**
+     * The root directory to scan for changes.
+     */
+    @Parameter(defaultValue = "${project.basedir}/src/main")
+    File redeployRootDirectory;
+
+    /**
+     * A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to include in change monitoring.
+     * <p>
+     * The patterns must be expressed relatively to the {@link #redeployRootDirectory}.
      */
     @Parameter
-    Redeployment redeployment;
+    List<String> redeployIncludes;
+
+    /**
+     * A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to exclude from change monitoring.
+     * <p>
+     * The patterns must be expressed relatively to the {@link #redeployRootDirectory}.
+     */
+    @Parameter
+    List<String> redeployExcludes;
+
+    /**
+     * How often, in milliseconds, should the source files be scanned for file changes.
+     */
+    @Parameter(property = "vertx.redeploy.scan.period", defaultValue = "250")
+    long redeployScanPeriod;
+
+    /**
+     * How long, in milliseconds, the plugin should wait between two redeployments.
+     */
+    @Parameter(property = "vertx.redeploy.grace.period", defaultValue = "1000")
+    long redeployGracePeriod;
 
     /**
      * Sets the environment the Vert.x Web app is running in.
@@ -148,7 +182,7 @@ public class RunMojo extends AbstractVertxMojo {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHookTask()));
 
-        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(redeployment)) {
+        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(redeployRootDirectory, redeployIncludes, redeployExcludes)) {
             buildLoop(fileChangesHelper);
         } catch (Exception e) {
             throw new MojoExecutionException("Failure while running Vert.x application", e);
@@ -255,9 +289,9 @@ public class RunMojo extends AbstractVertxMojo {
                 throw new MojoExecutionException("Failed to start Vert.x Application", e);
             }
 
-            if (redeployment.isEnabled()) {
+            if (redeploy) {
                 try {
-                    Thread.sleep(redeployment.getGracePeriod());
+                    Thread.sleep(redeployGracePeriod);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new MojoExecutionException("Interrupted while sleeping for grace period", e);
@@ -272,12 +306,12 @@ public class RunMojo extends AbstractVertxMojo {
                 if (stop) {
                     return;
                 }
-                if (redeployment.isEnabled()) {
+                if (redeploy) {
                     if (fileChangesHelper.foundChanges()) {
                         break;
                     }
                     try {
-                        Thread.sleep(redeployment.getScanPeriod());
+                        Thread.sleep(redeployScanPeriod);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         throw new MojoExecutionException("Interrupted while sleeping for scan period", e);

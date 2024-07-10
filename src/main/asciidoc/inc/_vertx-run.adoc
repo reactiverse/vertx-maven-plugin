@@ -21,10 +21,37 @@ The goal has the following configuration:
 |===
 | Element | Description | Property| Default
 
-| `redeployment`
-| <<_redeployment_configuration,Redeployment configuration>>
+| `redeploy`
+| Whether redeployment is enabled.
+| `vertx.redeploy.enabled`
+| `true`
+
+| `redeployRootDirectory`
+| The root directory to scan for changes.
+| &nbsp;
+| `${project.basedir}/src/main`
+
+| `redeployIncludes`
+| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to include in change monitoring.
+The patterns must be expressed relatively to the `rootDirectory`.
 | &nbsp;
 | &nbsp;
+
+| `redeployExcludes`
+| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to exclude from change monitoring.
+The patterns must be expressed relatively to the `rootDirectory`.
+| &nbsp;
+| &nbsp;
+
+| `redeployScanPeriod`
+| How often, in milliseconds, should the source files be scanned for file changes.
+| `vertx.redeploy.scan.period`
+| `250`
+
+| `redeployGracePeriod`
+| How long, in milliseconds, the plugin should wait between two redeployments.
+| `vertx.redeploy.grace.period`
+| `1000`
 
 | `jvmArgs`
 | The JVM arguments that will be used when starting the Vert.x application.
@@ -81,46 +108,5 @@ The converted file will be saved in `${project.outputDir}/conf` directory.
 | The remote debug server port.
 | `vertx.debug.port`
 | `5005`
-
-|===
-
-Redeployment configuration is the following:
-
-[#_redeployment_configuration]
-[cols="1,5,2,3"]
-|===
-| Element | Description | Property | Default
-
-| `enabled`
-| Whether redeployment is enabled.
-| `vertx.redeploy.enabled`
-| `true`
-
-| `rootDirectory`
-| The root directory to scan for changes.
-| &nbsp;
-| `${project.basedir}/src/main`
-
-| `includes`
-| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to include in change monitoring.
-The patterns must be expressed relatively to the `rootDirectory`.
-| &nbsp;
-| &nbsp;
-
-| `excludes`
-| A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to exclude from change monitoring.
-The patterns must be expressed relatively to the `rootDirectory`.
-| &nbsp;
-| &nbsp;
-
-| `scanPeriod`
-| How often, in milliseconds, should the source files be scanned for file changes.
-| `vertx.redeploy.scan.period`
-| `250`
-
-| `gracePeriod`
-| How long, in milliseconds, the plugin should wait between two redeployments.
-| `vertx.redeploy.grace.period`
-| `1000`
 
 |===

@@ -16,7 +16,6 @@
 
 package io.reactiverse.vertx.maven.plugin.utils;
 
-import io.reactiverse.vertx.maven.plugin.mojos.Redeployment;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -37,15 +36,12 @@ public class FileChangesHelperTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
     private File nestedFile;
 
-    private Redeployment redeployment;
     private FileChangesHelper helper;
 
     @Before
     public void setUp() throws Exception {
         nestedFile = new File(temporaryFolder.getRoot(), "parent/child/nested.txt");
         FileUtils.write(nestedFile, "this is a test", StandardCharsets.UTF_8);
-        redeployment = new Redeployment();
-        redeployment.setRootDirectory(temporaryFolder.getRoot());
     }
 
     @After
@@ -57,7 +53,7 @@ public class FileChangesHelperTest {
 
     @Test
     public void shouldDetectFileChangesWithoutFilter() throws Exception {
-        helper = new FileChangesHelper(redeployment);
+        helper = new FileChangesHelper(temporaryFolder.getRoot(), null, null);
         assertFalse(helper.foundChanges());
 
         // File modification
@@ -96,8 +92,7 @@ public class FileChangesHelperTest {
 
     @Test
     public void shouldNotDetectNonIncludedFile() throws Exception {
-        redeployment.setIncludes(Collections.singletonList("other"));
-        helper = new FileChangesHelper(redeployment);
+        helper = new FileChangesHelper(temporaryFolder.getRoot(), Collections.singletonList("other"), null);
         assertFalse(helper.foundChanges());
 
         FileUtils.write(nestedFile, "Changed", StandardCharsets.UTF_8);
@@ -106,9 +101,7 @@ public class FileChangesHelperTest {
 
     @Test
     public void shouldNotDetectExcludedFile() throws Exception {
-        redeployment.setIncludes(Collections.singletonList("parent/**"));
-        redeployment.setExcludes(Collections.singletonList("**/nested.txt"));
-        helper = new FileChangesHelper(redeployment);
+        helper = new FileChangesHelper(temporaryFolder.getRoot(), Collections.singletonList("parent/**"), Collections.singletonList("**/nested.txt"));
         assertFalse(helper.foundChanges());
 
         FileUtils.write(nestedFile, "Changed", StandardCharsets.UTF_8);
@@ -117,8 +110,7 @@ public class FileChangesHelperTest {
 
     @Test
     public void shouldDetectIncludedFile() throws Exception {
-        redeployment.setIncludes(Collections.singletonList("parent/**"));
-        helper = new FileChangesHelper(redeployment);
+        helper = new FileChangesHelper(temporaryFolder.getRoot(), Collections.singletonList("parent/**"), null);
         assertFalse(helper.foundChanges());
 
         FileUtils.write(nestedFile, "Changed", StandardCharsets.UTF_8);

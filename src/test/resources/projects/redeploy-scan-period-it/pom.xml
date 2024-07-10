@@ -54,9 +54,7 @@
 
                 <configuration>
                     <verticle>demo.SimpleVerticle</verticle>
-                    <redeployment>
-                        <gracePeriod>3000</gracePeriod>
-                    </redeployment>
+                    <redeployGracePeriod>3000</redeployGracePeriod>
                 </configuration>
 
             </plugin>

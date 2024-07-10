@@ -54,9 +54,7 @@
 
                 <configuration>
                     <verticle>demo.SimpleVerticle</verticle>
-                    <redeployment>
-                        <enabled>false</enabled>
-                    </redeployment>
+                    <redeploy>false</redeploy>
                 </configuration>
 
             </plugin>
