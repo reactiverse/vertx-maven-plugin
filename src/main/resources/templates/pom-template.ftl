@@ -9,8 +9,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <#if javaVersion == "1.8">
         <maven.compiler.source>${javaVersion}</maven.compiler.source>
         <maven.compiler.target>${javaVersion}</maven.compiler.target>
+        <#else>
+        <maven.compiler.release>${javaVersion}</maven.compiler.release>
+        </#if>
         <!-- vert.x properties -->
         <vertx.version>${vertxVersion}</vertx.version>
         <#if vertxVerticle??><vertx.verticle>${vertxVerticle}</vertx.verticle></#if>
@@ -36,10 +40,10 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
         <#if vertxVersion?starts_with("5.")>
-            <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-launcher-application</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-launcher-application</artifactId>
+        </dependency>
         </#if>
     </dependencies>
 
