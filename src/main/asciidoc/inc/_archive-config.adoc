@@ -1,4 +1,4 @@
-== Archive configuration
+= Archive configuration
 
 The Vert.x Maven Plugin lets you configure the content of the created archive.
 Typically, you can decide:
@@ -21,7 +21,7 @@ If the generated uber-jar contains files under `/META-INF/versions/`, the plugin
 In practice, this happens if your project contains files under `/META-INF/versions/` or depends on at least one Multi-release JAR file (e.g. Infinispan).
 ====
 
-=== Using archive configuration
+== Using archive configuration
 
 In your plugin configuration add the `archive` item:
 

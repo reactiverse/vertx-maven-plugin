@@ -1,5 +1,5 @@
 [[vertx:run]]
-=== *vertx:run*
+= *vertx:run*
 
 This goal allows to run the Vert.x application as part of the Maven build, in a separate process.
 
@@ -15,11 +15,15 @@ mvn vertx:run
 
 If the sources aren't compiled, the plugin executes `mvn compile` for you.
 
-The goal has the following configuration:
+[[run-configuration]]
+== Configuration
 
+The `run` goal has the following parameters apart from the ones mentioned in **<<common:configurations,Common Configuration>>**:
+
+.Run Configuration
 [cols="1,5,2,3"]
 |===
-| Element | Description | Property| Default
+| Element | Description | Property | Default
 
 | `redeploy`
 | Whether redeployment is enabled.

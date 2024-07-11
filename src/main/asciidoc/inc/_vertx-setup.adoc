@@ -1,9 +1,9 @@
 [[vertx:setup]]
-=== *vertx:setup*
+= *vertx:setup*
 
 This goal creates a new project, or adds the Vert.x Maven Plugin to an existing one.
 
-==== Usage
+== Usage
 
 [source,subs="attributes"]
 ----

@@ -1,21 +1,49 @@
-== Maven Goals
+= Goals
 
-This plugin supports the following goals which are explained in detail in the next sections.
+[[common:configurations]]
+== Common Configurations
 
-.Plugin Goals
-[cols="1,3"]
+All goals share the following configuration:
+
+.Package configuration
+[cols="1,5,1,1"]
 |===
-|Goal | Description
+| Element | Description | Default | Property
 
-|**<<vertx:setup>>**
-|Create a new project or add the Vert.x Maven Plugin to an existing project.
+| `verticle`
+| The main verticle class name.
+| &nbsp;
+|`vertx.verticle`
 
-|**<<vertx:initialize>>**
-|Copy _js_ dependencies to _webroot_, unpack webjars to _webroot_ (optional) and initialize the redeployment mode.
+| `launcher`
+| The launcher or application main class name.
+| Depends on the Vert.x version (see below).
+| `vertx.launcher`
 
-|**<<vertx:package>>**
-|Package Vert.x applications
+| `skip`
+| Skip the processing executed by this plugin
+| `false`
+| `vertx.skip`
 
-|**<<vertx:run>>**
-|Run a Vert.x application in foreground
 |===
+
+The Vert.x Maven Plugin computes a default `launcher` value as follows:
+
+* For a Vert.x 4 application, the default is `io.vertx.core.Launcher`
+* For a Vert.x 5 application:
+** If the `io.vertx:vertx-launcher-application` dependency is present, the default is `io.vertx.launcher.application.VertxApplication`
+** Otherwise, if the `io.vertx:vertx-launcher-legacy-cli` dependency is present, the default is  `io.vertx.core.Launcher`
+
+:leveloffset: +1
+
+include::_vertx-setup.adoc[]
+
+include::_vertx-initialize.adoc[]
+
+include::_vertx-package.adoc[]
+
+include::_vertx-run.adoc[]
+
+include::_archive-config.adoc[]
+
+:leveloffset: -1
