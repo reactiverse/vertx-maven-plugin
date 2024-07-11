@@ -9,28 +9,19 @@ Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont;
 :icons: font
 :vertx-core-version:
 
-ifndef::ebook-format[:leveloffset: 1]
+(C) 2016-{docyear} The original authors.
 
-(C) 2016-2020 The original authors.
-
-ifdef::basebackend-html[toc::[]]
+toc::[]
 
 :numbered:
+:leveloffset: +1
 
 include::inc/_introduction.adoc[]
 
-include::inc/_common_configuration.adoc[]
-
 include::inc/_goals.adoc[]
-include::inc/_vertx-setup.adoc[]
-include::inc/_vertx-initialize.adoc[]
-include::inc/_vertx-package.adoc[]
-include::inc/_vertx-run.adoc[]
-
-include::inc/_archive-config.adoc[]
-
-include::inc/_vertx-examples.adoc[]
 
 include::inc/_miscellaneous.adoc[]
 
 include::inc/_references.adoc[]
+
+:leveloffset: -1

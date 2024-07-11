@@ -1,5 +1,5 @@
 [[vertx:initialize]]
-=== *vertx:initialize*
+= *vertx:initialize*
 
 This goal has several aims:
 
@@ -8,41 +8,39 @@ This goal has several aims:
 * initialize the _recording_ of the build used for the redeployment
 
 [[initialize-configuration]]
-==== Configuration
+== Configuration
 
-The initialize goal has the following parameters apart from the ones mentioned in
- **<<common:configurations,Common Configuration>>**
+The `initialize` goal has the following parameters apart from the ones mentioned in **<<common:configurations,Common Configuration>>**:
 
-.Package Configuration
-
+.Initialize Configuration
 [cols="1,5,2,3"]
 |===
-| Element | Description | Property| Default
+| Element | Description | Property | Default
 
-| webRoot
+| `webRoot`
 | The location where _js_ dependencies and _webjars_ are copied.
 | &nbsp;
-| ${project.baseDir}/target/classes/webroot
+| `${project.baseDir}/target/classes/webroot`
 
-| unpackWebJar
+| `unpackWebJar`
 | Whether webjars are unpacked to _webRoot_. If not unpacked, webjars can be https://www.webjars.org/documentation#vertx[served from the classpath].
 | &nbsp;
-| false
+| `false`
 
-| stripWebJarVersion
+| `stripWebJarVersion`
 | Whether the version is stripped when unpacking webjars
 | &nbsp;
-| true
+| `true`
 
-| stripJavaScriptDependencyVersion
+| `stripJavaScriptDependencyVersion`
 | Whether the version is stripped when copying the JavaScript file
 | &nbsp;
-| true
+| `true`
 |===
 
 The `webroot` directory is generally used by the `StaticHandler` from Vert.x Web.
 
-==== Redeployment
+== Redeployment
 
-The initialize goal is used to configure the redeployment used in `vertx:run`. It starts observing the executed
-plugins in your build to _replay_ them when a file changes.
+The `initialize` goal is used to configure the redeployment used in `vertx:run`.
+It starts observing the executed plugins in your build to _replay_ them when a file changes.

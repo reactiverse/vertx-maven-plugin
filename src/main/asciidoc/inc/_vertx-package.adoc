@@ -1,37 +1,57 @@
 [[vertx:package]]
-=== *vertx:package*
+= *vertx:package*
 
-This goal packages a Vert.x application as fat or über jar with its dependencies bundled as part of the jar.
+This goal packages a Vert.x application as an executable uber-jar (a JAR file containing the files of the application and of its dependencies).
+
+Being executable, it can be launched using: `java -jar <my-app.jar>`.
+
+The packaging process adds certain *MANIFEST.MF* entries that control how the application is launched.
+The plugin takes care of adding the required entries to the *MANIFEST.MF* with values configured using the **<<common:configurations,Common Configuration>>**.
+
+The following are the *MANIFEST.MF* entries that will be added based on the configuration elements:
+
+.Manifest entries
+[cols="1,1,5"]
+|===
+| Property| Manifest Attribute | Remarks
+
+| `vertx.verticle`
+| `Main-Verticle`
+| The main verticle, _i.e._ the entry point of your application. Used when the `Main-Class` is a Vert.x launcher.
+
+| `vertx.launcher`
+| `Main-Class`
+| The main class used to start the application.
+|===
 
 [[package-configuration]]
-==== Configuration
+== Configuration
 
-The package goal has the following parameters apart from the ones mentioned in
-**<<common:configurations,Common Configuration>>**
+The `package` goal has the following parameters apart from the ones mentioned in **<<common:configurations,Common Configuration>>**:
 
 .Package Configuration
 [cols="1,5,2,3"]
 |===
 | Element | Description | Property | Default
 
-| serviceProviderCombination
+| `serviceProviderCombination`
 | Whether SPI files (`META-INF/services`) need to be combined. Accepted valued as `combine` and `none`.
 | &nbsp;
-| combine
+| `combine`
 
-| classifier
-| The classifier to add to the artifact generated. If given, the artifact will be attached with that classifier
-and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
-the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
-artifact allows to deploy it alongside to the original one. Attachment is controlled using the `attach`
-parameter.
+| `classifier`
+| The classifier to add to the artifact generated.
+If given, the artifact will be attached with that classifier and the main artifact will be deployed as the main artifact.
+If this is not given (default), it will replace the main artifact and only the Vert.x uber-jar artifact will be deployed (in the Maven sense).
+Attaching the artifact allows to deploy it alongside to the original one.
+Attachment is controlled using the `attach` parameter.
 | &nbsp;
 | &nbsp;
 
-| attach
-| Whether the created archive needs to be attached to the project. If attached, the _fat_ jar is
-installed and deployed alongside the main artifact (plain jar). Notice that you can't disable attachment if
-the classifier is not set (it would mean detaching the main artifact).
+| `attach`
+| Whether the created archive needs to be attached to the project.
+If attached, the uber-jar is installed and deployed alongside the main artifact (plain jar).
+Notice that you can't disable attachment if the classifier is not set (it would mean detaching the main artifact).
 | &nbsp;
-| true
+| `true`
 |===

@@ -1,4 +1,4 @@
-== References
+= References
 
 * https://github.com/reactiverse/vertx-maven-plugin[Vert.x Maven Plugin repository]
 * http://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html[Maven Properties]
