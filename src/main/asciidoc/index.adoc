@@ -29,8 +29,6 @@ include::inc/_vertx-run.adoc[]
 
 include::inc/_archive-config.adoc[]
 
-include::inc/_vertx-examples.adoc[]
-
 include::inc/_miscellaneous.adoc[]
 
 include::inc/_references.adoc[]
