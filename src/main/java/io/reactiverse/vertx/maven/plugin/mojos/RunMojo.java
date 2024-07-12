@@ -471,6 +471,7 @@ public class RunMojo extends AbstractVertxMojo {
     private class ShutdownHookTask implements Runnable {
         @Override
         public void run() {
+            getLog().info("Shutting down...");
             stop = true;
             try {
                 stopLatch.await();
