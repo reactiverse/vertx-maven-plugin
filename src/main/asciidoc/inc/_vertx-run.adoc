@@ -50,7 +50,7 @@ The patterns must be expressed relatively to the `rootDirectory`.
 | `redeployScanPeriod`
 | How often, in milliseconds, should the source files be scanned for file changes.
 | `vertx.redeploy.scan.period`
-| `250`
+| `1000`
 
 | `redeployGracePeriod`
 | How long, in milliseconds, the plugin should wait between two redeployments.

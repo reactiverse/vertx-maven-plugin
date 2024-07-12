@@ -80,7 +80,7 @@ public class RunMojo extends AbstractVertxMojo {
     /**
      * How often, in milliseconds, should the source files be scanned for file changes.
      */
-    @Parameter(property = "vertx.redeploy.scan.period", defaultValue = "250")
+    @Parameter(property = "vertx.redeploy.scan.period", defaultValue = "1000")
     long redeployScanPeriod;
 
     /**
