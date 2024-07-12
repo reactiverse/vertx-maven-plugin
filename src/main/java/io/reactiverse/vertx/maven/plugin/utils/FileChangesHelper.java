@@ -18,10 +18,12 @@ package io.reactiverse.vertx.maven.plugin.utils;
 
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,44 +36,55 @@ import static org.codehaus.plexus.util.SelectorUtils.PATTERN_HANDLER_SUFFIX;
  */
 public class FileChangesHelper implements AutoCloseable {
 
+    private final Log log;
     private final FileAlterationObserver observer;
 
     private boolean updated;
 
-    public FileChangesHelper(File redeployRootDirectory, List<String> redeployIncludes, List<String> redeployExcludes) throws Exception {
+    public FileChangesHelper(Log log, File redeployRootDirectory, List<String> redeployIncludes, List<String> redeployExcludes) throws Exception {
+        this.log = log;
         observer = new FileAlterationObserver(redeployRootDirectory, new RedeploymentFileFilter(redeployRootDirectory, redeployIncludes, redeployExcludes));
         observer.initialize();
         observer.addListener(new FileAlterationListenerAdaptor() {
             @Override
             public void onDirectoryChange(File directory) {
-                updated = true;
+                onListenerEvent(directory);
             }
 
             @Override
             public void onDirectoryCreate(File directory) {
-                updated = true;
+                onListenerEvent(directory);
             }
 
             @Override
             public void onDirectoryDelete(File directory) {
-                updated = true;
+                onListenerEvent(directory);
             }
 
             @Override
             public void onFileChange(File file) {
-                updated = true;
+                onListenerEvent(file);
             }
 
             @Override
             public void onFileCreate(File file) {
-                updated = true;
+                onListenerEvent(file);
             }
 
             @Override
             public void onFileDelete(File file) {
-                updated = true;
+                onListenerEvent(file);
             }
         });
+    }
+
+    private void onListenerEvent(File event) {
+        if (log.isDebugEnabled()) {
+            log.debug("Changed file event: " + event);
+        }
+        if (!updated) {
+            updated = true;
+        }
     }
 
     public boolean foundChanges() {
@@ -87,12 +100,12 @@ public class FileChangesHelper implements AutoCloseable {
 
     private static class RedeploymentFileFilter implements FileFilter {
 
-        final File rootDirectory;
+        final Path rootDirectoryPath;
         final List<String> includes;
         final List<String> excludes;
 
         RedeploymentFileFilter(File redeployRootDirectory, List<String> redeployIncludes, List<String> redeployExcludes) {
-            rootDirectory = redeployRootDirectory;
+            rootDirectoryPath = redeployRootDirectory.toPath();
             includes = toAntPatterns(redeployIncludes);
             excludes = toAntPatterns(redeployExcludes);
         }
@@ -110,7 +123,7 @@ public class FileChangesHelper implements AutoCloseable {
 
         @Override
         public boolean accept(File pathname) {
-            String relativePath = rootDirectory.toPath().relativize(pathname.toPath()).toString();
+            String relativePath = rootDirectoryPath.relativize(pathname.toPath()).toString();
             boolean accepted = includes.isEmpty();
             for (String include : includes) {
                 if (SelectorUtils.matchPath(include, relativePath)) {

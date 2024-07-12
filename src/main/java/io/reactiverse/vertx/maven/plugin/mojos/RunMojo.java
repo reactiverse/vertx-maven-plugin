@@ -182,7 +182,7 @@ public class RunMojo extends AbstractVertxMojo {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHookTask()));
 
-        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(redeployRootDirectory, redeployIncludes, redeployExcludes)) {
+        try (FileChangesHelper fileChangesHelper = new FileChangesHelper(getLog(), redeployRootDirectory, redeployIncludes, redeployExcludes)) {
             buildLoop(fileChangesHelper);
         } catch (Exception e) {
             throw new MojoExecutionException("Failure while running Vert.x application", e);
