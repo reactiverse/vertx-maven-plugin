@@ -932,7 +932,7 @@ The patterns must be expressed relatively to the <code>rootDirectory</code>.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployScanPeriod</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">How often, in milliseconds, should the source files be scanned for file changes.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.redeploy.scan.period</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>250</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1000</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployGracePeriod</code></p></td>
@@ -1008,6 +1008,35 @@ The converted file will be saved in <code>${project.outputDir}/conf</code> direc
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>For example, if the projects contains a web frontend built with Node in <code>/src/main/frontend</code>, you will have to exclude files that are changed as part of the frontend build:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;executions&gt;
+  &lt;execution&gt;
+    &lt;id&gt;vmp&lt;/id&gt;
+    &lt;goals&gt;
+      &lt;goal&gt;initialize&lt;/goal&gt;
+      &lt;goal&gt;package&lt;/goal&gt;
+    &lt;/goals&gt;
+  &lt;/execution&gt;
+&lt;/executions&gt;
+&lt;configuration&gt;
+  &lt;redeployRootDirectory&gt;${project.basedir}/src/main&lt;/redeployRootDirectory&gt;
+  &lt;redeployExcludes&gt;
+    &lt;redeployExclude&gt;frontend/node_modules/**&lt;/redeployExclude&gt;
+    &lt;redeployExclude&gt;frontend/dist/**&lt;/redeployExclude&gt;
+    &lt;redeployExclude&gt;frontend/package-lock.json&lt;/redeployExclude&gt;
+  &lt;/redeployExcludes&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1465,7 +1494,7 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 <div id="footer">
 <div id="footer-text">
 Version 2.0.0<br>
-Last updated 2024-07-12 14:26:19 UTC
+Last updated 2024-07-12 17:10:22 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
