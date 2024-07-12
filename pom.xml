@@ -33,6 +33,13 @@
         <url>https://github.com/reactiverse/vertx-maven-plugin/issues/</url>
     </issueManagement>
 
+    <developers>
+        <developer>
+            <name>Thomas Segismont</name>
+            <url>https://github.com/tsegismont</url>
+        </developer>
+    </developers>
+
     <licenses>
         <license>
             <name>Apache License 2</name>
