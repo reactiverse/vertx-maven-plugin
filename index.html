@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="generator" content="Asciidoctor 2.0.20">
 <meta name="author" content="Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont">
 <title>Vert.x Maven Plugin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -141,7 +141,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #content::before{content:none}
 #header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
 #header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
-#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
 #header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
 #header .details span:first-child{margin-left:-.125em}
 #header .details span.email a{color:rgba(0,0,0,.85)}
@@ -163,7 +163,6 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #toctitle{color:#7a2518;font-size:1.2em}
 @media screen and (min-width:768px){#toctitle{font-size:1.375em}
 body.toc2{padding-left:15em;padding-right:0}
-body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
 #toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
 #toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
 #toc.toc2>ul{font-size:.9em;margin-bottom:0}
@@ -329,7 +328,7 @@ a.image{text-decoration:none;display:inline-block}
 a.image object{pointer-events:none}
 sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
 sup.footnote a,sup.footnoteref a{text-decoration:none}
-sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
 #footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
 #footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
 #footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
@@ -435,60 +434,62 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
 <h1>Vert.x Maven Plugin</h1>
 <div class="details">
 <span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont</span><br>
-<span id="revnumber">version 1.0.29,</span>
-<span id="revdate">2024-06-07</span>
+<span id="revnumber">version 2.0.0,</span>
+<span id="revdate">2024-07-12</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Vert.x Maven Plugin</div>
-<ul class="sectlevel2">
+<ul class="sectlevel1">
 <li><a href="#introduction">1. Introduction</a>
-<ul class="sectlevel3">
+<ul class="sectlevel2">
 <li><a href="#using-the-plugin">1.1. Using the plugin</a></li>
-<li><a href="#packaging">1.2. Packaging</a></li>
-<li><a href="#running">1.3. Running</a></li>
 </ul>
 </li>
-<li><a href="#common:configurations">2. Common Configurations</a></li>
-<li><a href="#common:run-configurations">3. Common Run Configurations</a></li>
-<li><a href="#maven-goals">4. Maven Goals</a>
+<li><a href="#goals">2. Goals</a>
+<ul class="sectlevel2">
+<li><a href="#common:configurations">2.1. Common Configurations</a></li>
+<li><a href="#vertx:setup">2.2. <strong>vertx:setup</strong></a>
 <ul class="sectlevel3">
-<li><a href="#vertx:setup">4.1. <strong>vertx:setup</strong></a></li>
-<li><a href="#vertx:initialize">4.2. <strong>vertx:initialize</strong></a></li>
-<li><a href="#vertx:package">4.3. <strong>vertx:package</strong></a></li>
-<li><a href="#vertx:run">4.4. <strong>vertx:run</strong></a></li>
-<li><a href="#vertx:debug">4.5. <strong>vertx:debug</strong></a></li>
-<li><a href="#vertx:start">4.6. <strong>vertx:start</strong></a></li>
+<li><a href="#usage">2.2.1. Usage</a></li>
 </ul>
 </li>
-<li><a href="#archive-configuration">5. Archive configuration</a>
+<li><a href="#vertx:initialize">2.3. <strong>vertx:initialize</strong></a>
 <ul class="sectlevel3">
-<li><a href="#using-archive-configuration">5.1. Using archive configuration</a></li>
-<li><a href="#configuring-embedded-dependencies">5.2. Configuring embedded dependencies</a></li>
-<li><a href="#embedding-specific-file">5.3. Embedding specific file</a></li>
-<li><a href="#embedding-file-sets">5.4. Embedding file sets</a></li>
-<li><a href="#customizing-the-manifest">5.5. Customizing the manifest</a></li>
-<li><a href="#resource-combination">5.6. Resource combination</a></li>
+<li><a href="#initialize-configuration">2.3.1. Configuration</a></li>
+<li><a href="#redeployment">2.3.2. Redeployment</a></li>
 </ul>
 </li>
-<li><a href="#vertx:examples">6. Example Configurations</a>
+<li><a href="#vertx:package">2.4. <strong>vertx:package</strong></a>
 <ul class="sectlevel3">
-<li><a href="#package-goal-examples">6.1. <strong>vert.x:package</strong> Examples</a></li>
-<li><a href="#start-goal-examples">6.2. <strong>vert.x:start</strong> Examples</a></li>
+<li><a href="#package-configuration">2.4.1. Configuration</a></li>
 </ul>
 </li>
-<li><a href="#miscellaneous">7. Miscellaneous</a>
+<li><a href="#vertx:run">2.5. <strong>vertx:run</strong></a>
 <ul class="sectlevel3">
-<li><a href="#how-does-the-redeploy-work">7.1. How does the redeploy work</a></li>
-<li><a href="#windows-command-line-is-too-long">7.2. Windows: command line is too long</a></li>
+<li><a href="#run-configuration">2.5.1. Configuration</a></li>
 </ul>
 </li>
-<li><a href="#references">8. References</a></li>
+<li><a href="#archive-configuration">2.6. Archive configuration</a>
+<ul class="sectlevel3">
+<li><a href="#using-archive-configuration">2.6.1. Using archive configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#miscellaneous">3. Miscellaneous</a>
+<ul class="sectlevel2">
+<li><a href="#how-does-redeployment-work">3.1. How does redeployment work</a></li>
+<li><a href="#windows-command-line-is-too-long">3.2. Windows: command line is too long</a></li>
+</ul>
+</li>
+<li><a href="#references">4. References</a></li>
 </ul>
 </div>
 </div>
@@ -496,56 +497,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>&#169; 2016-2020 The original authors.</p>
+<p>&#169; 2016-2024 The original authors.</p>
 </div>
 <!-- toc disabled -->
 </div>
 </div>
+<div class="sect1">
+<h2 id="introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://vertx.io">Eclipse Vert.x</a> is a toolkit to build reactive and distributed systems on the top of the JVM.</p>
+</div>
+<div class="paragraph">
+<p>The Vert.x Maven Plugin is a plugin for <a href="https://maven.apache.org">Apache Maven</a> that helps to develop and/or to package Vert.x applications.</p>
+</div>
+<div class="paragraph">
+<p>The last version of the Vert.x Maven Plugin is <strong>2.0.0</strong>.</p>
+</div>
 <div class="sect2">
-<h3 id="introduction">1. Introduction</h3>
-<div class="paragraph">
-<p><a href="http://vertx.io/">Eclipse Vert.x</a> is a toolkit to build reactive and distributed systems on the top of the JVM.
-Vert.x applications can be developed in multiple languages such as Java, JavaScript, Groovy, Scala, Kotlin, Ceylon, Ruby&#8230;&#8203;
-As a toolkit, Vert.x is un-opinionated.</p>
-</div>
-<div class="paragraph">
-<p>The maven-vertx-plugin is a plugin for Apache Maven for packaging and running Vert.x applications.
-The plugin tries to provide an opinionated way to build Vert.x application:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>applications are packaged as a <em>fat</em> jar (containing your code and all the dependencies including Vert.x)</p>
-</li>
-<li>
-<p>the application is configured with an <code>application.json</code> file or an <code>application.yml</code> file (translated to json).</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The last version of the Vert.x Maven Plugin is <strong>1.0.29</strong>.</p>
-</div>
-<div class="sect3">
-<h4 id="using-the-plugin">1.1. Using the plugin</h4>
+<h3 id="using-the-plugin">1.1. Using the plugin</h3>
 <div class="paragraph">
 <p>The plugin provides a set of goals such as:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>setup - add the Vert.x Maven Plugin to your <code>pom.xml</code></p>
+<p><code>setup</code> - create a new project or adds the Vert.x Maven Plugin to an existing one</p>
 </li>
 <li>
-<p>initialize - manage <em>js</em> dependencies and <em>webjars</em>, also initiates the redeployment</p>
+<p><code>initialize</code> - manage <em>js</em> dependencies and <em>webjars</em>, and initiate redeployment if needed</p>
 </li>
 <li>
-<p>package - package your Vert.x application as a <em>fat</em> jar</p>
+<p><code>package</code> - package a Vert.x application as an executable uber-jar</p>
 </li>
 <li>
-<p>run - run your application</p>
-</li>
-<li>
-<p>start / stop - start your application in background / stop it</p>
+<p><code>run</code> - run the Vert.x application as part of the Maven build, in a separate process</p>
 </li>
 </ul>
 </div>
@@ -554,7 +540,10 @@ The plugin tries to provide an opinionated way to build Vert.x application:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;project&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+  &lt;properties&gt;
+    &lt;vertx.verticle&gt;org.acme.MyVerticle&lt;/vertx.verticle&gt;
+  &lt;/properties&gt;
   ...
   &lt;build&gt;
     &lt;plugins&gt;
@@ -562,7 +551,7 @@ The plugin tries to provide an opinionated way to build Vert.x application:</p>
         &lt;plugin&gt;
             &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
             &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;1.0.29&lt;/version&gt;
+            &lt;version&gt;2.0.0&lt;/version&gt;
             &lt;executions&gt;
                 &lt;execution&gt;
                     &lt;id&gt;vmp&lt;/id&gt;
@@ -572,9 +561,6 @@ The plugin tries to provide an opinionated way to build Vert.x application:</p>
                     &lt;/goals&gt;
                 &lt;/execution&gt;
             &lt;/executions&gt;
-            &lt;configuration&gt;
-                &lt;redeploy&gt;true&lt;/redeploy&gt;
-            &lt;/configuration&gt;
         &lt;/plugin&gt;
         ...
     &lt;/plugins&gt;
@@ -584,111 +570,18 @@ The plugin tries to provide an opinionated way to build Vert.x application:</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="packaging">1.2. Packaging</h4>
-<div class="paragraph">
-<p>This plugin packaged the Vert.x application as a fat or über jar.
-These jars are executable, and so can be launched using: <code>java -jar &lt;my-app.jar&gt;</code>.
-The packaging process adds certain <strong>MANIFEST.MF</strong> entries that control how the application is launched.
-The plugin takes care of adding the required entries to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a href="#common:configurations">Common Configuration</a></strong></p>
-</div>
-<div class="paragraph">
-<p>The following are the Manifest entries that will be added based on the configuration elements:</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Package configuration</caption>
-<colgroup>
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 71.4286%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Manifest Attribute</th>
-<th class="tableblock halign-left valign-top">Remarks</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.verticle</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Main-Verticle</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle, <em>i.e.</em> the entry point of your application. Used when the <code>Main-Class</code> is <code>io.vertx.core.Launcher</code>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.launcher</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Main-Class</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The main class used to start the application, defaults to <code>io.vertx.core.Launcher</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>The package is generated using:  <code>mvn clean package</code></p>
-</div>
-<div class="paragraph">
-<p>For more information on packaging refer to <strong><a href="#vertx:package">vertx:package</a></strong></p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="running">1.3. Running</h4>
-<div class="paragraph">
-<p>The plugin allows running vert.x applications in following ways:</p>
-</div>
-<div class="sect4">
-<h5 id="in-foreground-using-vertxrun">In foreground using <strong><a href="#vertx:run">vertx:run</a></strong></h5>
-<div class="paragraph">
-<p>The Vert.x application could also be run without building the fat jars, typically during the development mode.
-The <strong><a href="#vertx:run">vertx:run</a></strong> goal helps in running the application.
-The application will be run in as forked process with additional configurations based on the goals.</p>
-</div>
-<div class="paragraph">
-<p>To run the application vert.x application in foreground, execute the following maven command</p>
-</div>
-<div class="paragraph">
-<p><code>mvn clean compile vertx:run</code></p>
-</div>
-<div class="paragraph">
-<p>You can enable the redeployment mode rebuilding and restarting the application upon file changes.</p>
-</div>
-<div class="paragraph">
-<p>For more information on configuration options refer to  <strong><a href="#vertx:run">vertx:run</a></strong></p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="in-background-using-vertxstart">In background using <strong><a href="#vertx:start">vertx:start</a></strong></h5>
-<div class="paragraph">
-<p>This allows the application be run using the uber or fat jar as background process.
-This option also attaches a configurable id or an autogenerated id which could be used to stop the process using <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
-</div>
-<div class="paragraph">
-<p>To start the application vert.x application in background, execute the following maven command</p>
-</div>
-<div class="paragraph">
-<p><code>mvn clean install vertx:start</code></p>
-</div>
-<div class="paragraph">
-<p>For more information on configuration options refer to <strong><a href="#vertx:start">vertx:start</a></strong></p>
-</div>
-<div class="paragraph">
-<p>To stop the application vert.x application running in background, execute the following maven command</p>
-</div>
-<div class="paragraph">
-<p><code>mvn vertx:stop</code></p>
-</div>
-<div class="paragraph">
-<p>For more information on configuration options refer to <strong><a href="#vertx:stop">vertx:stop</a></strong></p>
-</div>
-<!-- toc disabled -->
-</div>
-</div>
-</div>
+<div class="sect1">
+<h2 id="goals">2. Goals</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="common:configurations">2. Common Configurations</h3>
+<h3 id="common:configurations">2.1. Common Configurations</h3>
 <div class="paragraph">
 <p>All goals share the following configuration:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Package configuration</caption>
+<caption class="title">Table 1. Package configuration</caption>
 <colgroup>
 <col style="width: 12.5%;">
 <col style="width: 62.5%;">
@@ -706,14 +599,14 @@ This option also attaches a configurable id or an autogenerated id which could b
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>verticle</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Main verticle to start up</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle class name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.verticle</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>launcher</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Main class to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>io.vertx.core.Launcher</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The launcher or application main class name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Depends on the Vert.x version (see below).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.launcher</code></p></td>
 </tr>
 <tr>
@@ -724,204 +617,83 @@ This option also attaches a configurable id or an autogenerated id which could b
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="common:run-configurations">3. Common Run Configurations</h3>
 <div class="paragraph">
-<p>These are the common configuration shared by the run based goals such as <strong><a href="#vertx:run">run</a></strong>,
- <strong><a href="#vertx:start">start</a></strong> and  <strong><a href="#vertx:stop">stop</a></strong>.</p>
+<p>The Vert.x Maven Plugin computes a default <code>launcher</code> value as follows:</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Run configuration</caption>
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">the application configuration file path that will be passed to the vertx launcher as <code>-options</code>.
-If a yaml file is configured then it will be converted to json by the plugin.
-The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>src/main/options.json</code> or <code>src/main/options.yaml</code> or <code>src/main/options.yml</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">the application configuration file path that will be passed to the vertx launcher as <code>-conf</code>.
-If a yaml file is configured then it will be converted to json by the plugin.
-The converted file will be saved in <code>${project.outputDir}/conf</code> directory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redeploy</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">controls whether vertx redeploy is enabled</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">workDirectory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The working directory of the running process of the application</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.directory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.basedir}</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertxWebEnvironment</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The <a href="https://vertx.io/docs/vertx-web/java/#_development_mode">environment</a> the Vert.x Web app is running in.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertxweb.environment</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default to either the <code>VERTXWEB_ENVIRONMENT</code> environment variable value or, if absent, to <code>dev</code>.</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Right now the plugin supports only file based Vert.x configuration
-</td>
-</tr>
-</table>
+<div class="ulist">
+<ul>
+<li>
+<p>For a Vert.x 4 application, the default is <code>io.vertx.core.Launcher</code></p>
+</li>
+<li>
+<p>For a Vert.x 5 application:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <code>io.vertx:vertx-launcher-application</code> dependency is present, the default is <code>io.vertx.launcher.application.VertxApplication</code></p>
+</li>
+<li>
+<p>Otherwise, if the <code>io.vertx:vertx-launcher-legacy-cli</code> dependency is present, the default is  <code>io.vertx.core.Launcher</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="maven-goals">4. Maven Goals</h3>
+<h3 id="vertx:setup">2.2. <strong>vertx:setup</strong></h3>
 <div class="paragraph">
-<p>This plugin supports the following goals which are explained in detail
-in the next sections.</p>
+<p>This goal creates a new project, or adds the Vert.x Maven Plugin to an existing one.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Plugin Goals</caption>
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 75%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Goal</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:setup"><strong>vertx:setup</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Add the vertx-maven-plugin to your <code>pom.xml</code> file</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:initialize"><strong>vertx:initialize</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <em>js</em> dependencies to <em>webroot</em>, unpack webjars to <em>webroot</em> (optional) and initialize the redeployment mode</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:package"><strong>vertx:package</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Package Vert.x applications</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:run"><strong>vertx:run</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Run a Vert.x application in foreground</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:debug"><strong>vertx:debug</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Debug a Vert.x application in foreground</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:start"><strong>vertx:start</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Run a Vert.x application in daemon mode with specific id</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:setup"><strong>vertx:setup</strong></a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets up vert.x maven plugin and basic vert.x dependencies on an existing maven project</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong><a href="#vertx:stop">[vertx:stop]</a></strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stops the vert.x application running in daemon mode</p></td>
-</tr>
-</tbody>
-</table>
 <div class="sect3">
-<h4 id="vertx:setup">4.1. <strong>vertx:setup</strong></h4>
-<div class="paragraph">
-<p>This goal adds the Vert.x Maven Plugin to your <code>pom.xml</code> file. The plugin is configured with a default configuration.</p>
-</div>
-<div class="sect4">
-<h5 id="example">Example</h5>
+<h4 id="usage">2.2.1. Usage</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.0:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The setup goal by default uses the plugin property <em>vertx-core-version</em>
-from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
-if you wish to override the vertx version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code></p>
+<p>This will configure Vert.x and its dependencies to <code>4.5.8</code>, i.e. the Maven project property <code>vertx.version</code> will be set to <code>4.5.8</code>.</p>
 </div>
 <div class="paragraph">
-<p>e.g.</p>
+<p>If you wish to override the default Vert.x version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DvertxVersion=4.5.8</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.0:setup -DvertxVersion=<your-vertx-version></code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This will configure the vert.x and its dependencies to <code>4.5.8</code> i.e. Maven project property <code>vertx.version</code>
-set to <code>4.5.8</code></p>
 </div>
 <div class="paragraph">
 <p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup \
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.0:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
-    -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
-    -Dverticle=org.acme.Foo \
-    -Ddependencies=web,jmx,mongo</code></pre>
+    -DprojectVersion=1.0-SNAPSHOT \
+    -Dverticle=org.acme.Foo</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>verticle</code> parameter creates a new verticle class file.
-The <code>dependencies</code> parameters specifies the Vert.x dependencies you need.</p>
+<p>The <code>verticle</code> parameter creates a new verticle class file.</p>
 </div>
 <div class="paragraph">
-<p>Dependencies are selected from a list of know dependencies matching the one listed on <a href="http://vertx.io/docs" class="bare">http://vertx.io/docs</a>. In
-addition, you can configure dependencies using the following syntax: <code>groupId:artifactId:version:classifier</code> such as in:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
-commons-io:commons-io:2.5 =&gt; Regular dependency
-io.vertx:vertx-template-engines:{vertx-core-version}:shaded =&gt; Dependency with classifier</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When creating a project, the <code>java.specification.version</code> system property is used to configure the Maven compiler plugin in the new POM file.
+<p>When creating a new project, the <code>java.specification.version</code> system property is used to configure the Maven compiler plugin in the new POM file.
 To set a different Java version, use the <code>javaVersion</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DjavaVersion=11</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.0:setup -DjavaVersion=11</code></pre>
 </div>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="vertx:initialize">4.2. <strong>vertx:initialize</strong></h4>
+<div class="sect2">
+<h3 id="vertx:initialize">2.3. <strong>vertx:initialize</strong></h3>
 <div class="paragraph">
-<p>This goals has several aims:</p>
+<p>This goal has several aims:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -936,14 +708,13 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </li>
 </ul>
 </div>
-<div class="sect4">
-<h5 id="initialize-configuration">Configuration</h5>
+<div class="sect3">
+<h4 id="initialize-configuration">2.3.1. Configuration</h4>
 <div class="paragraph">
-<p>The initialize goal has the following parameters apart from the ones mentioned in
- <strong><a href="#common:configurations">Common Configuration</a></strong></p>
+<p>The <code>initialize</code> goal has the following parameters apart from the ones mentioned in <strong><a href="#common:configurations">Common Configuration</a></strong>:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Package Configuration</caption>
+<caption class="title">Table 2. Initialize Configuration</caption>
 <colgroup>
 <col style="width: 9.0909%;">
 <col style="width: 45.4545%;">
@@ -960,28 +731,28 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">webRoot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>webRoot</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The location where <em>js</em> dependencies and <em>webjars</em> are copied.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">${project.baseDir}/target/classes/webroot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.baseDir}/target/classes/webroot</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">unpackWebJar</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not webjars are unpacked to <em>webRoot</em>. If not unpacked, webjars can be <a href="https://www.webjars.org/documentation#vertx">served from the classpath</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unpackWebJar</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether webjars are unpacked to <em>webRoot</em>. If not unpacked, webjars can be <a href="https://www.webjars.org/documentation#vertx">served from the classpath</a>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">stripWebJarVersion</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the version is stripped when unpacking webjars</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stripWebJarVersion</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the version is stripped when unpacking webjars</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">stripJavaScriptDependencyVersion</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the version is stripped when copying the JavaScript file</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stripJavaScriptDependencyVersion</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the version is stripped when copying the JavaScript file</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -989,434 +760,258 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 <p>The <code>webroot</code> directory is generally used by the <code>StaticHandler</code> from Vert.x Web.</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="redeployment">Redeployment</h5>
-<div class="paragraph">
-<p>The initialize goal is used to configure the redeployment used in <code>vertx:run</code>. It starts observing the executed
-plugins in your build to <em>replay</em> them when a file changes.</p>
-</div>
-</div>
-</div>
 <div class="sect3">
-<h4 id="vertx:package">4.3. <strong>vertx:package</strong></h4>
+<h4 id="redeployment">2.3.2. Redeployment</h4>
 <div class="paragraph">
-<p>This goal packages a Vert.x application as fat or über jar with its dependencies bundled as part of the jar.</p>
-</div>
-<div class="sect4">
-<h5 id="package-configuration">Configuration</h5>
-<div class="paragraph">
-<p>The package goal has the following parameters apart from the ones mentioned in
-<strong><a href="#common:configurations">Common Configuration</a></strong></p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Package Configuration</caption>
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">serviceProviderCombination</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether SPI files (<code>META-INF/services</code>) need to be combined. Accepted valued as <code>combine</code> and <code>none</code>.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">combine</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">classifier</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The classifier to add to the artifact generated. If given, the artifact will be attached with that classifier
-and the main artifact will be deployed as the main artifact. If this is not given (default), it will replace
-the main artifact and only the Vert.x (fat) jar artifact will be deployed (in the Maven sense). Attaching the
-artifact allows to deploy it alongside to the original one. Attachment is controlled using the <code>attach</code>
-parameter.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">attach</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the created archive needs to be attached to the project. If attached, the <em>fat</em> jar is
-installed and deployed alongside the main artifact (plain jar). Notice that you can&#8217;t disable attachment if
-the classifier is not set (it would mean detaching the main artifact).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">skipScmMetadata</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the SCM metadata should be retrieved from the SVN or Git repository</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="vertx:run">4.4. <strong>vertx:run</strong></h4>
-<div class="paragraph">
-<p>This goal allows to run the Vert.x application as part of the maven build.
-The application is always run as a forked process.</p>
-</div>
-<div class="paragraph">
-<p>The goal has the following exclusive configuration apart from the applicable <strong><a href="#common:run-configurations">Common Run Configuration</a></strong></p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runArgs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The list of arguments that can be passed as part of <code>run</code> command.  You can also pass the required run arguments using the system
-property. e.g. <code>-Dvertx.runArgs="--worker --instances=2"</code>. The system property takes precedence over the plugin configurations</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.runArgs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure Vert.x.
-This property is passed as the <code>-options</code> option to vertx run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application.
-This property is passed as the <code>-config</code> option to vertx run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>no arguments</em></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redeploy</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the redeployment is enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redeployScanPeriod</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The file system check period (in milliseconds)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.scan.period</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redeployGracePeriod</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The amount of time (in milliseconds) to wait between 2 re-deployments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.grace.period</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">redeployTerminationPeriod</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">the amount of time (in milliseconds) to wait after having stopped the application (before launching user command).
-  This is useful on Windows, where the process is not killed immediately.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.redeploy.termination.period</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1000 (1 second)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">worker</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If specified the verticle will be a worker verticle</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>When the redeployment is enabled, it replays the plugin configured between the <em>generate-source</em> and
-<em>process-classes</em> phases.</p>
-</div>
-<div class="paragraph">
-<p>So to start a Vert.x application just launch:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn vertx:run</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If the sources are not compiled, the plugin executes <code>mvn compile</code> for you.</p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<code>vertx:run</code> starts the application in a forked JVM.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="vertx:debug">4.5. <strong>vertx:debug</strong></h4>
-<div class="paragraph">
-<p>This goal allows to debug the Vert.x application.The application is started in a JVM with the debugging enabled.In
-your IDE, you need to create a <strong>remote</strong> debug configuration to plug the debugger.</p>
-</div>
-<div class="paragraph">
-<p>The goal does not have any exclusive configuration, <strong><a href="#common:run-configurations">Common Run Configuration</a></strong>
-defines all the applicable configurations for the goal.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure Vert.x.
-This property is passed as the <code>-options</code> option to vertx run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.options</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/options.json or src/main/config/options.yml or src/main/config/options.yaml</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration file to use to configure the application.
-This property is passed as the <code>-config</code> option to vertx run.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">src/main/config/application.json or src/main/config/application.yml or src/main/config/application.yaml</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>no arguments</em></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">debugPort</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The debugger port</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">debug.port</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">5005</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">debugSuspend</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether or not the application must wait until a debugger is attached to start</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">debug.suspend</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-the redeploy mode and debug cannot be used together.
-When <code>vertx:debug</code> is launched, the redeployment mode is disabled.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="vertx:start">4.6. <strong>vertx:start</strong></h4>
-<div class="paragraph">
-<p>This goal allows to start the Vert.x application as a background process from maven build. This goal triggers the vert.x
-<code>start</code> command, passing the configuration values as mentioned below.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Run configuration</caption>
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">startMode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The property to decide how the vert.x application will be started in background.  The application can be started in
-<strong>jar</strong> mode in which the application will be packaged as fat jar and started, or can be run in <strong>exploded</strong> mode where the
- application will be launched with exploded <em>classesDirectory</em> and maven dependencies to the classpath</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.start.mode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">jar</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">appId</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The application id that will added as <strong>-id</strong> option to the vert.x start command</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.app.id</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If this is not passed a default uuid will be generated and set as appId</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">jvmArgs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Java Options that will be used when starting the application, these are the values that are
-typically passed to vert.x applications using --java-opts</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">vertx.jvmArguments</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>Apart from the above list of exclusive start configuration, the goal shares the common
-<strong><a href="#common:run-configurations">Common Run Configuration</a></strong> with the following configuration
-ignored by the goal,</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>redeploy
-=== <strong>vertx:stop</strong>
-This goal allows to stop the vert.x application running as background process from maven build. This goal triggers the vert.x
-<code>stop</code> command, passing the configuration values as mentioned below.</p>
-</li>
-</ul>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. Run configuration</caption>
-<colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 45.4545%;">
-<col style="width: 18.1818%;">
-<col style="width: 27.2728%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Element</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">appIds</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The application id&#8217;s that will stopped using the vert.x stop command</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If this is not passed, the vertx-start-proc.id file present workingDirectory will be read for the
-application id</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>Apart from the above list of exclusive start configuration, the goal shares the common
-<strong><a href="#common:run-configurations">Common Run Configuration</a></strong> with the following configuration
-ignored by the goal,</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>redeploy
-=== <strong>vertx:setup</strong></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>This goal adds the Vert.x Maven Plugin to your <code>pom.xml</code> file. The plugin is configured with a default configuration.</p>
-</div>
-<div class="sect4">
-<h5 id="example-2">Example</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The setup goal by default uses the plugin property <em>vertx-core-version</em>
-from the plugin properties file vertx-maven-plugin.properties as the vert.x version of the project,
-if you wish to override the vertx version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code></p>
-</div>
-<div class="paragraph">
-<p>e.g.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DvertxVersion=4.5.8</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will configure the vert.x and its dependencies to <code>4.5.8</code> i.e. Maven project property <code>vertx.version</code>
-set to <code>4.5.8</code></p>
-</div>
-<div class="paragraph">
-<p>You can also generate a project if you don&#8217;t have a <code>pom.xml</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup \
-    -DprojectGroupId=org.acme \
-    -DprojectArtifactId=acme-project \
-    -DprojectVersion=1.0-SNAPSHOT \ # default to 1.0-SNAPSHOT
-    -Dverticle=org.acme.Foo \
-    -Ddependencies=web,jmx,mongo</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>verticle</code> parameter creates a new verticle class file.
-The <code>dependencies</code> parameters specifies the Vert.x dependencies you need.</p>
-</div>
-<div class="paragraph">
-<p>Dependencies are selected from a list of know dependencies matching the one listed on <a href="http://vertx.io/docs" class="bare">http://vertx.io/docs</a>. In
-addition, you can configure dependencies using the following syntax: <code>groupId:artifactId:version:classifier</code> such as in:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>io.vertx:vertxcodetrans =&gt; Inherit version from BOM
-commons-io:commons-io:2.5 =&gt; Regular dependency
-io.vertx:vertx-template-engines:{vertx-core-version}:shaded =&gt; Dependency with classifier</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When creating a project, the <code>java.specification.version</code> system property is used to configure the Maven compiler plugin in the new POM file.
-To set a different Java version, use the <code>javaVersion</code> property:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn io.reactiverse:vertx-maven-plugin:1.0.29:setup -DjavaVersion=11</code></pre>
-</div>
-</div>
+<p>The <code>initialize</code> goal is used to configure the redeployment used in <code>vertx:run</code>.
+It starts observing the executed plugins in your build to <em>replay</em> them when a file changes.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="archive-configuration">5. Archive configuration</h3>
+<h3 id="vertx:package">2.4. <strong>vertx:package</strong></h3>
+<div class="paragraph">
+<p>This goal packages a Vert.x application as an executable uber-jar (a JAR file containing the files of the application and of its dependencies).</p>
+</div>
+<div class="paragraph">
+<p>Being executable, it can be launched using: <code>java -jar &lt;my-app.jar&gt;</code>.</p>
+</div>
+<div class="paragraph">
+<p>The packaging process adds certain <strong>MANIFEST.MF</strong> entries that control how the application is launched.
+The plugin takes care of adding the required entries to the <strong>MANIFEST.MF</strong> with values configured using the <strong><a href="#common:configurations">Common Configuration</a></strong>.</p>
+</div>
+<div class="paragraph">
+<p>The following are the <strong>MANIFEST.MF</strong> entries that will be added based on the configuration elements:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Manifest entries</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 71.4286%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Manifest Attribute</th>
+<th class="tableblock halign-left valign-top">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.verticle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Main-Verticle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle, <em>i.e.</em> the entry point of your application. Used when the <code>Main-Class</code> is a Vert.x launcher.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.launcher</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Main-Class</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main class used to start the application.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect3">
+<h4 id="package-configuration">2.4.1. Configuration</h4>
+<div class="paragraph">
+<p>The <code>package</code> goal has the following parameters apart from the ones mentioned in <strong><a href="#common:configurations">Common Configuration</a></strong>:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Package Configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>serviceProviderCombination</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether SPI files (<code>META-INF/services</code>) need to be combined. Accepted valued as <code>combine</code> and <code>none</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>combine</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>classifier</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The classifier to add to the artifact generated.
+If given, the artifact will be attached with that classifier and the main artifact will be deployed as the main artifact.
+If this is not given (default), it will replace the main artifact and only the Vert.x uber-jar artifact will be deployed (in the Maven sense).
+Attaching the artifact allows to deploy it alongside to the original one.
+Attachment is controlled using the <code>attach</code> parameter.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>attach</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the created archive needs to be attached to the project.
+If attached, the uber-jar is installed and deployed alongside the main artifact (plain jar).
+Notice that you can&#8217;t disable attachment if the classifier is not set (it would mean detaching the main artifact).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="vertx:run">2.5. <strong>vertx:run</strong></h3>
+<div class="paragraph">
+<p>This goal allows to run the Vert.x application as part of the Maven build, in a separate process.</p>
+</div>
+<div class="paragraph">
+<p>By default, it monitors the <code>src/main</code> directory and, if the code changes, rebuilds the project and restarts the application.
+The plugin re-executes the mojos that ran between the <em>generate-source</em> and the <em>process-classes</em> phases.</p>
+</div>
+<div class="paragraph">
+<p>So, to start a Vert.x application, just launch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn vertx:run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the sources aren&#8217;t compiled, the plugin executes <code>mvn compile</code> for you.</p>
+</div>
+<div class="sect3">
+<h4 id="run-configuration">2.5.1. Configuration</h4>
+<div class="paragraph">
+<p>The <code>run</code> goal has the following parameters apart from the ones mentioned in <strong><a href="#common:configurations">Common Configuration</a></strong>:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Run Configuration</caption>
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 45.4545%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeploy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether redeployment is enabled.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.redeploy.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployRootDirectory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The root directory to scan for changes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.basedir}/src/main</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployIncludes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to include in change monitoring.
+The patterns must be expressed relatively to the <code>rootDirectory</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployExcludes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to exclude from change monitoring.
+The patterns must be expressed relatively to the <code>rootDirectory</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployScanPeriod</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How often, in milliseconds, should the source files be scanned for file changes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.redeploy.scan.period</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>250</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployGracePeriod</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How long, in milliseconds, the plugin should wait between two redeployments.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.redeploy.grace.period</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1000</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jvmArgs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The JVM arguments that will be used when starting the Vert.x application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.jvmArguments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>runArgs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The list of arguments that can be passed to the main class, if it is a Vert.x launcher.
+You can also pass the required run arguments using the system property. e.g. <code>-Dvertx.runArgs="--worker --instances=2"</code>.
+The system property takes precedence over the plugin configurations</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.runArgs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>options</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Vert.x configuration file path that will be passed to the main class, if it is a Vert.x launcher, as <code>-options</code>.
+If a YAML file is configured then it will be converted to JSON by the plugin.
+The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.options</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>src/main/options.json</code> or <code>src/main/options.yaml</code> or <code>src/main/options.yml</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>config</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The verticle configuration file path that will be passed to the main class, if it is a Vert.x launcher, as <code>-conf</code>.
+If a YAML file is configured then it will be converted to JSON by the plugin.
+The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.config</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>src/main/config/application.json</code> or <code>src/main/config/application.yml</code> or <code>src/main/config/application.yaml</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertxWebEnvironment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <a href="https://vertx.io/docs/vertx-web/java/#_development_mode">environment</a> for Vert.x Web apps.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertxweb.environment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defaults to either the <code>VERTXWEB_ENVIRONMENT</code> environment variable value or, if absent, to <code>dev</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>workDirectory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The working directory for the Vert.x application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.directory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.basedir}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>disableBlockedThreadChecker</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the Vert.x application should be started with its blocked thread checker disabled.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.disable.blocked.thread.checker</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the JVM running the Vert.x application should start a remote debug server.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.debug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debugSuspend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the application must wait until a debugger is attached before starting.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.debug.suspend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debugPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The remote debug server port.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.debug.port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5005</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="archive-configuration">2.6. Archive configuration</h3>
 <div class="paragraph">
 <p>The Vert.x Maven Plugin lets you configure the content of the created archive.
 Typically, you can decide:</p>
@@ -1469,13 +1064,13 @@ In practice, this happens if your project contains files under <code>/META-INF/v
 </table>
 </div>
 <div class="sect3">
-<h4 id="using-archive-configuration">5.1. Using archive configuration</h4>
+<h4 id="using-archive-configuration">2.6.1. Using archive configuration</h4>
 <div class="paragraph">
 <p>In your plugin configuration add the <code>archive</code> item:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;project&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
   ...
   &lt;build&gt;
     &lt;plugins&gt;
@@ -1506,9 +1101,8 @@ In practice, this happens if your project contains files under <code>/META-INF/v
 &lt;/project&gt;</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="configuring-embedded-dependencies">5.2. Configuring embedded dependencies</h4>
+<div class="sect4">
+<h5 id="configuring-embedded-dependencies">Configuring embedded dependencies</h5>
 <div class="paragraph">
 <p>In the <code>archive</code> configuration, you can declare <em>dependency sets</em> which indicate which dependencies must be included and excluded.
 Also for each configure set, you can decide the file to include and exclude.</p>
@@ -1518,7 +1112,7 @@ Also for each configure set, you can decide the file to include and exclude.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
    &lt;archive&gt;
        &lt;dependencySets&gt;
            &lt;set&gt;
@@ -1571,15 +1165,15 @@ When you configure the archive without a dependency set, the default behavior (e
 In the example above, the <code>dtd</code> files are excluded.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="embedding-specific-file">5.3. Embedding specific file</h4>
+<div class="sect4">
+<h5 id="embedding-specific-file">Embedding specific file</h5>
 <div class="paragraph">
 <p>The archive can be configured with a set of <em>external</em> file to include.
 For instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;configuration&gt;
    &lt;archive&gt;
        &lt;files&gt;
           &lt;file&gt;
@@ -1612,14 +1206,14 @@ For instance:</p>
 <p>For instance, in the previous example, the file <code>src/ext/hello.txt</code> is embedded in the archive as <code>misc/lorem-ipsum.txt</code>.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="embedding-file-sets">5.4. Embedding file sets</h4>
+<div class="sect4">
+<h5 id="embedding-file-sets">Embedding file sets</h5>
 <div class="paragraph">
 <p>While <code>files</code> allow embedding files individually, <code>fileSets</code> declare set of files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;archive&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;archive&gt;
     &lt;fileSets&gt;
        &lt;fileSet&gt;
            &lt;directory&gt;src/ext&lt;/directory&gt;
@@ -1652,14 +1246,14 @@ For instance:</p>
 </ul>
 </div>
 </div>
-<div class="sect3">
-<h4 id="customizing-the-manifest">5.5. Customizing the manifest</h4>
+<div class="sect4">
+<h5 id="customizing-the-manifest">Customizing the manifest</h5>
 <div class="paragraph">
 <p>You can also add entries into the <code>MANIFEST.MF</code> of the created archive using the <code>manifest</code> entry:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;executions&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;executions&gt;
     &lt;execution&gt;
         &lt;goals&gt;
             &lt;goal&gt;package&lt;/goal&gt;
@@ -1677,8 +1271,8 @@ For instance:</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="resource-combination">5.6. Resource combination</h4>
+<div class="sect4">
+<h5 id="resource-combination">Resource combination</h5>
 <div class="paragraph">
 <p>Resource combination is the process of merging the content of some files into a single file.
 It is particularly useful when building an archive embedding dependencies which contain the same files.</p>
@@ -1704,7 +1298,7 @@ It is particularly useful when building an archive embedding dependencies which 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;archive&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;archive&gt;
     &lt;fileCombinationPatterns&gt;
         &lt;pattern&gt;misc/extension.*&lt;/pattern&gt;
         &lt;pattern&gt;META-INF/services/*&lt;/pattern&gt;
@@ -1727,339 +1321,41 @@ If you set the <code>fileCombinationPatterns</code> attribute, the defaults are 
 </div>
 </div>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="miscellaneous">3. Miscellaneous</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="vertx:examples">6. Example Configurations</h3>
+<h3 id="how-does-redeployment-work">3.1. How does redeployment work</h3>
 <div class="paragraph">
-<p>The following sections shows example plugin snippets for the goals provided by the plugin.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-please update the plugin version as needed (latest is <strong>1.0.29</strong>).
-</td>
-</tr>
-</table>
+<p>During the <em>initialize</em> phase, the plugin starts observing the mojos (Maven plugins) that are executed.</p>
 </div>
 <div class="paragraph">
-<p>Also check the <a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/">samples</a> directory to see other examples:</p>
+<p>The Vert.x Maven Plugin watches for changes in <code>src/main</code>.
+When a file or directory is changed (created, updated or deleted):</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/java-redeploy-example">Simple Java application</a> illustrates the redeployment and packaging
-of a Java application.</p>
+<p>it stops the Vert.x application</p>
 </li>
 <li>
-<p><a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/frontend-example">WebPack example</a> illustrates how to use WebPack with the redeployment mechanism</p>
+<p>it replays the executed mojos (all the mojos from the <em>generate-sources</em> to the <em>process-classes</em> phases, using the same configuration as the initial (observed) one)</p>
 </li>
 <li>
-<p><a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/kotlin-example">Kotlin example</a> illustrates how you can use Kotlin with the Vert.x Maven Plugin</p>
-</li>
-<li>
-<p><a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/custom-launcher-example">Custom Launcher</a> shows how you can use your own <code>launcher</code> class</p>
-</li>
-<li>
-<p><a href="https://github.com/reactiverse/vertx-maven-plugin/tree/master/samples/custom-main-example">Custom Main</a> shows how you can use your own <em>main</em> class</p>
+<p>it stars the Vert.x application again</p>
 </li>
 </ul>
 </div>
-<div class="sect3">
-<h4 id="package-goal-examples">6.1. <strong>vert.x:package</strong> Examples</h4>
 <div class="paragraph">
-<p>This is the default configuration. It builds the fat jar in the <em>package</em> phase, and support <code>.js</code>
- and webjars dependencies. <code>mvn compile vertx:run</code> enables the redeployment.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;id&gt;vmp&lt;/id&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;initialize&lt;/goal&gt;
-                &lt;goal&gt;package&lt;/goal&gt;
-            &lt;/goals&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-    &lt;configuration&gt;
-        &lt;redeploy&gt;true&lt;/redeploy&gt;
-    &lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="webjars-and-javascript-dependencies">Webjars and Javascript dependencies</h5>
-<div class="paragraph">
-<p>When the <em>js</em> dependencies and the webjars are handled, it stripped the version by default. Let&#8217;s illustrate this
-with the following dependencies:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;io.vertx&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-web&lt;/artifactId&gt;
-    &lt;version&gt;3.9.5&lt;/version&gt;
-    &lt;classifier&gt;client&lt;/classifier&gt;
-    &lt;type&gt;js&lt;/type&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.webjars&lt;/groupId&gt;
-    &lt;artifactId&gt;jquery&lt;/artifactId&gt;
-    &lt;version&gt;3.1.1&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The first dependency is a <code>js</code> dependency (<code>&lt;type&gt;js&lt;/type&gt;</code>). The plugins resolves the dependency and copy the file
-to the <code>webroot</code> directory (the default is <code>${project.baseDir}/target/classes/webroot</code>). The output file name is:
-<code>vertx-web-client.js</code>.</p>
-</div>
-<div class="paragraph">
-<p>The second dependency is a webjar. A <a href="http://www.webjars.org/">webjar</a> is a jar file containing web resources.
-By default, the plugin extracts the web resource to the <code>webroot</code> directory.
-In this example, it creates: <code>${project.baseDir}/target/classes/webroot/jquery/jquery.js</code> (and other included resources).</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="using-full-names-for-webjars-and-javascript-dependencies">Using full names for Webjars and Javascript dependencies</h5>
-<div class="paragraph">
-<p>By default the plugin stripped the version. However this behavior can be disabled using:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;id&gt;vmp&lt;/id&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;initialize&lt;/goal&gt;
-                &lt;goal&gt;package&lt;/goal&gt;
-            &lt;/goals&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-    &lt;configuration&gt;
-        &lt;redeploy&gt;true&lt;/redeploy&gt;
-        &lt;stripWebJarVersion&gt;false&lt;/stripWebJarVersion&gt;
-        &lt;stripJavaScriptDependencyVersion&gt;false&lt;/stripJavaScriptDependencyVersion&gt;
-    &lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case, the <code>vertx-web-client.js</code> output file is: <code>vertx-web-3.9.5-client.js</code>, while for jquery, resources are
-unpacked in <code>${project.baseDir}/target/classes/webroot/jquery/3.1.1</code>. You can always look into the
-<code>target/classes/webroot</code> directory to check the output files.</p>
-</div>
-<div class="paragraph">
-<p>Finally, you can also configure the <code>webRoot</code> dir:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;id&gt;vmp&lt;/id&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;initialize&lt;/goal&gt;
-                &lt;goal&gt;package&lt;/goal&gt;
-            &lt;/goals&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-    &lt;configuration&gt;
-        &lt;webRoot&gt;target/classes/assets&lt;/webRoot&gt;
-        &lt;redeploy&gt;true&lt;/redeploy&gt;
-    &lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice that the <code>webRoot</code> directory is relative to the project directory.</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="start-goal-examples">6.2. <strong>vert.x:start</strong> Examples</h4>
-<div class="paragraph">
-<p>You can start your application in background using: <code>mvn clean package vertx:start</code>. The application is started in
-background. An id is automatically associated with the process. This id can be specified:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh">mvn clean package vertx:start -Dvertx.app.id=my-vertx-app</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This id is useful to stop the application:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh">mvn vertx:stop -Dvertx.app.id=my-vertx-app</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The application id can be set in the <code>pom.xml</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-          &lt;phase&gt;initialize&lt;/phase&gt;
-          &lt;phase&gt;package&lt;/phase&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-    &lt;configuration&gt;
-        &lt;appId&gt;my-app-id&lt;/appId&gt;
-    &lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="start-with-java-opts">Start goal with custom Java options</h5>
-<div class="paragraph">
-<p>Because it&#8217;s a forked process, passing Java options needs to be done explicitly using a specific property:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-      &lt;execution&gt;
-          &lt;phase&gt;initialize&lt;/phase&gt;
-          &lt;phase&gt;package&lt;/phase&gt;
-      &lt;/execution&gt;
-    &lt;/executions&gt;
-    &lt;configuration&gt;
-       &lt;jvmArgs&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-          &lt;jvmArg&gt;-Xms512m&lt;/jvmArg&gt;
-          &lt;jvmArg&gt;-Xmx1024m&lt;/jvmArg&gt;
-       &lt;/jvmArgs&gt;
-    &lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The jvm arguments that gets passed as <code>--java-opts</code> to the vert.x application</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can also pass these parameters in the command line:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>mvn clean package vertx:start -Dvertx.jvmArguments=-Xms512m -D-Dfoo=far</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="stopping-one-or-more-applications">Stopping one or more applications</h5>
-<div class="paragraph">
-<p>When you have configured to <a href="#start-with-app-id">[start-with-app-id]</a> or know the application ids, then you can add list
-of application ids as shown below to trigger stop of the those applications</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;phase&gt;package&lt;/phase&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;start&lt;/goal&gt;
-            &lt;/goals&gt;
-            &lt;configuration&gt;
-              &lt;appIds&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-                 &lt;appId&gt;my-app-id-1&lt;/appId&gt;
-                 &lt;appId&gt;my-app-id-2&lt;/appId&gt;
-              &lt;/appIds&gt;
-            &lt;/configuration&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>List of custom unique application ids</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="run-with-extra-args">Adding some extra options to run command</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml"> &lt;plugin&gt;
-    &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
-    &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;${version}&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;phase&gt;package&lt;/phase&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;run&lt;/goal&gt;
-            &lt;/goals&gt;
-            &lt;configuration&gt;
-                &lt;runArgs&gt;
-                    &lt;runArg&gt;--cluster&lt;/runArg&gt;
-                &lt;/runArgs&gt;
-            &lt;/configuration&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-&lt;/plugin&gt;</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="miscellaneous">7. Miscellaneous</h3>
-<div class="sect3">
-<h4 id="how-does-the-redeploy-work">7.1. How does the redeploy work</h4>
-<div class="paragraph">
-<p>During the <em>initialize</em> phase, the plugin starts observing the mojos (Maven plugins) that are executed.
-When the Vert.x application is launched, it watches for changes in <code>src/main</code>.
-When a file is changed (created, updated or deleted), it replays the executed mojos.
-It executes all the mojos from the <em>generate-sources</em> to the <em>process-classes</em> phases, using the same configuration as the initial (observed) one.</p>
-</div>
-<div class="paragraph">
-<p>When these mojos are executed, they may update files in <code>target/classes</code>.
-The Vert.x application has been launched to observe changed files from this location and restart when changes happen.
-The application is restarted completely, <em>i.e.</em> stopped and restarted.</p>
-</div>
-<div class="paragraph">
-<p>Such mechanism lets you use any Maven plugin (executed in the right set of phase).
+<p>Such a mechanism lets you use any Maven plugin (executed in the right set of phases).
 The plugin is re-executed and then the Vert.x application is restarted.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="windows-command-line-is-too-long">7.2. Windows: command line is too long</h4>
+<div class="sect2">
+<h3 id="windows-command-line-is-too-long">3.2. Windows: command line is too long</h3>
 <div class="paragraph">
 <p>The Vert.x Maven Plugin runs your Vert.x application in a forked process.
 This process command line can grow quickly depending on:</p>
@@ -2105,7 +1401,7 @@ You will see an error such as:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-shell script" data-lang="shell script">subst X: "C:\Program Files\AdoptOpenJDK\jdk-11.0.8.10-hotspot"
+<pre class="highlightjs highlight"><code class="language-shell script hljs" data-lang="shell script">subst X: "C:\Program Files\AdoptOpenJDK\jdk-11.0.8.10-hotspot"
 subst Y: "C:\Users\User\.m2\repository"</code></pre>
 </div>
 </div>
@@ -2149,8 +1445,10 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="references">8. References</h3>
+</div>
+<div class="sect1">
+<h2 id="references">4. References</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -2163,11 +1461,19 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.29<br>
-Last updated 2024-06-07 15:54:44 UTC
+Version 2.0.0<br>
+Last updated 2024-07-12 14:26:19 UTC
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code[data-lang]')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
 </body>
 </html>
