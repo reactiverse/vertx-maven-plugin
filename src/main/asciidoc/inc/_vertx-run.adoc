@@ -114,3 +114,31 @@ The converted file will be saved in `${project.outputDir}/conf` directory.
 | `5005`
 
 |===
+
+For example, if the projects contains a web frontend built with Node in `/src/main/frontend`, you will have to exclude files that are changed as part of the frontend build:
+
+[source,xml]
+----
+<plugin>
+<groupId>io.reactiverse</groupId>
+<artifactId>vertx-maven-plugin</artifactId>
+<version>${vertx-maven-plugin.version}</version>
+<executions>
+  <execution>
+    <id>vmp</id>
+    <goals>
+      <goal>initialize</goal>
+      <goal>package</goal>
+    </goals>
+  </execution>
+</executions>
+<configuration>
+  <redeployRootDirectory>${project.basedir}/src/main</redeployRootDirectory>
+  <redeployExcludes>
+    <redeployExclude>frontend/node_modules/**</redeployExclude>
+    <redeployExclude>frontend/dist/**</redeployExclude>
+    <redeployExclude>frontend/package-lock.json</redeployExclude>
+  </redeployExcludes>
+</configuration>
+</plugin>
+----
