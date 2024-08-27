@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
 /**
  * Test checking that the redeployment is triggered correctly both in Maven and in Vert.x.
@@ -70,6 +71,8 @@ public class RunIT extends VertxMojoTestBase {
 
     @Test
     public void testRunAppUsingVertxSnapshotVersion() throws Exception {
+        assumeThat(javaSpecVersion()).isGreaterThanOrEqualTo(11);
+
         File testDir = initProject("projects/run-vertx-snapshot-it");
         assertThat(testDir).isDirectory();
 
@@ -80,6 +83,13 @@ public class RunIT extends VertxMojoTestBase {
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
+    }
+
+    private int javaSpecVersion() {
+        String property = System.getProperty("java.specification.version");
+        assumeThat(property).withFailMessage("java.specification.version is null").isNotNull();
+        assumeThat(property).withFailMessage("%s is not a number", property).matches("\\d+");
+        return Integer.parseInt(property);
     }
 
     private void run(Verifier verifier, String ... previous) throws VerificationException {
