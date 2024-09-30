@@ -79,7 +79,7 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
-        <maven-gpg-plugin.version>3.2.6</maven-gpg-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 
         <!-- Compile dependency versions -->
