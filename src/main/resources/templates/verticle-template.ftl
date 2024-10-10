@@ -3,6 +3,7 @@ package ${packageName};
 </#if>
 
 <#if futurizedVerticle>
+import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
 <#else>
 import io.vertx.core.AbstractVerticle;
@@ -12,7 +13,7 @@ public class ${className} extends ${futurizedVerticle?then('VerticleBase', 'Abst
 
 <#if futurizedVerticle>
     @Override
-    public Future<?> start() {
+    public Future<?> start() throws Exception {
         return super.start();
     }
 <#else>
