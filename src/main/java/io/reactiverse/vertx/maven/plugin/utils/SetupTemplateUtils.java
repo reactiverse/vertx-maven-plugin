@@ -56,7 +56,7 @@ public class SetupTemplateUtils {
         }
     }
 
-    public static void createVerticle(MavenProject project, String verticle, Log log) throws MojoExecutionException {
+    public static void createVerticle(MavenProject project, String vertxVersion, String verticle, Log log) throws MojoExecutionException {
         if (StringUtils.isBlank(verticle)) {
             return;
         }
@@ -88,7 +88,8 @@ public class SetupTemplateUtils {
         }
 
         File classFile = new File(root, className + JAVA_EXTENSION);
-        Map<String, String> context = new HashMap<>();
+        Map<String, Object> context = new HashMap<>();
+        context.put("futurizedVerticle", vertxVersion.startsWith("5."));
         context.put("className", className);
         if (packageName != null) {
             context.put("packageName", packageName);

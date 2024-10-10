@@ -113,8 +113,10 @@ public class SetupMojo extends AbstractMojo {
         //We should get cloned of the OriginalModel, as project.getModel will return effective model
         model = project.getOriginalModel().clone();
 
+        vertxVersion = vertxVersion == null ? MojoUtils.getVersion(VERTX_CORE_VERSION) : vertxVersion;
+
         createDirectories();
-        SetupTemplateUtils.createVerticle(project, verticle, getLog());
+        SetupTemplateUtils.createVerticle(project, vertxVersion, verticle, getLog());
 
         Optional<Plugin> vmPlugin = MojoUtils.hasPlugin(project, PLUGIN_GROUP_ID + ":" + PLUGIN_ARTIFACT_ID);
         if (vmPlugin.isPresent()) {
@@ -123,8 +125,6 @@ public class SetupMojo extends AbstractMojo {
 
         //Set  a property at maven project level for vert.x  and vert.x maven plugin versions
         model.getProperties().putIfAbsent("vertx-maven-plugin.version", MojoUtils.getVersion(VERTX_MAVEN_PLUGIN_VERSION_PROPERTY));
-
-        vertxVersion = vertxVersion == null ? MojoUtils.getVersion(VERTX_CORE_VERSION) : vertxVersion;
 
         model.getProperties().putIfAbsent("vertx.version", vertxVersion);
         if (!StringUtils.isBlank(verticle)) {
