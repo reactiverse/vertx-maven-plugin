@@ -261,15 +261,27 @@ public class SetupMojoTest {
         Log log = mock(Log.class);
         when(mock.getBasedir()).thenReturn(baseDir);
 
-        SetupTemplateUtils.createVerticle(mock, "me.demo.Foo.java", log);
-        SetupTemplateUtils.createVerticle(mock, "me.demo.Bar", log);
-        SetupTemplateUtils.createVerticle(mock, "Baz.java", log);
-        SetupTemplateUtils.createVerticle(mock, "Bob", log);
+        SetupTemplateUtils.createVerticle(mock, "4.5.8", "me.demo.Foo.java", log);
+        SetupTemplateUtils.createVerticle(mock, "4.5.8", "me.demo.Bar", log);
+        SetupTemplateUtils.createVerticle(mock, "5.0.0", "Baz.java", log);
+        SetupTemplateUtils.createVerticle(mock, "5.0.0", "Bob", log);
 
-        assertThat(new File(baseDir, "src/main/java/me/demo/Foo.java")).isFile();
-        assertThat(new File(baseDir, "src/main/java/me/demo/Bar.java")).isFile();
-        assertThat(new File(baseDir, "src/main/java/Baz.java")).isFile();
-        assertThat(new File(baseDir, "src/main/java/Bob.java")).isFile();
+        assertThat(new File(baseDir, "src/main/java/me/demo/Foo.java"))
+            .isFile()
+            .content()
+            .contains("import io.vertx.core.AbstractVerticle;");
+        assertThat(new File(baseDir, "src/main/java/me/demo/Bar.java"))
+            .isFile()
+            .content()
+            .contains("import io.vertx.core.AbstractVerticle;");
+        assertThat(new File(baseDir, "src/main/java/Baz.java"))
+            .isFile()
+            .content()
+            .contains("import io.vertx.core.VerticleBase;");
+        assertThat(new File(baseDir, "src/main/java/Bob.java"))
+            .isFile()
+            .content()
+            .contains("import io.vertx.core.VerticleBase;");
     }
 
     @Test
