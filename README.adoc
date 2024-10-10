@@ -18,3 +18,37 @@ If you feel the need to add any feature you can https://github.com/reactiverse/v
 == Contributing
 
 We love contributions, if you wish to contribute a patch or feature, please https://github.com/reactiverse/vertx-maven-plugin/issues[open an issue] and send in a PR.
+
+== Releasing
+
+NOTE: The following commands assume you have forked the project and `upstream` is the `reactiverse/vertx-maven-plugin` remote repository.
+
+To release the project, proceed as follows.
+
+First, tag the last commit in `master` branch:
+
+[source,shell]
+----
+# Change this version as needed
+VMP_VERSION="2.0.1"
+mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${VMP_VERSION}"
+git add pom.xml
+git commit -m "Version ${VMP_VERSION}"
+git push upstream && git push origin
+git tag -f -a "v${VMP_VERSION}" -m "Version ${VMP_VERSION}"
+git push upstream  --tags
+----
+
+Close the corresponding https://github.com/reactiverse/vertx-maven-plugin/milestones[milestone] on GitHub.
+
+Then set the snapshot version again:
+
+[source,shell]
+----
+# Change this version as needed
+VMP_VERSION="2.0-SNAPSHOT"
+mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${VMP_VERSION}"
+git add pom.xml
+git commit -m "Version ${VMP_VERSION}"
+git push upstream && git push origin
+----
