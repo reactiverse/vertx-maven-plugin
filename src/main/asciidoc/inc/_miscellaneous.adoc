@@ -1,6 +1,6 @@
 = Miscellaneous
 
-== How does redeployment work
+== How does redeployment work?
 
 During the _initialize_ phase, the plugin starts observing the mojos (Maven plugins) that are executed.
 
@@ -53,3 +53,18 @@ Then:
 . open the Maven settings file and change the `localRepository` element value to `Y:`
 
 NOTE: Don't forget to open a new terminal so that the environment variable change is visible.
+
+[#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher]
+== How does the plugin detect if a custom main class is a launcher?
+
+Some goals must detect whether a custom main class set with the `launcher` element (see <<common:configurations>>) is a Vert.x launcher.
+
+The Vert.x Maven plugin considers a class is a Vert.x launcher if:
+
+* the project depends on Vert.x 4 and the class extends `io.vertx.core.Launcher`, or
+* the project depends on Vert.x 5 application and:
+** the class extends `io.vertx.launcher.application.VertxApplication`, or
+** the class extends `io.vertx.core.Launcher`.
+
+In the last case, of course, the project must depend on `io.vertx:vertx-launcher-legacy-cli`.
+

@@ -17,7 +17,7 @@ The following are the *MANIFEST.MF* entries that will be added based on the conf
 
 | `vertx.verticle`
 | `Main-Verticle`
-| The main verticle, _i.e._ the entry point of your application. Used when the `Main-Class` is a Vert.x launcher.
+| The main verticle, _i.e._ the entry point of your application. Used when the `Main-Class` <<_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher,is a Vert.x launcher>>.
 
 | `vertx.launcher`
 | `Main-Class`
