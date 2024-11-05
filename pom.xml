@@ -86,7 +86,7 @@
         <maven-plugin-api.version>3.9.9</maven-plugin-api.version>
         <plexus-utils.version>3.5.1</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
-        <maven-failsafe-plugin.version>3.5.1</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
         <commons-io.version>2.17.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
