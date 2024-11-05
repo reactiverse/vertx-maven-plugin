@@ -63,21 +63,21 @@ The patterns must be expressed relatively to the `rootDirectory`.
 | &nbsp;
 
 | `runArgs`
-| The list of arguments that can be passed to the main class, if it is a Vert.x launcher.
+| The list of arguments that can be passed to the main class, if it <<_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher,is a Vert.x launcher>>.
 You can also pass the required run arguments using the system property. e.g. `-Dvertx.runArgs="--worker --instances=2"`.
 The system property takes precedence over the plugin configurations
 | `vertx.runArgs`
 | &nbsp;
 
 | `options`
-| The Vert.x configuration file path that will be passed to the main class, if it is a Vert.x launcher, as `-options`.
+| The Vert.x configuration file path that will be passed to the main class, if it <<_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher,is a Vert.x launcher>>, as `-options`.
 If a YAML file is configured then it will be converted to JSON by the plugin.
 The converted file will be saved in `${project.outputDir}/conf` directory.
 | `vertx.options`
 | `src/main/options.json` or `src/main/options.yaml` or `src/main/options.yml`
 
 | `config`
-| The verticle configuration file path that will be passed to the main class, if it is a Vert.x launcher, as `-conf`.
+| The verticle configuration file path that will be passed to the main class, if it <<_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher,is a Vert.x launcher>>, as `-conf`.
 If a YAML file is configured then it will be converted to JSON by the plugin.
 The converted file will be saved in `${project.outputDir}/conf` directory.
 | `vertx.config`
