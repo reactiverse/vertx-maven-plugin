@@ -51,8 +51,7 @@ public class PrompterImpl implements Prompter {
 
     public PrompterImpl(InputStream in, OutputStream out) throws IOException {
         Terminal terminal = TerminalBuilder.builder()
-            .system(false)
-            .jni(false)
+            .provider(TerminalBuilder.PROP_PROVIDER_EXEC)
             .streams(in, out)
             .build();
         console = LineReaderBuilder.builder()
