@@ -1,7 +1,7 @@
 = Maven Plugin for Eclipse Vert.x
 
 image:https://github.com/reactiverse/vertx-maven-plugin/actions/workflows/ci.yml/badge.svg["Build Status",link="https://github.com/reactiverse/vertx-maven-plugin/actions/workflows/ci.yml"]
-image:https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin/badge.svg["Maven Central",link=https://maven-badges.herokuapp.com/maven-central/io.reactiverse/vertx-maven-plugin]
+image:https://img.shields.io/maven-central/v/io.reactiverse/vertx-maven-plugin[Maven Central]
 
 http://vertx.io[Eclipse Vert.x] is a toolkit to build reactive and distributed systems on the top of the JVM.
 
