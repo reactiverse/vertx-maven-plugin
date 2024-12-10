@@ -73,7 +73,7 @@
         <reactiverse.vertx.plugin.version>${project.version}</reactiverse.vertx.plugin.version>
 
         <!-- Plugin versions -->
-        <maven-invoker-plugin.version>3.8.1</maven-invoker-plugin.version>
+        <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.15.1</maven-plugin-plugin.version>
 
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
