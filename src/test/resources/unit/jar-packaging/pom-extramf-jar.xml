@@ -28,12 +28,12 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>4.5.8</version>
+            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
-            <version>4.5.8</version>
+            <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
