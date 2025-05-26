@@ -39,12 +39,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PackagingIT extends VertxMojoTestBase {
 
-    private String PACKAGING_META_INF = "projects/packaging-meta-inf-it";
-    private String PACKAGING_DUPLICATE = "projects/packaging-duplicate-it";
-    private String PACKAGING_ALTERNATIVE_OUTPUT = "projects/packaging-alternative-output-it";
-
     private Verifier verifier;
-
 
     private void initVerifier(File root) throws VerificationException {
         verifier = new Verifier(root.getAbsolutePath());
@@ -54,7 +49,7 @@ public class PackagingIT extends VertxMojoTestBase {
 
     @Test
     public void testAlternativeOutputDir() throws IOException, VerificationException {
-        File testDir = initProject(PACKAGING_ALTERNATIVE_OUTPUT);
+        File testDir = initProject("projects/packaging-alternative-output-it");
         assertThat(testDir).isDirectory();
         initVerifier(testDir);
         prepareProject(testDir, verifier);
@@ -68,7 +63,7 @@ public class PackagingIT extends VertxMojoTestBase {
 
     @Test
     public void testContentInTheJar() throws IOException, VerificationException {
-        File testDir = initProject(PACKAGING_META_INF);
+        File testDir = initProject("projects/packaging-meta-inf-it");
         assertThat(testDir).isDirectory();
         initVerifier(testDir);
         prepareProject(testDir, verifier);
@@ -130,7 +125,7 @@ public class PackagingIT extends VertxMojoTestBase {
 
     @Test
     public void testDuplicateManagement() throws VerificationException, IOException {
-        File testDir = initProject(PACKAGING_DUPLICATE);
+        File testDir = initProject("projects/packaging-duplicate-it");
         assertThat(testDir).isDirectory();
         initVerifier(testDir);
         prepareProject(testDir, verifier);
