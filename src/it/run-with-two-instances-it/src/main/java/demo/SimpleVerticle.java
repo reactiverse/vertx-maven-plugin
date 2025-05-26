@@ -24,6 +24,6 @@ public class SimpleVerticle extends AbstractVerticle {
     public void start() throws Exception {
         int instances = vertx.getOrCreateContext().getInstanceCount();
         System.out.println("Instances="+instances);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

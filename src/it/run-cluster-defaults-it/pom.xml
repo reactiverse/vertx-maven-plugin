@@ -48,9 +48,11 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <jvmArgs>
+                                <jvmArg>-Djava.net.preferIPv4Stack=true</jvmArg>
+                            </jvmArgs>
                             <runArgs>
                                 <runArg>--cluster</runArg>
-                                <run>-Djava.net.preferIPv4Stack=true</run>
                             </runArgs>
                         </configuration>
                     </execution>
@@ -62,6 +64,10 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-launcher-application</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

@@ -34,6 +34,6 @@ public class SimpleVerticle extends AbstractVerticle {
                 .map(s -> String.valueOf(s))
                 .collect(Collectors.joining(" "));
         System.out.println("Configured Names are :" + names);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

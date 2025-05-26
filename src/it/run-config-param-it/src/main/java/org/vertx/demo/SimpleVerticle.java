@@ -29,6 +29,6 @@ public class SimpleVerticle extends AbstractVerticle {
         int httpPort = config().getInteger("http.port");
         System.out.println("Configured HTTP Port is :" + httpPort);
         startFuture.complete();
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

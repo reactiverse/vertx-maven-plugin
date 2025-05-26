@@ -62,6 +62,10 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-launcher-application</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.reactiverse.vmp.it</groupId>
             <artifactId>spi-dep-one</artifactId>
             <version>${project.version}</version>

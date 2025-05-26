@@ -27,6 +27,6 @@ public class SimpleVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
        System.out.println("Clustered: " + vertx.isClustered());
-       vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

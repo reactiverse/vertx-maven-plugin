@@ -258,7 +258,7 @@ public class Verify {
                 assertThat(manifest).isNotNull();
                 String mainClass = manifest.getMainAttributes().getValue("Main-Class");
                 String mainVerticle = manifest.getMainAttributes().getValue("Main-Verticle");
-                assertThat(mainClass).isNotNull().isEqualTo("io.vertx.core.Launcher");
+                assertThat(mainClass).isNotNull().isEqualTo("io.vertx.launcher.application.VertxApplication");
                 assertThat(mainVerticle).isNotNull().isEqualTo("org.vertx.demo.MainVerticle");
             }
         }

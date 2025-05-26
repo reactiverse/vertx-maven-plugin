@@ -28,6 +28,6 @@ public class SimpleVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) throws Exception {
         System.out.println("Metrics enabled :" + vertx.isMetricsEnabled());
         startPromise.complete();
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }
