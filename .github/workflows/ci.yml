@@ -65,7 +65,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-          server-id: ossrh
           server-username: SONATYPE_NEXUS_USERNAME
           server-password: SONATYPE_NEXUS_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
