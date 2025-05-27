@@ -31,6 +31,6 @@ public class SimpleVerticle extends AbstractVerticle {
         System.out.println("Instances=" + instances);
         boolean workerContext = context.isWorkerContext();
         System.out.println("Worker=" + workerContext);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

@@ -132,8 +132,21 @@ public class Verify {
         Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
             .filter(d -> d.getArtifactId().equals("vertx-core") && d.getGroupId().equals("io.vertx"))
             .findFirst();
-        assertThat(vertxCoreDep.isPresent()).isTrue();
-        assertThat(vertxCoreDep.get().getVersion()).isNull();
+        assertThat(vertxCoreDep)
+            .isPresent()
+            .get()
+            .extracting(Dependency::getVersion)
+            .isNull();
+
+        // Check Vert.x App Launcher dependency
+        Optional<Dependency> vertxLauncherApp = model.getDependencies().stream()
+            .filter(d -> d.getArtifactId().equals("vertx-launcher-application") && d.getGroupId().equals("io.vertx"))
+            .findFirst();
+        assertThat(vertxLauncherApp)
+            .isPresent()
+            .get()
+            .extracting(Dependency::getVersion)
+            .isNull();
 
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
@@ -141,18 +154,7 @@ public class Verify {
         assertNull(pluginConfig);
     }
 
-    public static void verifySetupWithVersion(File pomFile) throws Exception {
-        MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-        Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
-
-        MavenProject project = new MavenProject(model);
-        Properties projectProps = project.getProperties();
-        assertNotNull(projectProps);
-        assertFalse(projectProps.isEmpty());
-        assertEquals(projectProps.getProperty("vertx.version"), "4.3.1");
-    }
-
-    public static void verifySetupWithVertx5(File pomFile) throws Exception {
+    public static void verifySetupWithVertx4(File pomFile) throws Exception {
         assertNotNull("Unable to find pom.xml", pomFile);
         MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
         Model model = xpp3Reader.read(Files.newInputStream(pomFile.toPath()));
@@ -165,7 +167,7 @@ public class Verify {
         //Check if the properties have been set correctly
         Properties properties = model.getProperties();
         assertThat(properties.containsKey("vertx.version")).isTrue();
-        assertEquals(properties.getProperty("vertx.version"), "5.0.0-SNAPSHOT");
+        assertEquals("4.5.15", properties.getProperty("vertx.version"));
 
         assertThat(properties.containsKey("vertx-maven-plugin.version")).isTrue();
         assertThat(properties.getProperty("vertx-maven-plugin.version")).isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
@@ -186,15 +188,17 @@ public class Verify {
         Optional<Dependency> vertxCoreDep = model.getDependencies().stream()
             .filter(d -> d.getArtifactId().equals("vertx-core") && d.getGroupId().equals("io.vertx"))
             .findFirst();
-        assertThat(vertxCoreDep.isPresent()).isTrue();
-        assertThat(vertxCoreDep.get().getVersion()).isNull();
+        assertThat(vertxCoreDep)
+            .isPresent()
+            .get()
+            .extracting(Dependency::getVersion)
+            .isNull();
 
-        //Check Vert.x App Launcher dependency
+        // Check Vert.x App Launcher dependency not present
         Optional<Dependency> vertxLauncherApp = model.getDependencies().stream()
             .filter(d -> d.getArtifactId().equals("vertx-launcher-application") && d.getGroupId().equals("io.vertx"))
             .findFirst();
-        assertThat(vertxLauncherApp.isPresent()).isTrue();
-        assertThat(vertxLauncherApp.get().getVersion()).isNull();
+        assertThat(vertxLauncherApp).isNotPresent();
 
         Plugin vmp = project.getPlugin("io.reactiverse:vertx-maven-plugin");
         assertNotNull(vmp);
@@ -258,7 +262,7 @@ public class Verify {
                 assertThat(manifest).isNotNull();
                 String mainClass = manifest.getMainAttributes().getValue("Main-Class");
                 String mainVerticle = manifest.getMainAttributes().getValue("Main-Verticle");
-                assertThat(mainClass).isNotNull().isEqualTo("io.vertx.core.Launcher");
+                assertThat(mainClass).isNotNull().isEqualTo("io.vertx.launcher.application.VertxApplication");
                 assertThat(mainVerticle).isNotNull().isEqualTo("org.vertx.demo.MainVerticle");
             }
         }

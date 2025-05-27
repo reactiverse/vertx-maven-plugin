@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>5.0.0-SNAPSHOT</vertx.version>
+        <vertx.version>4.5.15</vertx.version>
         <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
     </properties>
     <build>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -59,10 +59,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-launcher-application</artifactId>
-        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -75,17 +71,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <repositories>
-        <repository>
-            <id>vertx-snapshots-repository</id>
-            <name>Vert.x Snapshots Repository</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

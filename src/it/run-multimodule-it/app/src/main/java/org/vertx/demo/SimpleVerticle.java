@@ -24,6 +24,6 @@ public class SimpleVerticle extends AbstractVerticle {
     public void start(Promise<Void> startFuture) throws Exception {
         startFuture.complete();
         System.out.println(Constants.VALUE);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

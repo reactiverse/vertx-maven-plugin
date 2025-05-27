@@ -35,6 +35,6 @@ public class SimpleVerticle extends AbstractVerticle {
         String groupName = haGroupOptional.get().split("=")[1];
 
         System.out.println("HA Group="+groupName);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

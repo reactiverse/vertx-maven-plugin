@@ -35,6 +35,6 @@ public class SimpleVerticle extends AbstractVerticle {
         String quorum = haGroupOptional.get().split("=")[1];
 
         System.out.println("Quorum="+quorum);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

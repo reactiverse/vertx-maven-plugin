@@ -26,6 +26,6 @@ public class SimpleVerticle extends AbstractVerticle {
         String name = "vert.x";
         String message = config().getString("prefix") + " " + name;
         System.out.println(message);
-        vertx.close();
+        vertx.setTimer(500, l -> vertx.close());
     }
 }

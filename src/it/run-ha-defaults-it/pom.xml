@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>@vertx-core.version@</vertx.version>
+        <vertx.version>4.5.15</vertx.version>
         <vertx.verticle>org.vertx.demo.SimpleVerticle</vertx.verticle>
     </properties>
     <build>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -49,9 +49,11 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <jvmArgs>
+                                <jvmArg>-Djava.net.preferIPv4Stack=true</jvmArg>
+                            </jvmArgs>
                             <runArgs>
                                 <runArg>--ha</runArg>
-                                <runArg>-Djava.net.preferIPv4Stack=true</runArg>
                             </runArgs>
                         </configuration>
                     </execution>
