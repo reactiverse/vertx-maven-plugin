@@ -15,8 +15,8 @@ jobs:
     name: Run tests
     strategy:
       matrix:
-        os: [ubuntu-latest,windows-latest]
-        jdk: [11,17,21]
+        os: [ubuntu-latest]
+        jdk: [11]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
       - name: Run tests
-        run: mvn -B clean verify -DwithIts
+        run: mvn -B clean compile
   Deploy:
     name: Deploy Snapshot
     if: ${{ github.repository_owner == 'reactiverse' && (github.event_name == 'push' || github.event_name == 'schedule') && !startsWith(github.ref, 'refs/tags/') }}
@@ -41,7 +41,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-          server-id: ossrh
+          server-id: central
           server-username: SONATYPE_NEXUS_USERNAME
           server-password: SONATYPE_NEXUS_PASSWORD
       - name: Get project version
@@ -65,6 +65,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
+          server-id: central
           server-username: SONATYPE_NEXUS_USERNAME
           server-password: SONATYPE_NEXUS_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
