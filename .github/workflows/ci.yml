@@ -15,8 +15,8 @@ jobs:
     name: Run tests
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        jdk: [11]
+        os: [ubuntu-latest,windows-latest]
+        jdk: [11,17,21]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
       - name: Run tests
-        run: mvn -B clean compile
+        run: mvn -B clean verify -DwithIts
   Deploy:
     name: Deploy Snapshot
     if: ${{ github.repository_owner == 'reactiverse' && (github.event_name == 'push' || github.event_name == 'schedule') && !startsWith(github.ref, 'refs/tags/') }}
