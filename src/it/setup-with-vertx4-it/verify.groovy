@@ -20,4 +20,4 @@ import io.reactiverse.vertx.maven.plugin.Verify
 String base = basedir
 File pomFile = new File(base, "pom.xml")
 
-Verify.verifySetupWithVertx5(pomFile)
+Verify.verifySetupWithVertx4(pomFile)
