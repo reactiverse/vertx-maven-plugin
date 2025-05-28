@@ -441,8 +441,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Vert.x Maven Plugin</h1>
 <div class="details">
 <span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont</span><br>
-<span id="revnumber">version 2.0.1,</span>
-<span id="revdate">2024-10-10</span>
+<span id="revnumber">version 2.0.2,</span>
+<span id="revdate">2025-05-28</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Vert.x Maven Plugin</div>
@@ -485,8 +485,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#miscellaneous">3. Miscellaneous</a>
 <ul class="sectlevel2">
-<li><a href="#how-does-redeployment-work">3.1. How does redeployment work</a></li>
+<li><a href="#how-does-redeployment-work">3.1. How does redeployment work?</a></li>
 <li><a href="#windows-command-line-is-too-long">3.2. Windows: command line is too long</a></li>
+<li><a href="#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">3.3. How does the plugin detect if a custom main class is a launcher?</a></li>
 </ul>
 </li>
 <li><a href="#references">4. References</a></li>
@@ -497,7 +498,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>&#169; 2016-2024 The original authors.</p>
+<p>&#169; 2016-2025 The original authors.</p>
 </div>
 <!-- toc disabled -->
 </div>
@@ -512,7 +513,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The Vert.x Maven Plugin is a plugin for <a href="https://maven.apache.org">Apache Maven</a> that helps to develop and/or to package Vert.x applications.</p>
 </div>
 <div class="paragraph">
-<p>The last version of the Vert.x Maven Plugin is <strong>2.0.1</strong>.</p>
+<p>The last version of the Vert.x Maven Plugin is <strong>2.0.2</strong>.</p>
 </div>
 <div class="sect2">
 <h3 id="using-the-plugin">1.1. Using the plugin</h3>
@@ -551,7 +552,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
         &lt;plugin&gt;
             &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
             &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;2.0.1&lt;/version&gt;
+            &lt;version&gt;2.0.2&lt;/version&gt;
             &lt;executions&gt;
                 &lt;execution&gt;
                     &lt;id&gt;vmp&lt;/id&gt;
@@ -650,18 +651,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h4 id="usage">2.2.1. Usage</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.1:setup</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.2:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will configure Vert.x and its dependencies to <code>4.5.8</code>, i.e. the Maven project property <code>vertx.version</code> will be set to <code>4.5.8</code>.</p>
+<p>This will configure Vert.x and its dependencies to <code>5.0.0</code>, i.e. the Maven project property <code>vertx.version</code> will be set to <code>5.0.0</code>.</p>
 </div>
 <div class="paragraph">
 <p>If you wish to override the default Vert.x version, then you can run the same command as above with <code>-DvertxVersion=&lt;your-vertx-version&gt;</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.1:setup -DvertxVersion=<your-vertx-version></code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.2:setup -DvertxVersion=<your-vertx-version></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -669,7 +670,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.1:setup \
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.2:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \
@@ -685,7 +686,7 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.1:setup -DjavaVersion=11</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.0.2:setup -DjavaVersion=11</code></pre>
 </div>
 </div>
 </div>
@@ -801,7 +802,7 @@ The plugin takes care of adding the required entries to the <strong>MANIFEST.MF<
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.verticle</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Main-Verticle</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle, <em>i.e.</em> the entry point of your application. Used when the <code>Main-Class</code> is a Vert.x launcher.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main verticle, <em>i.e.</em> the entry point of your application. Used when the <code>Main-Class</code> <a href="#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">is a Vert.x launcher</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.launcher</code></p></td>
@@ -948,7 +949,7 @@ The patterns must be expressed relatively to the <code>rootDirectory</code>.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>runArgs</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The list of arguments that can be passed to the main class, if it is a Vert.x launcher.
+<td class="tableblock halign-left valign-top"><p class="tableblock">The list of arguments that can be passed to the main class, if it <a href="#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">is a Vert.x launcher</a>.
 You can also pass the required run arguments using the system property. e.g. <code>-Dvertx.runArgs="--worker --instances=2"</code>.
 The system property takes precedence over the plugin configurations</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.runArgs</code></p></td>
@@ -956,7 +957,7 @@ The system property takes precedence over the plugin configurations</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>options</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Vert.x configuration file path that will be passed to the main class, if it is a Vert.x launcher, as <code>-options</code>.
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Vert.x configuration file path that will be passed to the main class, if it <a href="#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">is a Vert.x launcher</a>, as <code>-options</code>.
 If a YAML file is configured then it will be converted to JSON by the plugin.
 The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.options</code></p></td>
@@ -964,7 +965,7 @@ The converted file will be saved in <code>${project.outputDir}/conf</code> direc
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>config</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The verticle configuration file path that will be passed to the main class, if it is a Vert.x launcher, as <code>-conf</code>.
+<td class="tableblock halign-left valign-top"><p class="tableblock">The verticle configuration file path that will be passed to the main class, if it <a href="#_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">is a Vert.x launcher</a>, as <code>-conf</code>.
 If a YAML file is configured then it will be converted to JSON by the plugin.
 The converted file will be saved in <code>${project.outputDir}/conf</code> directory.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.config</code></p></td>
@@ -1357,7 +1358,7 @@ If you set the <code>fileCombinationPatterns</code> attribute, the defaults are 
 <h2 id="miscellaneous">3. Miscellaneous</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="how-does-redeployment-work">3.1. How does redeployment work</h3>
+<h3 id="how-does-redeployment-work">3.1. How does redeployment work?</h3>
 <div class="paragraph">
 <p>During the <em>initialize</em> phase, the plugin starts observing the mojos (Maven plugins) that are executed.</p>
 </div>
@@ -1473,6 +1474,38 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_how_does_the_plugin_detect_if_a_custom_main_class_is_a_launcher">3.3. How does the plugin detect if a custom main class is a launcher?</h3>
+<div class="paragraph">
+<p>Some goals must detect whether a custom main class set with the <code>launcher</code> element (see <a href="#common:configurations">Common Configurations</a>) is a Vert.x launcher.</p>
+</div>
+<div class="paragraph">
+<p>The Vert.x Maven plugin considers a class is a Vert.x launcher if:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the project depends on Vert.x 4 and the class extends <code>io.vertx.core.Launcher</code>, or</p>
+</li>
+<li>
+<p>the project depends on Vert.x 5 application and:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>the class extends <code>io.vertx.launcher.application.VertxApplication</code>, or</p>
+</li>
+<li>
+<p>the class extends <code>io.vertx.core.Launcher</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the last case, of course, the project must depend on <code>io.vertx:vertx-launcher-legacy-cli</code>.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1493,8 +1526,8 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2.0.1<br>
-Last updated 2024-10-10 15:19:26 UTC
+Version 2.0.2<br>
+Last updated 2025-05-28 13:41:15 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
