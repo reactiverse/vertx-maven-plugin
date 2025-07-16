@@ -72,7 +72,7 @@
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 
         <!-- Compile dependency versions -->
-        <maven-plugin-api.version>3.9.10</maven-plugin-api.version>
+        <maven-plugin-api.version>3.9.11</maven-plugin-api.version>
         <plexus-utils.version>3.5.1</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
