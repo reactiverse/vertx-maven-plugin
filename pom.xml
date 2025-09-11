@@ -82,7 +82,7 @@
         <mojo-executor.version>2.4.1</mojo-executor.version>
         <jackson-bom.version>2.17.1</jackson-bom.version>
         <shrinkwrap.version>1.2.6</shrinkwrap.version>
-        <jline.version>3.30.5</jline.version>
+        <jline.version>3.30.6</jline.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>5.0.0</vertx-core.version>
