@@ -1,7 +1,6 @@
 package io.reactiverse.vertx.maven.plugin.components.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import org.junit.Test;
 import java.io.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeFalse;
 
 /**
  * Tests the Prompter implementation.
@@ -25,7 +23,6 @@ public class PrompterImplTest {
 
     @Before
     public void setUp() throws Exception {
-        assumeFalse(SystemUtils.IS_OS_WINDOWS);
         input = new PipedInputStream();
         pipeToInput = new PrintWriter(new PipedOutputStream(input), true);
         output = new ByteArrayOutputStream();
