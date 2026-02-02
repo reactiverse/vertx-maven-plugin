@@ -25,7 +25,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>5.0.0-SNAPSHOT</vertx.version>
+        <vertx.version>5.0.8-SNAPSHOT</vertx.version>
     </properties>
     <build>
         <plugins>
@@ -83,7 +83,7 @@
         <repository>
             <id>vertx-snapshots-repository</id>
             <name>Vert.x Snapshots Repository</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
