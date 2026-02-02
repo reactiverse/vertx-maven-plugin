@@ -94,9 +94,14 @@ public class RunningVerifier extends Verifier {
 
     private void findDefaultMavenHome() {
         defaultMavenHome = System.getProperty("maven.home");
-
+        if (defaultMavenHome != null) {
+            return;
+        }
+        Properties envVars = CommandLineUtils.getSystemEnvVars();
+        // Maven 3
+        defaultMavenHome = envVars.getProperty("MAVEN_HOME");
         if (defaultMavenHome == null) {
-            Properties envVars = CommandLineUtils.getSystemEnvVars();
+            // Maven 2
             defaultMavenHome = envVars.getProperty("M2_HOME");
         }
     }
