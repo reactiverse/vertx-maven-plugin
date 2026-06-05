@@ -4,6 +4,7 @@ import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -70,6 +71,7 @@ public class RunIT extends VertxMojoTestBase {
     }
 
     @Test
+    @Ignore("Disable for now because snapshots retrieval from central is not reliable")
     public void testRunAppUsingVertxSnapshotVersion() throws Exception {
         assumeThat(javaSpecVersion()).isGreaterThanOrEqualTo(11);
 
