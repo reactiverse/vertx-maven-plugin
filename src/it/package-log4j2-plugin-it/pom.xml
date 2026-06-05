@@ -25,7 +25,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <log4j.version>2.22.1</log4j.version>
+        <log4j.version>2.26.0</log4j.version>
         <vertx.version>@vertx-core.version@</vertx.version>
         <vertx.launcher>org.vertx.demo.Main</vertx.launcher>
     </properties>
@@ -37,6 +37,13 @@
                 <version>3.14.0</version>
                 <configuration>
                     <release>11</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.apache.logging.log4j</groupId>
+                            <artifactId>log4j-core</artifactId>
+                            <version>2.24.1</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
