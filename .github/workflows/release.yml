@@ -1,0 +1,115 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (e.g. 2.1.0)'
+        required: true
+      next_version:
+        description: 'Next development version (e.g. 2.1.1-SNAPSHOT)'
+        required: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  Prepare:
+    name: Prepare release commit
+    runs-on: ubuntu-latest
+    outputs:
+      release_sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 11
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Set release version
+        run: mvn versions:set -DnewVersion=${{ inputs.release_version }} -DgenerateBackupPoms=false -B
+
+      - name: Commit and push release version
+        id: commit
+        run: |
+          git add -A
+          git commit -m "Release version ${{ inputs.release_version }}"
+          git push origin main
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+  Test:
+    needs: Prepare
+    uses: ./.github/workflows/test.yml
+    with:
+      ref: ${{ needs.Prepare.outputs.release_sha }}
+
+  Release:
+    name: Release ${{ inputs.release_version }}
+    needs: [ Prepare, Test ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.Prepare.outputs.release_sha }}
+
+      - name: Install JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 11
+          server-id: central
+          server-username: SONATYPE_NEXUS_USERNAME
+          server-password: SONATYPE_NEXUS_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Tag release
+        run: |
+          TAG=v${{ inputs.release_version }}
+          git tag -f "$TAG"
+          git push origin "refs/tags/$TAG" --force
+
+      - name: Deploy to Maven Central
+        run: mvn -Prelease,doc-html generate-resources asciidoctor:process-asciidoc deploy -DskipTests -Ddoc.outputDirectory=./public -B
+        env:
+          SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Set next development version
+        run: mvn versions:set -DnewVersion=${{ inputs.next_version }} -DgenerateBackupPoms=false -B
+
+      - name: Commit next development version
+        run: |
+          git add -A
+          git commit -m "Development version ${{ inputs.next_version }}"
+
+      - name: Push next development version
+        run: git push origin HEAD:main
