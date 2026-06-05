@@ -167,7 +167,7 @@ public class Verify {
         //Check if the properties have been set correctly
         Properties properties = model.getProperties();
         assertThat(properties.containsKey("vertx.version")).isTrue();
-        assertEquals("4.5.15", properties.getProperty("vertx.version"));
+        assertEquals("4.5.28", properties.getProperty("vertx.version"));
 
         assertThat(properties.containsKey("vertx-maven-plugin.version")).isTrue();
         assertThat(properties.getProperty("vertx-maven-plugin.version")).isEqualTo(MojoUtils.getVersion("vertx-maven-plugin-version"));
