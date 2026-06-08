@@ -261,10 +261,10 @@ public class SetupMojoTest {
         Log log = mock(Log.class);
         when(mock.getBasedir()).thenReturn(baseDir);
 
-        SetupTemplateUtils.createVerticle(mock, "4.5.8", "me.demo.Foo.java", log);
-        SetupTemplateUtils.createVerticle(mock, "4.5.8", "me.demo.Bar", log);
-        SetupTemplateUtils.createVerticle(mock, "5.0.0", "Baz.java", log);
-        SetupTemplateUtils.createVerticle(mock, "5.0.0", "Bob", log);
+        SetupTemplateUtils.createVerticle(mock, "4.5.28", "me.demo.Foo.java", log);
+        SetupTemplateUtils.createVerticle(mock, "4.5.28", "me.demo.Bar", log);
+        SetupTemplateUtils.createVerticle(mock, "5.1.1", "Baz.java", log);
+        SetupTemplateUtils.createVerticle(mock, "5.1.1", "Bob", log);
 
         assertThat(new File(baseDir, "src/main/java/me/demo/Foo.java"))
             .isFile()
