@@ -43,7 +43,7 @@ jobs:
         run: |
           git add -A
           git commit -m "Release version ${{ inputs.release_version }}"
-          git push origin main
+          git push origin master
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
   Test:
@@ -112,4 +112,4 @@ jobs:
           git commit -m "Development version ${{ inputs.next_version }}"
 
       - name: Push next development version
-        run: git push origin HEAD:main
+        run: git push origin HEAD:master
