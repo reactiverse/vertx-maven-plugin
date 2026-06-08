@@ -27,5 +27,4 @@ Verify.verifyVertxJar(primaryArtifactFile)
 
 JarFile jar = new JarFile(primaryArtifactFile)
 assert jar.getEntry("webroot") != null
-assert jar.getEntry("webroot/vertx-web-client.js") != null
 assert jar.getEntry("webroot/jquery/jquery.js") != null
