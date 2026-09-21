@@ -55,6 +55,7 @@ public class RunningVerifier extends Verifier {
         File logFile = new File(getBasedir(), getLogFileName());
 
 
+        request.setBatchMode(true);
         request.setDebug(isMavenDebug());
 
         /*
