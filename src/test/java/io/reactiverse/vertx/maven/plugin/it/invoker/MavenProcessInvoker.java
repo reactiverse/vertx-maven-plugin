@@ -70,7 +70,7 @@ public class MavenProcessInvoker extends DefaultInvoker {
     private Process executeCommandLine(Commandline cli, InvocationRequest request)
         throws CommandLineException {
 
-        assert !request.isInteractive();
+        assert request.isBatchMode();
 
         InvocationOutputHandler outputHandler = request.getOutputHandler(DEFAULT_OUTPUT_HANDLER);
         InvocationOutputHandler errorHandler = request.getErrorHandler(DEFAULT_OUTPUT_HANDLER);
