@@ -73,7 +73,7 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 
         <!-- Compile dependency versions -->
-        <maven-plugin-api.version>3.9.16</maven-plugin-api.version>
+        <maven-plugin-api.version>3.10.0</maven-plugin-api.version>
         <plexus-utils.version>3.6.2</plexus-utils.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
