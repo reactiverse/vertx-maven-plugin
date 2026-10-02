@@ -13,7 +13,6 @@ import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +70,6 @@ public class InitializeMojoTest {
     private InitializeMojo createMojoInstance() throws PlexusContainerException {
         InitializeMojo mojo = new InitializeMojo();
         mojo.project = new MavenProject();
-        mojo.repositorySystem = new DefaultRepositorySystem();
         mojo.repositorySystemSession = new DefaultRepositorySystemSession();
         mojo.buildPluginManager = new DefaultBuildPluginManager();
         mojo.container = new DefaultPlexusContainer(new DefaultContainerConfiguration());
