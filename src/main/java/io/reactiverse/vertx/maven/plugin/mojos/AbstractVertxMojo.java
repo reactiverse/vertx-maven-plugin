@@ -18,7 +18,6 @@
 package io.reactiverse.vertx.maven.plugin.mojos;
 
 import io.reactiverse.vertx.maven.plugin.utils.WebJars;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
@@ -28,15 +27,18 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.StringUtils;
+import org.objectweb.asm.ClassReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -90,6 +92,9 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Component
     protected LifecycleExecutor lifecycleExecutor;
+
+    @Component
+    protected ToolchainManager toolchainManager;
 
     /**
      * Configure the packaging content.
@@ -251,18 +256,29 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
                 throw new MojoExecutionException("Invalid classpath element: " + classPathElements.get(i), e);
             }
         }
-        try (URLClassLoader classLoader = new URLClassLoader(classPathUrls)) {
-            Class<?> mainClass = classLoader.loadClass(mainClassName);
-            for (Class<?> superClass : ClassUtils.getAllSuperclasses(mainClass)) {
-                if (launcherClassName.equals(superClass.getName())) {
-                    return true;
+        String className = mainClassName;
+        try (URLClassLoader classLoader = new URLClassLoader(classPathUrls, null)) {
+            while (className != null && !"java.lang.Object".equals(className)) {
+                String resourceName = className.replace('.', '/') + ".class";
+                try (InputStream is = classLoader.getResourceAsStream(resourceName)) {
+                    if (is == null) {
+                        throw new MojoExecutionException("Could not find main class: " + mainClassName);
+                    }
+                    ClassReader classReader = new ClassReader(is);
+                    String superName = classReader.getSuperName();
+                    if (superName == null) {
+                        return false;
+                    }
+                    String superClassName = superName.replace('/', '.');
+                    if (launcherClassName.equals(superClassName)) {
+                        return true;
+                    }
+                    className = superClassName;
                 }
             }
             return false;
         } catch (IOException e) {
             throw new MojoExecutionException("Failure while inspecting main class hierarchy", e);
-        } catch (ClassNotFoundException e) {
-            throw new MojoExecutionException("Could not find main class: " + mainClassName);
         }
     }
 

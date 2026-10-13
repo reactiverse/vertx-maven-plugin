@@ -27,6 +27,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.Toolchain;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -200,6 +201,15 @@ public class RunMojo extends AbstractVertxMojo {
     }
 
     private File findJava() throws MojoExecutionException {
+        Toolchain toolchain = toolchainManager.getToolchainFromBuildContext("jdk", mavenSession);
+        if (toolchain != null) {
+            String javaExecutable = toolchain.findTool("java");
+            if (javaExecutable != null) {
+                File java = new File(javaExecutable);
+                getLog().info("Toolchain in vertx-maven-plugin: " + toolchain);
+                return java;
+            }
+        }
         String javaHome = System.getProperty("java.home");
         if (javaHome == null) {
             Properties envVars = systemEnvVars;

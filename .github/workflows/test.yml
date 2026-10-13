@@ -23,6 +23,8 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.jdk }}
+          java-version: |
+            21
+            ${{ matrix.jdk }}
       - name: Run tests
         run: mvn -B clean verify -DwithIts
