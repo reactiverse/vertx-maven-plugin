@@ -21,6 +21,7 @@ import io.reactiverse.vertx.maven.plugin.utils.WebJars;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -34,6 +35,16 @@ import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.Exclusion;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.resolution.DependencyResult;
 import org.objectweb.asm.ClassReader;
 
 import java.io.File;
@@ -96,11 +107,33 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     @Component
     protected ToolchainManager toolchainManager;
 
+    @Component
+    protected RepositorySystem repositorySystem;
+
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+    protected RepositorySystemSession repositorySystemSession;
+
+    @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
+    protected List<RemoteRepository> remoteRepositories;
+
     /**
      * Configure the packaging content.
      */
     @Parameter
     protected Archive archive;
+
+    /**
+     * Additional dependencies to add to the classpath when running or debugging the application.
+     * These dependencies are resolved transitively but are not added to the project's compile or runtime scope.
+     */
+    @Parameter
+    protected List<Dependency> additionalDependencies;
+
+    /**
+     * Additional classpath elements (directories, JAR or ZIP files) to add to the classpath when running or debugging the application.
+     */
+    @Parameter
+    protected List<File> additionalClasspathElements;
 
     /* ==== Config ====  */
 
@@ -155,6 +188,15 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
             classPathElements = new ArrayList<>();
             classPathElements.add(this.classesDirectory);
             classPathElements.addAll(extractArtifactPaths(this.project.getArtifacts()));
+            if (additionalDependencies != null && !additionalDependencies.isEmpty()) {
+                classPathElements.addAll(resolveAdditionalDependencies());
+            }
+            if (additionalClasspathElements != null && !additionalClasspathElements.isEmpty()) {
+                for (File element : additionalClasspathElements) {
+                    getLog().debug("Additional classpath element: " + element.getAbsoluteFile());
+                    classPathElements.add(element.getAbsoluteFile());
+                }
+            }
             getLog().debug("Classpath elements: " + classPathElements);
         }
         return classPathElements;
@@ -279,6 +321,41 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
             return false;
         } catch (IOException e) {
             throw new MojoExecutionException("Failure while inspecting main class hierarchy", e);
+        }
+    }
+
+    private List<File> resolveAdditionalDependencies() throws MojoExecutionException {
+        CollectRequest collectRequest = new CollectRequest();
+        for (Dependency dep : additionalDependencies) {
+            String type = dep.getType() != null ? dep.getType() : "jar";
+            String coords;
+            if (dep.getClassifier() != null && !dep.getClassifier().isEmpty()) {
+                coords = dep.getGroupId() + ":" + dep.getArtifactId() + ":" + type + ":" + dep.getClassifier() + ":" + dep.getVersion();
+            } else {
+                coords = dep.getGroupId() + ":" + dep.getArtifactId() + ":" + type + ":" + dep.getVersion();
+            }
+            List<Exclusion> exclusions = new ArrayList<>();
+            for (org.apache.maven.model.Exclusion e : dep.getExclusions()) {
+                exclusions.add(new Exclusion(e.getGroupId(), e.getArtifactId(), "*", "*"));
+            }
+            collectRequest.addDependency(new org.eclipse.aether.graph.Dependency(new DefaultArtifact(coords), "runtime", false, exclusions));
+        }
+        for (RemoteRepository repo : remoteRepositories) {
+            collectRequest.addRepository(repo);
+        }
+        try {
+            DependencyResult result = repositorySystem.resolveDependencies(
+                repositorySystemSession, new DependencyRequest(collectRequest, null));
+            List<File> files = new ArrayList<>();
+            for (ArtifactResult ar : result.getArtifactResults()) {
+                @SuppressWarnings("deprecation")
+                File file = ar.getArtifact().getFile().getAbsoluteFile();
+                getLog().debug("Additional dependency: " + file);
+                files.add(file);
+            }
+            return files;
+        } catch (DependencyResolutionException e) {
+            throw new MojoExecutionException("Failed to resolve additional dependencies", e);
         }
     }
 

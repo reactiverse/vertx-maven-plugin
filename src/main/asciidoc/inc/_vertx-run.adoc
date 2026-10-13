@@ -113,6 +113,18 @@ The converted file will be saved in `${project.outputDir}/conf` directory.
 | `vertx.debug.port`
 | `5005`
 
+| `additionalDependencies`
+| A list of Maven dependencies to resolve transitively and add to the classpath.
+These dependencies are not added to the project's compile or runtime scope.
+Supports `<exclusions>`.
+| &nbsp;
+| &nbsp;
+
+| `additionalClasspathElements`
+| A list of additional classpath elements (directories, JAR or ZIP files) to add to the classpath.
+| &nbsp;
+| &nbsp;
+
 |===
 
 For example, if the projects contains a web frontend built with Node in `/src/main/frontend`, you will have to exclude files that are changed as part of the frontend build:
@@ -139,6 +151,76 @@ For example, if the projects contains a web frontend built with Node in `/src/ma
     <redeployExclude>frontend/dist/**</redeployExclude>
     <redeployExclude>frontend/package-lock.json</redeployExclude>
   </redeployExcludes>
+</configuration>
+</plugin>
+----
+
+[[run-additional-classpath]]
+== Additional classpath entries
+
+You can add dependencies and classpath elements that are available at runtime but not part of the project's compile or runtime scope.
+This is useful for development-only tools like logging backends, diagnostic libraries, or configuration directories.
+
+=== Additional dependencies
+
+Use `additionalDependencies` to declare Maven artifacts that will be resolved (with their transitive dependencies) and added to the classpath of the running application.
+
+For example, to add a Logback logging backend during development:
+
+[source,xml]
+----
+<plugin>
+<groupId>io.reactiverse</groupId>
+<artifactId>vertx-maven-plugin</artifactId>
+<version>${vertx-maven-plugin.version}</version>
+<configuration>
+  <additionalDependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+  </additionalDependencies>
+</configuration>
+</plugin>
+----
+
+Exclusions are supported, just like regular Maven dependencies:
+
+[source,xml]
+----
+<additionalDependencies>
+  <dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>${logback.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+</additionalDependencies>
+----
+
+=== Additional classpath elements
+
+Use `additionalClasspathElements` to add directories, JAR or ZIP files directly to the classpath.
+This is handy for configuration files that should not be part of the project resources.
+
+For example, to add a directory with a development-specific logging configuration:
+
+[source,xml]
+----
+<plugin>
+<groupId>io.reactiverse</groupId>
+<artifactId>vertx-maven-plugin</artifactId>
+<version>${vertx-maven-plugin.version}</version>
+<configuration>
+  <additionalClasspathElements>
+    <element>${project.basedir}/dev-config</element>
+  </additionalClasspathElements>
 </configuration>
 </plugin>
 ----
