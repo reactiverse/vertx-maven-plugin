@@ -84,6 +84,7 @@
         <jackson-bom.version>2.17.1</jackson-bom.version>
         <shrinkwrap.version>2.0.0.Final</shrinkwrap.version>
         <jline.version>4.4.7</jline.version>
+        <asm.version>9.11</asm.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>5.1.1</vertx-core.version>
@@ -209,6 +210,12 @@
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-common-artifact-filters</artifactId>
             <version>3.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
         </dependency>
 
         <!-- user prompt -->
