@@ -17,7 +17,6 @@
 
 package io.reactiverse.vertx.maven.plugin.mojos;
 
-import io.reactiverse.vertx.maven.plugin.utils.MavenUtils;
 import io.reactiverse.vertx.maven.plugin.utils.WebJars;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.maven.artifact.Artifact;
@@ -36,12 +35,7 @@ import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.ArtifactRepository;
-import org.eclipse.aether.resolution.ArtifactRequest;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.ArtifactResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,9 +99,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
 
     @Component
     protected BuildPluginManager buildPluginManager;
-
-    @Component
-    protected RepositorySystem repositorySystem;
 
     /**
      * The component used to execute the second Maven execution.
@@ -297,29 +288,14 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
                 if (e.getScope().equals("compile") || e.getScope().equals("runtime")) {
                     if (e.getType().equals("jar")) {
                         if (!WebJars.isWebJar(e.getFile())) {
-                            File resolvedArtifact = resolveArtifact(MavenUtils.asMavenCoordinates(e));
-                            if (resolvedArtifact != null) {
-                                files.add(resolvedArtifact.getAbsoluteFile());
-                            }
+                            files.add(e.getFile().getAbsoluteFile());
                         }
                     }
                 }
             }
             return files;
-        } catch (IOException | ArtifactResolutionException ex) {
+        } catch (IOException ex) {
             throw new MojoExecutionException("Unable to extract artifact paths", ex);
         }
-    }
-
-    private File resolveArtifact(String artifact) throws ArtifactResolutionException {
-        ArtifactRequest artifactRequest = new ArtifactRequest();
-        artifactRequest.setArtifact(new DefaultArtifact(artifact));
-        ArtifactResult artifactResult = repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
-        if (artifactResult.isResolved()) {
-            getLog().debug("Resolved: " + artifactResult.getArtifact().getArtifactId());
-            return artifactResult.getArtifact().getFile();
-        }
-        getLog().warn("Unable to resolve artifact: " + artifact);
-        return null;
     }
 }
