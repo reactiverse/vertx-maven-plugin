@@ -34,8 +34,6 @@ import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.StringUtils;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,19 +73,6 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
      */
     @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
     File classesDirectory;
-
-    /**
-     * The maven artifact resolution session, which will be used to resolve Maven artifacts
-     */
-    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
-    protected DefaultRepositorySystemSession repositorySystemSession;
-
-    /**
-     * The list of remote repositories that will be used to resolve artifacts
-     */
-    @Parameter(alias = "remoteRepositories", defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
-    protected List<ArtifactRepository> remoteRepositories;
-
 
     /* ==== Maven Components ==== */
 

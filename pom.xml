@@ -75,7 +75,7 @@
         <!-- Compile dependency versions -->
         <maven-plugin-api.version>3.10.0</maven-plugin-api.version>
         <plexus-utils.version>3.6.2</plexus-utils.version>
-        <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
+
         <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
         <commons-io.version>2.22.0</commons-io.version>
@@ -173,14 +173,6 @@
             <groupId>org.twdata.maven</groupId>
             <artifactId>mojo-executor</artifactId>
             <version>${mojo-executor.version}</version>
-        </dependency>
-
-        <!-- Artifact Resolution -->
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-aether-provider</artifactId>
-            <version>${maven-aether-provider.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Packaging and Other Archiving Utilities -->

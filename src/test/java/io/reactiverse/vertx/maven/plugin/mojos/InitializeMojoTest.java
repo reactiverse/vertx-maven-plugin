@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -70,14 +69,12 @@ public class InitializeMojoTest {
     private InitializeMojo createMojoInstance() throws PlexusContainerException {
         InitializeMojo mojo = new InitializeMojo();
         mojo.project = new MavenProject();
-        mojo.repositorySystemSession = new DefaultRepositorySystemSession();
         mojo.buildPluginManager = new DefaultBuildPluginManager();
         mojo.container = new DefaultPlexusContainer(new DefaultContainerConfiguration());
-        mojo.mavenSession = new MavenSession(mojo.container, mojo.repositorySystemSession, new DefaultMavenExecutionRequest(),
+        mojo.mavenSession = new MavenSession(mojo.container, new DefaultRepositorySystemSession(), new DefaultMavenExecutionRequest(),
             new DefaultMavenExecutionResult());
 
         mojo.lifecycleExecutor = new DefaultLifecycleExecutor();
-        mojo.remoteRepositories = Collections.emptyList();
         mojo.projectBuildDir = projectBuildDir.getAbsolutePath();
 
         Build build = new Build();
