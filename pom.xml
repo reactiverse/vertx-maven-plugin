@@ -82,7 +82,7 @@
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <mojo-executor.version>2.4.1</mojo-executor.version>
         <jackson-bom.version>2.17.1</jackson-bom.version>
-        <shrinkwrap.version>1.2.6</shrinkwrap.version>
+        <shrinkwrap.version>2.0.0.Final</shrinkwrap.version>
         <jline.version>4.4.7</jline.version>
 
         <!-- Test dependency versions -->
