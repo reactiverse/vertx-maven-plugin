@@ -224,3 +224,53 @@ For example, to add a directory with a development-specific logging configuratio
 </configuration>
 </plugin>
 ----
+
+[[run-toolchains]]
+== Maven Toolchains
+
+The `run` goal supports https://maven.apache.org/guides/mini/guide-using-toolchains.html[Maven Toolchains].
+When a JDK toolchain is configured, the forked Vert.x application uses the toolchain JDK instead of the JDK running Maven.
+This is useful when your code targets a higher JDK version than the one running Maven.
+
+To use a JDK toolchain, first declare it in your `~/.m2/toolchains.xml`:
+
+[source,xml]
+----
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>21</version>
+    </provides>
+    <configuration>
+      <jdkHome>/path/to/jdk-21</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>
+----
+
+Then activate the toolchain in your `pom.xml` using the `maven-toolchains-plugin`:
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-toolchains-plugin</artifactId>
+  <executions>
+    <execution>
+      <goals>
+        <goal>toolchain</goal>
+      </goals>
+    </execution>
+  </executions>
+  <configuration>
+    <toolchains>
+      <jdk>
+        <version>21</version>
+      </jdk>
+    </toolchains>
+  </configuration>
+</plugin>
+----
+
+When no toolchain is configured, the plugin falls back to the `java.home` system property and then the `JAVA_HOME` environment variable.
