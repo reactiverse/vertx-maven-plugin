@@ -130,6 +130,12 @@ public class RunMojo extends AbstractVertxMojo {
     List<String> runArgs;
 
     /**
+     * Environment variables to set for the forked Vert.x application process.
+     */
+    @Parameter
+    Map<String, String> environmentVariables;
+
+    /**
      * Whether the Vert.x application should be started with blocked thread checker disabled.
      */
     @Parameter(property = "vertx.disable.blocked.thread.checker", defaultValue = "true")
@@ -233,6 +239,10 @@ public class RunMojo extends AbstractVertxMojo {
             VertxAppBuilder appBuilder = new VertxAppBuilder(java, getVertxApplicationInfo().mainClass())
                 .env(WEB_ENVIRONMENT_VARIABLE_NAME, vertxWebEnvironment)
                 .workDir(workDirectory);
+
+            if (environmentVariables != null) {
+                environmentVariables.forEach(appBuilder::env);
+            }
 
             for (File classPathElement : getClassPathElements()) {
                 appBuilder.addClasspathElement(classPathElement);

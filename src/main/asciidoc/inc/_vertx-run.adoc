@@ -57,6 +57,11 @@ The patterns must be expressed relatively to the `rootDirectory`.
 | `vertx.redeploy.grace.period`
 | `1000`
 
+| `environmentVariables`
+| Environment variables to set for the forked Vert.x application process.
+| &nbsp;
+| &nbsp;
+
 | `jvmArgs`
 | The JVM arguments that will be used when starting the Vert.x application.
 | `vertx.jvmArguments`
@@ -151,6 +156,28 @@ For example, if the projects contains a web frontend built with Node in `/src/ma
     <redeployExclude>frontend/dist/**</redeployExclude>
     <redeployExclude>frontend/package-lock.json</redeployExclude>
   </redeployExcludes>
+</configuration>
+</plugin>
+----
+
+[[run-environment-variables]]
+== Environment variables
+
+You can set environment variables for the forked Vert.x application process using `environmentVariables`.
+
+For example, to configure database connection details:
+
+[source,xml]
+----
+<plugin>
+<groupId>io.reactiverse</groupId>
+<artifactId>vertx-maven-plugin</artifactId>
+<version>${vertx-maven-plugin.version}</version>
+<configuration>
+  <environmentVariables>
+    <DB_HOST>localhost</DB_HOST>
+    <DB_PORT>5432</DB_PORT>
+  </environmentVariables>
 </configuration>
 </plugin>
 ----
