@@ -38,12 +38,14 @@ The `run` goal has the following parameters apart from the ones mentioned in **<
 | `redeployIncludes`
 | A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to include in change monitoring.
 The patterns must be expressed relatively to the `rootDirectory`.
+See <<run-redeploy-filtering,Redeploy filtering>>.
 | &nbsp;
 | &nbsp;
 
 | `redeployExcludes`
 | A list of https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] patterns of files/directories to exclude from change monitoring.
 The patterns must be expressed relatively to the `rootDirectory`.
+See <<run-redeploy-filtering,Redeploy filtering>>.
 | &nbsp;
 | &nbsp;
 
@@ -59,6 +61,7 @@ The patterns must be expressed relatively to the `rootDirectory`.
 
 | `environmentVariables`
 | Environment variables to set for the forked Vert.x application process.
+See <<run-environment-variables,Environment variables>>.
 | &nbsp;
 | &nbsp;
 
@@ -122,17 +125,25 @@ The converted file will be saved in `${project.outputDir}/conf` directory.
 | A list of Maven dependencies to resolve transitively and add to the classpath.
 These dependencies are not added to the project's compile or runtime scope.
 Supports `<exclusions>`.
+See <<run-additional-classpath,Additional classpath entries>>.
 | &nbsp;
 | &nbsp;
 
 | `additionalClasspathElements`
 | A list of additional classpath elements (directories, JAR or ZIP files) to add to the classpath.
+See <<run-additional-classpath,Additional classpath entries>>.
 | &nbsp;
 | &nbsp;
 
 |===
 
-For example, if the projects contains a web frontend built with Node in `/src/main/frontend`, you will have to exclude files that are changed as part of the frontend build:
+[[run-redeploy-filtering]]
+== Redeploy filtering
+
+You can fine-tune which file changes trigger a redeployment using `redeployIncludes` and `redeployExcludes`.
+The patterns follow the https://ant.apache.org/manual/dirtasks.html#patterns[Ant-like] syntax and are relative to the `redeployRootDirectory`.
+
+For example, if the project contains a web frontend built with Node in `/src/main/frontend`, you will have to exclude files that are changed as part of the frontend build:
 
 [source,xml]
 ----
