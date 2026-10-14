@@ -331,7 +331,7 @@
                 <version>0.11.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
+                    <publishingServerId>sonatype-central</publishingServerId>
                 </configuration>
             </plugin>
         </plugins>

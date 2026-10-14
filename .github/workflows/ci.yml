@@ -24,7 +24,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-          server-id: central
+          server-id: sonatype-central
           server-username: SONATYPE_NEXUS_USERNAME
           server-password: SONATYPE_NEXUS_PASSWORD
       - name: Get project version
