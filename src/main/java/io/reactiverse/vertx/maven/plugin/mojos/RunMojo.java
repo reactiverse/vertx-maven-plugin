@@ -148,6 +148,17 @@ public class RunMojo extends AbstractVertxMojo {
     boolean debug;
 
     /**
+     * Whether the Vert.x application should be started on the module path.
+     * <p>
+     * When set to {@code auto} (the default), the application is started on the module path if the project is
+     * a Vert.x 5 application with a {@code module-info.class} in the classes directory and no verticle configured.
+     * <p>
+     * Set to {@code false} to force classpath mode even when a {@code module-info.java} is present.
+     */
+    @Parameter(property = "vertx.useModulePath", defaultValue = "auto")
+    String useModulePath;
+
+    /**
      * Whether the Vert.x application should wait for a remote debugger to attach before starting.
      */
     @Parameter(property = "vertx.debug.suspend", defaultValue = "false")
@@ -236,16 +247,28 @@ public class RunMojo extends AbstractVertxMojo {
     private void buildLoop(FileChangesHelper fileChangesHelper) throws MojoExecutionException {
         while (!stop) {
 
-            VertxAppBuilder appBuilder = new VertxAppBuilder(java, getVertxApplicationInfo().mainClass())
+            VertxApplicationInfo appInfo = getVertxApplicationInfo();
+            String moduleName = resolveModuleName(appInfo);
+
+            VertxAppBuilder appBuilder;
+            if (moduleName != null) {
+                appBuilder = VertxAppBuilder.forModularApp(java, moduleName, appInfo.mainClass());
+                for (File element : getModulePathElements()) {
+                    appBuilder.addModulePathElement(element);
+                }
+            } else {
+                appBuilder = VertxAppBuilder.forApp(java, appInfo.mainClass());
+                for (File classPathElement : getClassPathElements()) {
+                    appBuilder.addClasspathElement(classPathElement);
+                }
+            }
+
+            appBuilder
                 .env(WEB_ENVIRONMENT_VARIABLE_NAME, vertxWebEnvironment)
                 .workDir(workDirectory);
 
             if (environmentVariables != null) {
                 environmentVariables.forEach(appBuilder::env);
-            }
-
-            for (File classPathElement : getClassPathElements()) {
-                appBuilder.addClasspathElement(classPathElement);
             }
 
             if (debug || disableBlockedThreadChecker) {
@@ -267,11 +290,13 @@ public class RunMojo extends AbstractVertxMojo {
                 }
             }
 
-            if (getVertxApplicationInfo().isVertxLauncher()) {
-                if (getVertxApplicationInfo().isLegacyVertxLauncher()) {
+            if (appInfo.isVertxLauncher()) {
+                if (appInfo.isLegacyVertxLauncher()) {
                     appBuilder.addAppArg("run");
                 }
-                appBuilder.addAppArg(getVertxApplicationInfo().mainVerticle());
+                if (appInfo.mainVerticle() != null) {
+                    appBuilder.addAppArg(appInfo.mainVerticle());
+                }
                 File optionsFile = scanAndLoad("options", options);
                 if (optionsFile != null) {
                     appBuilder
@@ -353,6 +378,32 @@ public class RunMojo extends AbstractVertxMojo {
                     throw new MojoExecutionException("Failed to build Vert.x Application", e);
                 }
             }
+        }
+    }
+
+    /**
+     * @return the user's module name if module-path mode should be used, {@code null} otherwise
+     */
+    private String resolveModuleName(VertxApplicationInfo appInfo) throws MojoExecutionException {
+        if ("false".equalsIgnoreCase(useModulePath) || !appInfo.isVertx5()) {
+            return null;
+        }
+        if (appInfo.mainVerticle() != null) {
+            try {
+                if (ModuleNameReader.readModuleName(classesDirectory) != null) {
+                    getLog().warn("Module descriptor found but the verticle is loaded by class name, "
+                        + "which is not compatible with JPMS encapsulation. "
+                        + "Falling back to classpath mode.");
+                }
+            } catch (IOException e) {
+                throw new MojoExecutionException("Failed to read module-info.class", e);
+            }
+            return null;
+        }
+        try {
+            return ModuleNameReader.readModuleName(classesDirectory);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to read module-info.class", e);
         }
     }
 
