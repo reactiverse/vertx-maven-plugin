@@ -441,8 +441,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Vert.x Maven Plugin</h1>
 <div class="details">
 <span id="author" class="author">Kamesh Sampath, Roland Huß, Clement Escoffier, Thomas Segismont</span><br>
-<span id="revnumber">version 2.1.0,</span>
-<span id="revdate">2026-06-08</span>
+<span id="revnumber">version 2.2.0,</span>
+<span id="revdate">2026-10-15</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Vert.x Maven Plugin</div>
@@ -474,6 +474,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#vertx:run">2.5. <strong>vertx:run</strong></a>
 <ul class="sectlevel3">
 <li><a href="#run-configuration">2.5.1. Configuration</a></li>
+<li><a href="#run-redeploy-filtering">2.5.2. Redeploy filtering</a></li>
+<li><a href="#run-environment-variables">2.5.3. Environment variables</a></li>
+<li><a href="#run-additional-classpath">2.5.4. Additional classpath entries</a></li>
+<li><a href="#run-toolchains">2.5.5. Maven Toolchains</a></li>
+<li><a href="#run-module-path">2.5.6. Module path mode</a></li>
 </ul>
 </li>
 <li><a href="#archive-configuration">2.6. Archive configuration</a>
@@ -513,7 +518,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The Vert.x Maven Plugin is a plugin for <a href="https://maven.apache.org">Apache Maven</a> that helps to develop and/or to package Vert.x applications.</p>
 </div>
 <div class="paragraph">
-<p>The last version of the Vert.x Maven Plugin is <strong>2.1.0</strong>.</p>
+<p>The last version of the Vert.x Maven Plugin is <strong>2.2.0</strong>.</p>
 </div>
 <div class="sect2">
 <h3 id="using-the-plugin">1.1. Using the plugin</h3>
@@ -552,7 +557,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
         &lt;plugin&gt;
             &lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
             &lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;2.1.0&lt;/version&gt;
+            &lt;version&gt;2.2.0&lt;/version&gt;
             &lt;executions&gt;
                 &lt;execution&gt;
                     &lt;id&gt;vmp&lt;/id&gt;
@@ -651,7 +656,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h4 id="usage">2.2.1. Usage</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.1.0:setup</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.2.0:setup</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -662,7 +667,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.1.0:setup -DvertxVersion=<your-vertx-version></code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.2.0:setup -DvertxVersion=<your-vertx-version></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -670,7 +675,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.1.0:setup \
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.2.0:setup \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=acme-project \
     -DprojectVersion=1.0-SNAPSHOT \
@@ -686,7 +691,7 @@ To set a different Java version, use the <code>javaVersion</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.1.0:setup -DjavaVersion=11</code></pre>
+<pre class="highlightjs highlight"><code class="language-none hljs">mvn io.reactiverse:vertx-maven-plugin:2.2.0:setup -DjavaVersion=11</code></pre>
 </div>
 </div>
 </div>
@@ -918,14 +923,16 @@ The plugin re-executes the mojos that ran between the <em>generate-source</em> a
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployIncludes</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to include in change monitoring.
-The patterns must be expressed relatively to the <code>rootDirectory</code>.</p></td>
+The patterns must be expressed relatively to the <code>rootDirectory</code>.
+See <a href="#run-redeploy-filtering">Redeploy filtering</a>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>redeployExcludes</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A list of <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> patterns of files/directories to exclude from change monitoring.
-The patterns must be expressed relatively to the <code>rootDirectory</code>.</p></td>
+The patterns must be expressed relatively to the <code>rootDirectory</code>.
+See <a href="#run-redeploy-filtering">Redeploy filtering</a>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 </tr>
@@ -940,6 +947,13 @@ The patterns must be expressed relatively to the <code>rootDirectory</code>.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">How long, in milliseconds, the plugin should wait between two redeployments.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.redeploy.grace.period</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>1000</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>environmentVariables</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Environment variables to set for the forked Vert.x application process.
+See <a href="#run-environment-variables">Environment variables</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>jvmArgs</code></p></td>
@@ -1007,10 +1021,43 @@ The converted file will be saved in <code>${project.outputDir}/conf</code> direc
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.debug.port</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>5005</code></p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>additionalDependencies</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A list of Maven dependencies to resolve transitively and add to the classpath or module path.
+These dependencies are not added to the project&#8217;s compile or runtime scope.
+Supports <code>&lt;exclusions&gt;</code>.
+See <a href="#run-additional-classpath">Additional classpath entries</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>additionalClasspathElements</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A list of additional classpath elements (directories, JAR or ZIP files) to add to the classpath.
+Only used in classpath mode; ignored when running on the <a href="#run-module-path">module path</a>.
+See <a href="#run-additional-classpath">Additional classpath entries</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&nbsp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>useModulePath</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to launch the application on the module path.
+When set to <code>auto</code>, the application is started on the module path if it is a Vert.x 5 application with a <code>module-info.class</code> in the classes directory and no verticle configured.
+Set to <code>false</code> to force classpath mode.
+See <a href="#run-module-path">Module path mode</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.useModulePath</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>auto</code></p></td>
+</tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="run-redeploy-filtering">2.5.2. Redeploy filtering</h4>
 <div class="paragraph">
-<p>For example, if the projects contains a web frontend built with Node in <code>/src/main/frontend</code>, you will have to exclude files that are changed as part of the frontend build:</p>
+<p>You can fine-tune which file changes trigger a redeployment using <code>redeployIncludes</code> and <code>redeployExcludes</code>.
+The patterns follow the <a href="https://ant.apache.org/manual/dirtasks.html#patterns">Ant-like</a> syntax and are relative to the <code>redeployRootDirectory</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, if the project contains a web frontend built with Node in <code>/src/main/frontend</code>, you will have to exclude files that are changed as part of the frontend build:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1036,6 +1083,317 @@ The converted file will be saved in <code>${project.outputDir}/conf</code> direc
   &lt;/redeployExcludes&gt;
 &lt;/configuration&gt;
 &lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-environment-variables">2.5.3. Environment variables</h4>
+<div class="paragraph">
+<p>You can set environment variables for the forked Vert.x application process using <code>environmentVariables</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, to configure database connection details:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;configuration&gt;
+  &lt;environmentVariables&gt;
+    &lt;DB_HOST&gt;localhost&lt;/DB_HOST&gt;
+    &lt;DB_PORT&gt;5432&lt;/DB_PORT&gt;
+  &lt;/environmentVariables&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-additional-classpath">2.5.4. Additional classpath entries</h4>
+<div class="paragraph">
+<p>You can add dependencies and classpath elements that are available at runtime but not part of the project&#8217;s compile or runtime scope.
+This is useful for development-only tools like logging backends, diagnostic libraries, or configuration directories.</p>
+</div>
+<div class="sect4">
+<h5 id="additional-dependencies">Additional dependencies</h5>
+<div class="paragraph">
+<p>Use <code>additionalDependencies</code> to declare Maven artifacts that will be resolved (with their transitive dependencies) and added to the classpath or module path of the running application.</p>
+</div>
+<div class="paragraph">
+<p>For example, to add a Logback logging backend during development:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;configuration&gt;
+  &lt;additionalDependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+      &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+      &lt;version&gt;${logback.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/additionalDependencies&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exclusions are supported, just like regular Maven dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;additionalDependencies&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+    &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+    &lt;version&gt;${logback.version}&lt;/version&gt;
+    &lt;exclusions&gt;
+      &lt;exclusion&gt;
+        &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+        &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+      &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+  &lt;/dependency&gt;
+&lt;/additionalDependencies&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="additional-classpath-elements">Additional classpath elements</h5>
+<div class="paragraph">
+<p>Use <code>additionalClasspathElements</code> to add directories, JAR or ZIP files directly to the classpath.
+This is handy for configuration files that should not be part of the project resources.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>additionalClasspathElements</code> is only used in classpath mode.
+When running on the <a href="#run-module-path">module path</a>, these entries are ignored.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For example, to add a directory with a development-specific logging configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;configuration&gt;
+  &lt;additionalClasspathElements&gt;
+    &lt;element&gt;${project.basedir}/dev-config&lt;/element&gt;
+  &lt;/additionalClasspathElements&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-toolchains">2.5.5. Maven Toolchains</h4>
+<div class="paragraph">
+<p>The <code>run</code> goal supports <a href="https://maven.apache.org/guides/mini/guide-using-toolchains.html">Maven Toolchains</a>.
+When a JDK toolchain is configured, the forked Vert.x application uses the toolchain JDK instead of the JDK running Maven.
+This is useful when your code targets a higher JDK version than the one running Maven.</p>
+</div>
+<div class="paragraph">
+<p>To use a JDK toolchain, first declare it in your <code>~/.m2/toolchains.xml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;toolchains&gt;
+  &lt;toolchain&gt;
+    &lt;type&gt;jdk&lt;/type&gt;
+    &lt;provides&gt;
+      &lt;version&gt;21&lt;/version&gt;
+    &lt;/provides&gt;
+    &lt;configuration&gt;
+      &lt;jdkHome&gt;/path/to/jdk-21&lt;/jdkHome&gt;
+    &lt;/configuration&gt;
+  &lt;/toolchain&gt;
+&lt;/toolchains&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then activate the toolchain in your <code>pom.xml</code> using the <code>maven-toolchains-plugin</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+  &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+  &lt;artifactId&gt;maven-toolchains-plugin&lt;/artifactId&gt;
+  &lt;executions&gt;
+    &lt;execution&gt;
+      &lt;goals&gt;
+        &lt;goal&gt;toolchain&lt;/goal&gt;
+      &lt;/goals&gt;
+    &lt;/execution&gt;
+  &lt;/executions&gt;
+  &lt;configuration&gt;
+    &lt;toolchains&gt;
+      &lt;jdk&gt;
+        &lt;version&gt;21&lt;/version&gt;
+      &lt;/jdk&gt;
+    &lt;/toolchains&gt;
+  &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When no toolchain is configured, the plugin falls back to the <code>java.home</code> system property and then the <code>JAVA_HOME</code> environment variable.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-module-path">2.5.6. Module path mode</h4>
+<div class="paragraph">
+<p>When a Vert.x 5 project contains a <code>module-info.java</code> and uses a custom main class, the plugin automatically launches the application on the module path instead of the classpath.
+All project dependencies are placed on the <code>--module-path</code> and the application is started with <code>--module</code>.</p>
+</div>
+<div class="paragraph">
+<p>Module path mode is not compatible with loading verticles by class name (the <code>vertx.verticle</code> property).
+When a verticle is specified, the launcher loads it by class name across module boundaries, which breaks JPMS encapsulation.
+With a custom main class, the application&#8217;s own module is the root module and verticles can be instantiated directly.</p>
+</div>
+<div class="paragraph">
+<p>Module path mode is enabled automatically when all the following conditions are met:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The project uses Vert.x 5</p>
+</li>
+<li>
+<p>The project has a compiled <code>module-info.class</code> in the classes directory</p>
+</li>
+<li>
+<p>No verticle is configured (the <code>vertx.verticle</code> property is not set)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To disable module path mode and force classpath mode, set <code>useModulePath</code> to <code>false</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;configuration&gt;
+  &lt;useModulePath&gt;false&lt;/useModulePath&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="example-modular-project">Example modular project</h5>
+<div class="paragraph">
+<p>Your <code>module-info.java</code> should declare the required dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">module com.example.myapp {
+    requires io.vertx.core;
+    requires io.vertx.launcher.application;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your custom launcher extends <code>VertxApplication</code> and supplies the verticle instance directly, avoiding cross-module reflection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.example.myapp;
+
+import io.vertx.core.Verticle;
+import io.vertx.launcher.application.VertxApplication;
+import io.vertx.launcher.application.VertxApplicationHooks;
+
+import java.util.function.Supplier;
+
+public class CustomLauncher extends VertxApplication implements VertxApplicationHooks {
+
+    public static void main(String[] args) {
+        new CustomLauncher(args).launch();
+    }
+
+    public CustomLauncher(String[] args) {
+        super(args);
+    }
+
+    @Override
+    public Supplier&lt;Verticle&gt; verticleSupplier() {
+        return MyVerticle::new;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Using <code>VertxApplication</code> and <code>VertxApplicationHooks</code> is not mandatory.
+Any class with a <code>public static void main(String[])</code> method works as a custom launcher.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Configure the plugin to use your custom launcher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;properties&gt;
+  &lt;vertx.launcher&gt;com.example.myapp.CustomLauncher&lt;/vertx.launcher&gt;
+&lt;/properties&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the default <code>useModulePath</code> value (<code>auto</code>), the plugin detects the module descriptor and launches the application with <code>--module-path</code> and <code>--module</code>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="passing-jpms-flags">Passing JPMS flags</h5>
+<div class="paragraph">
+<p>If your application or its dependencies require additional JPMS flags (such as <code>--add-opens</code>, <code>--add-exports</code>, <code>--add-reads</code>, or <code>--add-modules</code>), pass them via <code>jvmArgs</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+&lt;groupId&gt;io.reactiverse&lt;/groupId&gt;
+&lt;artifactId&gt;vertx-maven-plugin&lt;/artifactId&gt;
+&lt;version&gt;${vertx-maven-plugin.version}&lt;/version&gt;
+&lt;configuration&gt;
+  &lt;jvmArgs&gt;
+    &lt;arg&gt;--add-opens=java.base/java.lang=ALL-UNNAMED&lt;/arg&gt;
+    &lt;arg&gt;--add-exports=java.base/sun.nio.ch=ALL-UNNAMED&lt;/arg&gt;
+  &lt;/jvmArgs&gt;
+&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="non-modular-dependencies">Non-modular dependencies</h5>
+<div class="paragraph">
+<p>Dependencies that do not contain a <code>module-info.class</code> are placed on the module path as <em>automatic modules</em>.
+The JVM derives their module name from the JAR filename or the <code>Automatic-Module-Name</code> manifest entry.
+This works transparently in most cases.</p>
 </div>
 </div>
 </div>
@@ -1526,8 +1884,8 @@ Don&#8217;t forget to open a new terminal so that the environment variable chang
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2.1.0<br>
-Last updated 2026-06-08 15:26:21 UTC
+Version 2.2.0<br>
+Last updated 2026-10-15 16:14:45 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
