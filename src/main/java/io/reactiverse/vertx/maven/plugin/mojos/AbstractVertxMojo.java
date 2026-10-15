@@ -123,14 +123,16 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     protected Archive archive;
 
     /**
-     * Additional dependencies to add to the classpath when running or debugging the application.
+     * Additional dependencies to add to the classpath or module path when running or debugging the application.
      * These dependencies are resolved transitively but are not added to the project's compile or runtime scope.
      */
     @Parameter
     protected List<Dependency> additionalDependencies;
 
     /**
-     * Additional classpath elements (directories, JAR or ZIP files) to add to the classpath when running or debugging the application.
+     * Additional classpath elements (directories, JAR or ZIP files) to add to the classpath when running or
+     * debugging the application.
+     * Only used in classpath mode; ignored when running on the module path.
      */
     @Parameter
     protected List<File> additionalClasspathElements;
@@ -162,6 +164,7 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     protected PlexusContainer container;
 
     private List<File> classPathElements;
+    private List<File> modulePathElements;
     private VertxApplicationInfo applicationInfo;
 
     // Visible for testing
@@ -181,16 +184,11 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
     }
 
     /**
-     * List of classpath elements (classes directory and dependencies).
+     * List of classpath elements (classes directory, dependencies, additional dependencies, and additional classpath elements).
      */
     public List<File> getClassPathElements() throws MojoExecutionException {
         if (classPathElements == null) {
-            classPathElements = new ArrayList<>();
-            classPathElements.add(this.classesDirectory);
-            classPathElements.addAll(extractArtifactPaths(this.project.getArtifacts()));
-            if (additionalDependencies != null && !additionalDependencies.isEmpty()) {
-                classPathElements.addAll(resolveAdditionalDependencies());
-            }
+            classPathElements = new ArrayList<>(getCorePathElements());
             if (additionalClasspathElements != null && !additionalClasspathElements.isEmpty()) {
                 for (File element : additionalClasspathElements) {
                     getLog().debug("Additional classpath element: " + element.getAbsoluteFile());
@@ -200,6 +198,28 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
             getLog().debug("Classpath elements: " + classPathElements);
         }
         return classPathElements;
+    }
+
+    /**
+     * List of module path elements (classes directory, dependencies, and additional dependencies).
+     * Does not include {@link #additionalClasspathElements}.
+     */
+    public List<File> getModulePathElements() throws MojoExecutionException {
+        if (modulePathElements == null) {
+            modulePathElements = getCorePathElements();
+            getLog().debug("Module path elements: " + modulePathElements);
+        }
+        return modulePathElements;
+    }
+
+    private List<File> getCorePathElements() throws MojoExecutionException {
+        List<File> elements = new ArrayList<>();
+        elements.add(this.classesDirectory);
+        elements.addAll(extractArtifactPaths(this.project.getArtifacts()));
+        if (additionalDependencies != null && !additionalDependencies.isEmpty()) {
+            elements.addAll(resolveAdditionalDependencies());
+        }
+        return elements;
     }
 
     public VertxApplicationInfo getVertxApplicationInfo() throws MojoExecutionException {
@@ -243,47 +263,56 @@ public abstract class AbstractVertxMojo extends AbstractMojo implements Contextu
                 throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
             }
         }
-        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isVertxLauncher);
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isVertxLauncher, false);
     }
 
     private VertxApplicationInfo computeVertx5ApplicationInfo(boolean hasLauncherLegacyCliJar, boolean hasLauncherApplicationJar) throws MojoExecutionException {
         String mainVerticle = StringUtils.isBlank(verticle) ? null : verticle.trim();
-        String mainClass;
-        boolean isVertxLauncher, isLegacyVertxLauncher;
         if (StringUtils.isBlank(launcher)) {
-            if (hasLauncherLegacyCliJar && hasLauncherApplicationJar) {
-                throw new MojoExecutionException("Invalid configuration, the element `launcher` (`vertx.launcher` property) is required (both `io.vertx:vertx-launcher-application` and `io.vertx:vertx-launcher-legacy-cli` dependencies are present).");
-            }
-            if (hasLauncherApplicationJar) {
-                mainClass = LAUNCHER;
-                isVertxLauncher = true;
-                isLegacyVertxLauncher = false;
-            } else if (hasLauncherLegacyCliJar) {
-                mainClass = LEGACY_LAUNCHER;
-                isVertxLauncher = true;
-                isLegacyVertxLauncher = true;
-            } else {
-                throw new MojoExecutionException("Invalid configuration, you must add the `io.vertx:vertx-launcher-application` or `io.vertx:vertx-launcher-legacy-cli` dependency to the project.");
-            }
+            return computeAutoDetectedLauncherInfo(mainVerticle, hasLauncherLegacyCliJar, hasLauncherApplicationJar);
+        }
+        return computeExplicitLauncherInfo(mainVerticle);
+    }
+
+    private VertxApplicationInfo computeAutoDetectedLauncherInfo(String mainVerticle, boolean hasLauncherLegacyCliJar, boolean hasLauncherApplicationJar) throws MojoExecutionException {
+        if (hasLauncherLegacyCliJar && hasLauncherApplicationJar) {
+            throw new MojoExecutionException("Invalid configuration, the element `launcher` (`vertx.launcher` property) is required (both `io.vertx:vertx-launcher-application` and `io.vertx:vertx-launcher-legacy-cli` dependencies are present).");
+        }
+        String mainClass;
+        boolean isLegacyVertxLauncher;
+        if (hasLauncherApplicationJar) {
+            mainClass = LAUNCHER;
+            isLegacyVertxLauncher = false;
+        } else if (hasLauncherLegacyCliJar) {
+            mainClass = LEGACY_LAUNCHER;
+            isLegacyVertxLauncher = true;
         } else {
-            mainClass = launcher.trim();
-            if (isMainClassInstanceOfLauncher(mainClass, LAUNCHER, getClassPathElements())) {
-                isVertxLauncher = true;
-                isLegacyVertxLauncher = false;
-            } else if (isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements())) {
-                isVertxLauncher = true;
-                isLegacyVertxLauncher = true;
-            } else {
-                isVertxLauncher = false;
-                isLegacyVertxLauncher = false;
-            }
+            throw new MojoExecutionException("Invalid configuration, you must add the `io.vertx:vertx-launcher-application` or `io.vertx:vertx-launcher-legacy-cli` dependency to the project.");
         }
-        if (isVertxLauncher) {
-            if (mainVerticle == null) {
-                throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
-            }
+        if (mainVerticle == null) {
+            throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
         }
-        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isLegacyVertxLauncher);
+        return new VertxApplicationInfo(mainClass, mainVerticle, true, isLegacyVertxLauncher, true);
+    }
+
+    private VertxApplicationInfo computeExplicitLauncherInfo(String mainVerticle) throws MojoExecutionException {
+        String mainClass = launcher.trim();
+        boolean isVertxLauncher;
+        boolean isLegacyVertxLauncher;
+        if (isMainClassInstanceOfLauncher(mainClass, LAUNCHER, getClassPathElements())) {
+            isVertxLauncher = true;
+            isLegacyVertxLauncher = false;
+        } else if (isMainClassInstanceOfLauncher(mainClass, LEGACY_LAUNCHER, getClassPathElements())) {
+            isVertxLauncher = true;
+            isLegacyVertxLauncher = true;
+        } else {
+            isVertxLauncher = false;
+            isLegacyVertxLauncher = false;
+        }
+        if (isLegacyVertxLauncher && mainVerticle == null) {
+            throw new MojoExecutionException("Invalid configuration, the element `verticle` (`vertx.verticle` property) is required.");
+        }
+        return new VertxApplicationInfo(mainClass, mainVerticle, isVertxLauncher, isLegacyVertxLauncher, true);
     }
 
     private static boolean isMainClassInstanceOfLauncher(String mainClassName, String launcherClassName, List<File> classPathElements) throws MojoExecutionException {

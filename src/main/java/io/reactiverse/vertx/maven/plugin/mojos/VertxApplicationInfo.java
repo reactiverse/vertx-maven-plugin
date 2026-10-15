@@ -25,10 +25,11 @@ public class VertxApplicationInfo {
     private final String mainVerticle;
     private final boolean isVertxLauncher;
     private final boolean isLegacyVertxLauncher;
+    private final boolean isVertx5;
 
-    public VertxApplicationInfo(String mainClass, String mainVerticle, boolean isVertxLauncher, boolean isLegacyVertxLauncher) {
-        if (mainVerticle == null && isVertxLauncher) {
-            throw new IllegalArgumentException("Main verticle cannot be null if the main class is a Vert.x launcher");
+    public VertxApplicationInfo(String mainClass, String mainVerticle, boolean isVertxLauncher, boolean isLegacyVertxLauncher, boolean isVertx5) {
+        if (mainVerticle == null && isLegacyVertxLauncher) {
+            throw new IllegalArgumentException("Main verticle cannot be null if the main class is a legacy Vert.x launcher");
         }
         if (isLegacyVertxLauncher && !isVertxLauncher) {
             throw new IllegalArgumentException("A legacy launcher is a Vert.x launcher");
@@ -37,6 +38,7 @@ public class VertxApplicationInfo {
         this.mainVerticle = mainVerticle;
         this.isVertxLauncher = isVertxLauncher;
         this.isLegacyVertxLauncher = isLegacyVertxLauncher;
+        this.isVertx5 = isVertx5;
     }
 
     /**
@@ -65,5 +67,12 @@ public class VertxApplicationInfo {
      */
     public boolean isLegacyVertxLauncher() {
         return isLegacyVertxLauncher;
+    }
+
+    /**
+     * Whether the application uses Vert.x 5.
+     */
+    public boolean isVertx5() {
+        return isVertx5;
     }
 }

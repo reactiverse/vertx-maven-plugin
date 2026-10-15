@@ -27,13 +27,16 @@ public class VertxAppBuilder {
 
     private final File java;
     private final List<String> jvmArgs = new ArrayList<>();
-    private final List<File> classpathElements = new ArrayList<>();
+    private final List<File> classpathElements;
+    private final List<File> modulePathElements;
     private final String mainClass;
+    private final String launchModule;
     private final List<String> appArgs = new ArrayList<>();
     private File workDir;
     private final Map<String, String> env = new HashMap<>();
 
-    public VertxAppBuilder(File java, String mainClass) {
+    private VertxAppBuilder(File java, String mainClass, String launchModule,
+                            List<File> classpathElements, List<File> modulePathElements) {
         this.java = Objects.requireNonNull(java);
         if (!java.canExecute()) {
             throw new IllegalArgumentException("Java command not executable: " + java.getAbsolutePath());
@@ -42,6 +45,17 @@ public class VertxAppBuilder {
             throw new IllegalArgumentException("mainClass must not be blank");
         }
         this.mainClass = mainClass;
+        this.launchModule = launchModule;
+        this.classpathElements = classpathElements;
+        this.modulePathElements = modulePathElements;
+    }
+
+    public static VertxAppBuilder forApp(File java, String mainClass) {
+        return new VertxAppBuilder(java, mainClass, null, new ArrayList<>(), Collections.emptyList());
+    }
+
+    public static VertxAppBuilder forModularApp(File java, String launchModule, String mainClass) {
+        return new VertxAppBuilder(java, mainClass, Objects.requireNonNull(launchModule), Collections.emptyList(), new ArrayList<>());
     }
 
     public VertxAppBuilder addJvmArg(String jvmArg) {
@@ -50,7 +64,18 @@ public class VertxAppBuilder {
     }
 
     public VertxAppBuilder addClasspathElement(File classpathElement) {
+        if (launchModule != null) {
+            throw new IllegalStateException("Cannot add classpath elements in module-path mode");
+        }
         classpathElements.add(Objects.requireNonNull(classpathElement));
+        return this;
+    }
+
+    public VertxAppBuilder addModulePathElement(File modulePathElement) {
+        if (launchModule == null) {
+            throw new IllegalStateException("Cannot add module-path elements in classpath mode");
+        }
+        modulePathElements.add(Objects.requireNonNull(modulePathElement));
         return this;
     }
 
@@ -75,12 +100,14 @@ public class VertxAppBuilder {
             .redirectError(INHERIT)
             .redirectInput(INHERIT)
             .directory(workDir);
-        StringJoiner joiner = new StringJoiner(File.pathSeparator);
-        for (File elem : classpathElements) {
-            joiner.add(StringUtils.quoteAndEscape(elem.getAbsolutePath(), '"'));
-        }
         Map<String, String> environment = builder.environment();
-        environment.put("CLASSPATH", joiner.toString());
+        if (launchModule == null) {
+            StringJoiner joiner = new StringJoiner(File.pathSeparator);
+            for (File elem : classpathElements) {
+                joiner.add(StringUtils.quoteAndEscape(elem.getAbsolutePath(), '"'));
+            }
+            environment.put("CLASSPATH", joiner.toString());
+        }
         environment.putAll(env);
         return builder;
     }
@@ -89,7 +116,18 @@ public class VertxAppBuilder {
         List<String> command = new ArrayList<>();
         command.add(StringUtils.quoteAndEscape(java.getAbsolutePath(), '"'));
         command.addAll(jvmArgs);
-        command.add(mainClass);
+        if (launchModule != null) {
+            StringJoiner joiner = new StringJoiner(File.pathSeparator);
+            for (File elem : modulePathElements) {
+                joiner.add(StringUtils.quoteAndEscape(elem.getAbsolutePath(), '"'));
+            }
+            command.add("--module-path");
+            command.add(joiner.toString());
+            command.add("--module");
+            command.add(launchModule + "/" + mainClass);
+        } else {
+            command.add(mainClass);
+        }
         command.addAll(appArgs);
         return command;
     }
