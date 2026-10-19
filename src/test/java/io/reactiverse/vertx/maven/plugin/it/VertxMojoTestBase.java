@@ -1,11 +1,10 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
 
+import io.reactiverse.vertx.maven.plugin.it.invoker.RunningMavenProcess;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.junit.BeforeClass;
 
 import java.io.File;
@@ -137,6 +136,11 @@ public abstract class VertxMojoTestBase {
         return out;
     }
 
+    static String getLocalRepository() {
+        return System.getProperty("maven.repo.local",
+            System.getProperty("user.home") + "/.m2/repository");
+    }
+
     static void installPluginToLocalRepository(String local) {
         File repo = new File(local, "io/reactiverse/vertx-maven-plugin/" + VERTX_MAVEN_PLUGIN_VERSION);
         if (!repo.isDirectory()) {
@@ -178,37 +182,27 @@ public abstract class VertxMojoTestBase {
         }
     }
 
-    static void prepareProject(File testDir, Verifier verifier) throws IOException {
+    static void prepareProject(File testDir) throws IOException {
         File pom = new File(testDir, "pom.xml");
         assertThat(pom).isFile();
-        verifier.filterFile("pom.xml", "pom.xml", "UTF-8", VertxMojoTestBase.VARIABLES);
+        filter(pom, VARIABLES);
     }
 
-    void filter(File input, Map<String, String> variables) throws IOException {
+    static void filter(File input, Map<String, String> variables) throws IOException {
         assertThat(input).isFile();
-        String data = FileUtils.readFileToString(input, "UTF-8");
+        String data = FileUtils.readFileToString(input, StandardCharsets.UTF_8);
 
         for (String token : variables.keySet()) {
             String value = String.valueOf(variables.get(token));
             data = StringUtils.replace(data, token, value);
         }
-        FileUtils.write(input, data, "UTF-8");
+        FileUtils.write(input, data, StandardCharsets.UTF_8);
     }
 
-    void runPackage(Verifier verifier) throws VerificationException {
-        verifier.setLogFileName("build-package.log");
-        verifier.executeGoal("package", getEnv());
-
-        verifier.verifyFilePresent("target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
-        verifier.resetStreams();
-    }
-
-    Map<String, String> getEnv() {
-        String opts = System.getProperty("mavenOpts");
-        Map<String, String> env = new HashMap<>();
-        if (opts != null) {
-            env.put("MAVEN_OPTS", opts);
-        }
-        return env;
+    static void runPackage(File testDir) throws IOException, InterruptedException {
+        RunningMavenProcess.ExecutionResult result = RunningMavenProcess.execute(testDir.toPath(), "package");
+        assertThat(result.isSuccess())
+            .withFailMessage("package failed:\n" + result.getOutput())
+            .isTrue();
     }
 }

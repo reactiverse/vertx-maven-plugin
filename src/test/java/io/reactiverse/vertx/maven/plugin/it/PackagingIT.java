@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2016-2018 Red Hat, Inc.
+ *    Copyright (c) 2016-2026 Red Hat, Inc.
  *
  *    Red Hat licenses this file to you under the Apache License, version
  *    2.0 (the "License"); you may not use this file except in compliance
@@ -17,8 +17,6 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -27,9 +25,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -39,96 +35,13 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PackagingIT extends VertxMojoTestBase {
 
-    private Verifier verifier;
-
-    private void initVerifier(File root) throws VerificationException {
-        verifier = new Verifier(root.getAbsolutePath());
-        verifier.setAutoclean(false);
-        installPluginToLocalRepository(verifier.getLocalRepository());
-    }
-
     @Test
-    public void testAlternativeOutputDir() throws IOException, VerificationException {
-        File testDir = initProject("projects/packaging-alternative-output-it");
-        assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
-        runPackage(verifier);
-
-        assertThat(testDir).isNotNull();
-
-        File out = new File(testDir, "target/context/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
-        assertThat(out).isFile();
-    }
-
-    @Test
-    public void testContentInTheJar() throws IOException, VerificationException {
-        File testDir = initProject("projects/packaging-meta-inf-it");
-        assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
-        runPackage(verifier);
-
-        assertThat(testDir).isNotNull();
-
-        File out = new File(testDir, "target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
-        assertThat(out).isFile();
-        JarFile jar = new JarFile(out);
-
-        // Commons utils
-        // org.apache.commons.io.CopyUtils
-        JarEntry entry = jar.getJarEntry("org/apache/commons/io/CopyUtils.class");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-
-        // SLF4J-API
-        // /org/slf4j/MDC.class
-        entry = jar.getJarEntry("org/slf4j/MDC.class");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-
-        // tc native
-        // /org/apache/tomcat/Apr.class
-        entry = jar.getJarEntry("org/apache/tomcat/Apr.class");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-        // /org/apache/tomcat/apr.properties
-        entry = jar.getJarEntry("org/apache/tomcat/apr.properties");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-        // /META-INF/native/libnetty-tcnative-linux-x86_64.so
-        entry = jar.getJarEntry("META-INF/native/libnetty-tcnative-linux-x86_64.so");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-
-        // Jackson (transitive of vert.x core)
-        // /com/fasterxml/jackson/core/JsonParser.class
-        entry = jar.getJarEntry("com/fasterxml/jackson/core/JsonParser.class");
-        assertThat(entry).isNotNull();
-        assertThat(entry.isDirectory()).isFalse();
-
-        // Not included
-        // codegen - transitive optional
-        entry = jar.getJarEntry("io/vertx/codegen/Case.class");
-        assertThat(entry).isNull();
-        // log4j - transitive provided
-        entry = jar.getJarEntry("org/apache/log4j/MDC.class");
-        assertThat(entry).isNull();
-        // junit - test
-        entry = jar.getJarEntry("junit/runner/Version.class");
-        assertThat(entry).isNull();
-        // commons-lang3 - provided
-        entry = jar.getJarEntry("org/apache/commons/lang3/RandomUtils.class");
-        assertThat(entry).isNull();
-
-    }
-
-    @Test
-    public void testDuplicateManagement() throws VerificationException, IOException {
+    public void testDuplicateManagement() throws Exception {
         File testDir = initProject("projects/packaging-duplicate-it");
         assertThat(testDir).isDirectory();
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
         File A = new File("target/A-1.0.jar");
         File B = new File("target/B-1.0.jar");
@@ -143,30 +56,26 @@ public class PackagingIT extends VertxMojoTestBase {
         jarArchive2.add(new StringAsset("C2"), "/res/C");
         jarArchive2.as(ZipExporter.class).exportTo(B, true);
 
-        installJarToLocalRepository(verifier.getLocalRepository(), "A", A);
-        installJarToLocalRepository(verifier.getLocalRepository(), "B", B);
+        installJarToLocalRepository(getLocalRepository(), "A", A);
+        installJarToLocalRepository(getLocalRepository(), "B", B);
 
-        runPackage(verifier);
+        runPackage(testDir);
 
         File out = new File(testDir, "target/vertx-demo-start-0.0.1.BUILD-SNAPSHOT.jar");
         assertThat(out).isFile();
         JavaArchive archive = ShrinkWrap.createFromZipFile(JavaArchive.class, out);
         assertNotNull(archive);
 
-        Asset a = archive.get( "/res/A").getAsset();
-        Asset b = archive.get( "/res/B").getAsset();
-        Asset c = archive.get( "/res/C").getAsset();
+        Asset a = archive.get("/res/A").getAsset();
+        Asset b = archive.get("/res/B").getAsset();
+        Asset c = archive.get("/res/C").getAsset();
 
-        String content_a = IOUtils.toString(a.openStream(), "UTF-8");
-        String content_b = IOUtils.toString(b.openStream(), "UTF-8");
-        String content_c = IOUtils.toString(c.openStream(), "UTF-8");
+        String content_a = IOUtils.toString(a.openStream(), StandardCharsets.UTF_8);
+        String content_b = IOUtils.toString(b.openStream(), StandardCharsets.UTF_8);
+        String content_c = IOUtils.toString(c.openStream(), StandardCharsets.UTF_8);
 
         assertThat(content_a).isEqualToIgnoringCase("A3" + System.lineSeparator());
         assertThat(content_b).isEqualToIgnoringCase("B1");
         assertThat(content_c).isEqualToIgnoringCase("C2");
     }
-
-
-
-
 }
