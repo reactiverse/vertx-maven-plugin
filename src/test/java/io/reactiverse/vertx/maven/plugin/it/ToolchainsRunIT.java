@@ -1,33 +1,21 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import io.reactiverse.vertx.maven.plugin.it.invoker.RunningMavenProcess;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ToolchainsRunIT extends VertxMojoTestBase {
 
-    private RunningVerifier verifier;
-
-    private void initVerifier(File root) throws VerificationException {
-        verifier = new RunningVerifier(root.getAbsolutePath());
-        verifier.setAutoclean(false);
-        verifier.setDebug(true);
-        verifier.setForkJvm(true);
-        verifier.setMavenDebug(true);
-        installPluginToLocalRepository(verifier.getLocalRepository());
-    }
+    private RunningMavenProcess process;
 
     @After
     public void waitForStop() {
-        if (verifier != null) {
-            verifier.stop();
+        if (process != null) {
+            process.stop();
         }
         awaitUntilServerDown();
     }
@@ -39,20 +27,14 @@ public class ToolchainsRunIT extends VertxMojoTestBase {
         File testDir = initProject("projects/toolchain-run-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
 
-        File buildLog = new File(testDir, "build-run.log");
-        assertThat(buildLog).content().contains("Toolchain in vertx-maven-plugin:");
-    }
-
-    private void run(Verifier verifier) throws VerificationException {
-        verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(Arrays.asList("compile", "vertx:run"), getEnv());
+        assertThat(process.outputContains("Toolchain in vertx-maven-plugin:")).isTrue();
     }
 }

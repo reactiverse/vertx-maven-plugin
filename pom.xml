@@ -90,7 +90,6 @@
         <vertx-core.version>5.1.1</vertx-core.version>
         <assertj-core.version>3.27.7</assertj-core.version>
         <junit.version>4.13.2</junit.version>
-        <maven-verifier.version>1.8.0</maven-verifier.version>
         <awaitility.version>4.3.0</awaitility.version>
 
         <skipTests>false</skipTests>
@@ -256,21 +255,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-verifier</artifactId>
-            <version>${maven-verifier.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-invoker</artifactId>
-            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -397,6 +384,7 @@
                                 <systemPropertyVariables>
                                     <!--suppress MavenModelInspection -->
                                     <maven.home>${maven.home}</maven.home>
+                                    <maven.repo.local>${settings.localRepository}</maven.repo.local>
                                     <vertx-core.version>${vertx-core.version}</vertx-core.version>
                                 </systemPropertyVariables>
                             </configuration>

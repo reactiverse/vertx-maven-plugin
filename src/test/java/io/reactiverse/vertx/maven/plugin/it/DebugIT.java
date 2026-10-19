@@ -1,36 +1,26 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import io.reactiverse.vertx.maven.plugin.it.invoker.RunningMavenProcess;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Arrays;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test checking the execution of vertx:debug
  */
 public class DebugIT extends VertxMojoTestBase {
 
-    private RunningVerifier verifier;
-
-    private void initVerifier(File root) throws VerificationException {
-        verifier = new RunningVerifier(root.getAbsolutePath());
-        verifier.setAutoclean(false);
-        verifier.setDebug(true);
-        verifier.setForkJvm(true);
-        verifier.setMavenDebug(true);
-        installPluginToLocalRepository(verifier.getLocalRepository());
-    }
+    private RunningMavenProcess process;
 
     @After
     public void waitForStop() {
-        if (verifier != null) {
-            verifier.stop();
+        if (process != null) {
+            process.stop();
         }
         awaitUntilServerDown();
     }
@@ -40,15 +30,15 @@ public class DebugIT extends VertxMojoTestBase {
         File testDir = initProject("projects/debug-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        debug(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
 
-        verifier.verifyTextInLog("Listening for transport dt_socket at address: 5005");
+        await().atMost(1, MINUTES).until(() -> process.outputContains("Listening for transport dt_socket at address: 5005"));
     }
 
     @Test
@@ -56,15 +46,15 @@ public class DebugIT extends VertxMojoTestBase {
         File testDir = initProject("projects/debug-with-jvmArgs-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        debug(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha prop");
 
-        verifier.verifyTextInLog("Listening for transport dt_socket at address: 5000");
+        await().atMost(1, MINUTES).until(() -> process.outputContains("Listening for transport dt_socket at address: 5000"));
     }
 
     @Test
@@ -72,20 +62,14 @@ public class DebugIT extends VertxMojoTestBase {
         File testDir = initProject("projects/debug-with-main-class-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        debug(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("bonjour");
 
-        verifier.verifyTextInLog("Listening for transport dt_socket at address: 5005");
+        await().atMost(1, MINUTES).until(() -> process.outputContains("Listening for transport dt_socket at address: 5005"));
     }
-
-    private void debug(Verifier verifier) throws VerificationException {
-        verifier.setLogFileName("build-run.log");
-        verifier.executeGoals(Arrays.asList("compile", "vertx:run"), getEnv());
-    }
-
 }

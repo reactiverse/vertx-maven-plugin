@@ -1,15 +1,13 @@
 package io.reactiverse.vertx.maven.plugin.it;
 
-import io.reactiverse.vertx.maven.plugin.it.invoker.RunningVerifier;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import io.reactiverse.vertx.maven.plugin.it.invoker.RunningMavenProcess;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,21 +18,12 @@ import static org.awaitility.Awaitility.await;
  */
 public class RedeployIT extends VertxMojoTestBase {
 
-    private RunningVerifier verifier;
-
-    private void initVerifier(File root) throws VerificationException {
-        verifier = new RunningVerifier(root.getAbsolutePath());
-        verifier.setAutoclean(false);
-        verifier.setDebug(true);
-        verifier.setForkJvm(true);
-        verifier.setMavenDebug(true);
-        installPluginToLocalRepository(verifier.getLocalRepository());
-    }
+    private RunningMavenProcess process;
 
     @After
     public void waitForStop() {
-        if (verifier != null) {
-            verifier.stop();
+        if (process != null) {
+            process.stop();
         }
         awaitUntilServerDown();
     }
@@ -44,10 +33,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
@@ -66,10 +55,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-disabled-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
@@ -88,10 +77,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-it", "projects/redeploy-without-classes-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier, "clean");
+        process = RunningMavenProcess.start(testDir.toPath(), "clean", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha");
@@ -110,10 +99,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-with-jvmArgs-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("aloha prop");
@@ -132,10 +121,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-with-custom-launcher-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("Bonjour vert.x");
@@ -162,10 +151,10 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-with-extended-launcher-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).isEqualTo("Buongiorno vert.x");
@@ -192,15 +181,15 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-on-resource-change-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).startsWith("Hello");
 
-        // Touch the java source code
+        // Touch the resource file
         File source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid = UUID.randomUUID().toString();
         filter(source, Collections.singletonMap("Hello", uuid));
@@ -214,15 +203,15 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-with-some-plugin-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).contains("color: #f938ab");
 
-        // Touch the java source code
+        // Touch the less source
         File source = new File(testDir, "src/main/less/style.less");
         filter(source, Collections.singletonMap("#f938ab;", "green;"));
 
@@ -235,16 +224,15 @@ public class RedeployIT extends VertxMojoTestBase {
         File testDir = initProject("projects/redeploy-scan-period-it");
         assertThat(testDir).isDirectory();
 
-        initVerifier(testDir);
-        prepareProject(testDir, verifier);
+        installPluginToLocalRepository(getLocalRepository());
+        prepareProject(testDir);
 
-        run(verifier);
+        process = RunningMavenProcess.start(testDir.toPath(), "compile", "vertx:run");
 
         String response = getHttpResponse();
         assertThat(response).startsWith("Hello");
 
-        //Start timer and check the next redeploy happens after only 300 ms secs
-        // Touch the java source code
+        // Touch the resource file
         File source = new File(testDir, "src/main/resources/some-text.txt");
         String uuid = UUID.randomUUID().toString();
         filter(source, Collections.singletonMap("Hello", uuid));
@@ -256,32 +244,12 @@ public class RedeployIT extends VertxMojoTestBase {
         String uuid2 = UUID.randomUUID().toString();
         filter(source, Collections.singletonMap(uuid, uuid2));
 
-        // Wait until we get "uuid"
+        // Wait until we get "uuid2"
         await().atMost(1, MINUTES).until(() -> getHttpResponse().startsWith(uuid2));
 
-        File buildLog = new File(testDir, "build-run.log");
-        assertThat(buildLog).isNotNull();
-        assertThat(buildLog.exists()).isTrue();
-        assertThat(buildLog.isFile()).isTrue();
-        List<String> lines = IOUtils.readLines(new FileReader(buildLog));
-        assertThat(lines.isEmpty()).isFalse();
-        long redeployCount = lines.stream()
+        long redeployCount = Arrays.stream(process.getOutput().split(System.lineSeparator()))
             .filter(s -> s.contains("Redeploying Vert.x Application"))
             .count();
         assertThat(redeployCount).isEqualTo(2);
     }
-
-    private void run(Verifier verifier) throws VerificationException {
-        verifier.setLogFileName("build-run.log");
-
-        verifier.executeGoals(Arrays.asList("compile", "vertx:run"), getEnv());
-    }
-
-    private void run(Verifier verifier, String... previous) throws VerificationException {
-        verifier.setLogFileName("build-run.log");
-        List<String> goals = new ArrayList<>(Arrays.asList(previous));
-        goals.add("vertx:run");
-        verifier.executeGoals(goals, getEnv());
-    }
-
 }
