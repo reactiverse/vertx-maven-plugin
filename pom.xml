@@ -84,7 +84,7 @@
         <jackson-bom.version>2.17.1</jackson-bom.version>
         <shrinkwrap.version>2.0.0.Final</shrinkwrap.version>
         <jline.version>4.4.8</jline.version>
-        <asm.version>9.11</asm.version>
+        <asm.version>9.11.1</asm.version>
 
         <!-- Test dependency versions -->
         <vertx-core.version>5.1.1</vertx-core.version>
